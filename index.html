@@ -1,22 +1,52 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="kk.css">
+    <meta name="description" content="A beautiful website template">
+    <title>My Beautiful Website</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body style="background-image: url('https://media.istockphoto.com/id/1336271758/photo/programming-source-code-on-digital-screen-software-developer-and-internet-programming-html.jpg?s=1024x1024&w=is&k=20&c=y8qNwBpYVVCmhdxhe0t1WMkhVIxUlsGqwQwgKPdKOYg=');">
-    <ul>
-        <li>home</li>
-        <li>email</li>
-        <li>domain</li>
-        <li>login</li>
-        <li>services</li>
-    </ul>
-    <form>
-        <input type="search" placeholder="Search...">
-        <button type="submit">Search</button>
-      </form>
-      <img src="">
+<body>
+    <header>
+        <nav>
+            <div class="logo">MySite</div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Welcome to Our Beautiful Website</h1>
+        <p>We create stunning and responsive websites that work on any device!</p>
+        <button onclick="scrollToContent()">Learn More</button>
+    </section>
+
+    <section id="content" class="content">
+        <h2>Our Services</h2>
+        <div class="service">
+            <h3>Web Design</h3>
+            <p>We design stunning and user-friendly websites that represent your brand.</p>
+        </div>
+        <div class="service">
+            <h3>Web Development</h3>
+            <p>Our development team builds fast, scalable, and secure websites.</p>
+        </div>
+        <div class="service">
+            <h3>SEO Optimization</h3>
+            <p>We help improve your website's search engine rankings and visibility.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 MySite. All Rights Reserved.</p>
+        <p>Follow us on <a href="#">Facebook</a>, <a href="#">Instagram</a>, <a href="#">Twitter</a></p>
+    </footer>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
