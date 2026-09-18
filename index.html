@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Student55 Advanced OMR V2</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 
@@ -23,8 +19,7 @@ font-family:'Poppins',sans-serif;
 
 :root{
 --primary:#2563eb;
---secondary:#7c3aed;
---bg:#f5f7fb;
+--bg:#f4f7fb;
 --card:#ffffff;
 --text:#111827;
 }
@@ -32,7 +27,6 @@ font-family:'Poppins',sans-serif;
 body{
 background:var(--bg);
 color:var(--text);
-transition:.3s;
 }
 
 .dark{
@@ -41,58 +35,28 @@ transition:.3s;
 --text:#ffffff;
 }
 
-.container{
-width:95%;
-max-width:1400px;
-margin:auto;
-padding:20px;
-}
-
-/* =========================
-WELCOME PAGE
-========================= */
-
 #welcomePage{
-
 min-height:100vh;
-
-background:
-linear-gradient(
-135deg,
-#2563eb,
-#7c3aed,
-#ec4899
-);
-
 display:flex;
 justify-content:center;
 align-items:center;
-padding:30px;
+padding:20px;
+background:linear-gradient(135deg,#2563eb,#7c3aed,#ec4899);
 }
 
 .welcome-box{
-
 max-width:900px;
 width:100%;
-
 background:rgba(255,255,255,.12);
-
-backdrop-filter:blur(20px);
-
-border-radius:30px;
-
-padding:50px;
-
+backdrop-filter:blur(15px);
+border-radius:25px;
+padding:40px;
 text-align:center;
-
 color:white;
-
-box-shadow:
-0 20px 50px rgba(0,0,0,.25);
 }
 
 .welcome-box h1{
-font-size:55px;
+font-size:50px;
 margin-bottom:15px;
 }
 
@@ -103,86 +67,53 @@ margin-bottom:25px;
 }
 
 .start-btn{
-
 padding:15px 40px;
-
 font-size:18px;
-
 font-weight:700;
-
 border:none;
-
 border-radius:50px;
-
 cursor:pointer;
-
 background:white;
-
 color:#2563eb;
 }
 
-.feature-grid{
-
-margin-top:40px;
-
+.features{
+margin-top:35px;
 display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(200px,1fr));
-
-gap:20px;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
 }
 
-.feature-card{
-
+.feature{
 background:rgba(255,255,255,.15);
-
-padding:20px;
-
-border-radius:20px;
+padding:18px;
+border-radius:15px;
 }
-
-.feature-card i{
-font-size:30px;
-margin-bottom:10px;
-}
-
-.feature-card h3{
-margin-bottom:10px;
-}
-
-/* =========================
-MAIN APP
-========================= */
 
 #app{
 display:none;
 }
 
-.header{
-
-background:var(--card);
-
+.container{
+width:95%;
+max-width:1400px;
+margin:auto;
 padding:20px;
+}
 
-border-radius:20px;
-
+.header{
+background:var(--card);
+padding:20px;
+border-radius:15px;
 margin-bottom:20px;
-
-box-shadow:
-0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
 .header-top{
-
 display:flex;
-
 justify-content:space-between;
-
 align-items:center;
-
 flex-wrap:wrap;
-
 gap:10px;
 }
 
@@ -197,93 +128,164 @@ gap:10px;
 flex-wrap:wrap;
 }
 
-button,
-select{
-
-padding:10px 15px;
-
-border:none;
-
-border-radius:10px;
-
+button{
 cursor:pointer;
-
-font-weight:600;
+border:none;
 }
 
 .primary{
 background:var(--primary);
 color:white;
+padding:10px 15px;
+border-radius:10px;
+font-weight:600;
 }
 
 .timer{
 background:#111827;
 color:white;
+padding:10px 15px;
+border-radius:10px;
 font-weight:700;
 }
 
-.dark .timer{
-background:#000;
+.result-panel{
+display:none;
+background:var(--card);
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-/* next parts continue */
+.result-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:15px;
+}
+
+.result-box{
+background:#e5e7eb;
+padding:15px;
+border-radius:12px;
+text-align:center;
+}
+
+.navigator{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:20px;
+}
+
+.nav-btn{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#dbeafe;
+font-weight:700;
+}
+
+.question-card{
+background:var(--card);
+padding:20px;
+border-radius:15px;
+margin-bottom:15px;
+box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.question-title{
+font-weight:600;
+margin-bottom:15px;
+}
+
+.options{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+}
+
+.option{
+padding:12px;
+border:2px solid #d1d5db;
+border-radius:10px;
+cursor:pointer;
+}
+
+.option.selected{
+background:#2563eb;
+color:white;
+border-color:#2563eb;
+}
+
+.correct-row{
+border-left:8px solid #16a34a;
+}
+
+.wrong-row{
+border-left:8px solid #dc2626;
+}
+
+.checking-panel{
+display:none;
+margin-top:15px;
+gap:10px;
+}
+
+.right-btn{
+background:#16a34a;
+color:white;
+padding:10px 15px;
+border-radius:10px;
+}
+
+.wrong-btn{
+background:#dc2626;
+color:white;
+padding:10px 15px;
+border-radius:10px;
+}
 
 </style>
 </head>
 
 <body>
 
-<!-- WELCOME PAGE -->
-
 <section id="welcomePage">
 
 <div class="welcome-box">
 
-<h1>🎯 Welcome To Student55 Advanced OMR V2</h1>
+<h1>🎯 Student55 Advanced OMR V2</h1>
 
 <p>
-
-Practice, Check, Analyse and Export
-your OMR tests with advanced features.
-
+Welcome to the Advanced OMR Practice Platform.
+Check Answers, Export PDF, Use Navigator,
+Dark Mode, Rating System and much more.
 </p>
 
-<button class="start-btn"
+<button
+class="start-btn"
 onclick="startApp()">
 
 Start Test
 
 </button>
 
-<div class="feature-grid">
+<div class="features">
 
-<div class="feature-card">
-<i class="fas fa-file-pdf"></i>
-<h3>PDF Export</h3>
-</div>
+<div class="feature">📄 PDF Export</div>
 
-<div class="feature-card">
-<i class="fas fa-chart-line"></i>
-<h3>Analytics</h3>
-</div>
+<div class="feature">📊 Result Analysis</div>
 
-<div class="feature-card">
-<i class="fas fa-star"></i>
-<h3>Rating System</h3>
-</div>
+<div class="feature">⭐ Rating System</div>
 
-<div class="feature-card">
-<i class="fab fa-instagram"></i>
-<h3>Instagram</h3>
-</div>
+<div class="feature">🌙 Dark Mode</div>
 
 </div>
 
 </div>
 
 </section>
-
-<!-- MAIN APP -->
 
 <div id="app">
 
@@ -301,15 +303,6 @@ Student55 Advanced OMR V2
 
 <div class="controls">
 
-<select id="themeSelector">
-
-<option value="blue">Blue</option>
-<option value="green">Green</option>
-<option value="purple">Purple</option>
-<option value="red">Red</option>
-
-</select>
-
 <button
 class="primary"
 onclick="toggleDarkMode()">
@@ -318,7 +311,8 @@ Dark Mode
 
 </button>
 
-<div class="timer"
+<div
+class="timer"
 id="timer">
 
 00:00
@@ -330,37 +324,40 @@ id="timer">
 </div>
 
 </div>
+
 <!-- RESULT PANEL -->
 
-<div id="resultPanel" class="result-panel">
+<div
+id="resultPanel"
+class="result-panel">
 
 <h2 style="margin-bottom:15px;">
-📊 Test Analysis
+📊 Result Analysis
 </h2>
 
 <div class="result-grid">
 
-<div class="result-card">
+<div class="result-box">
 <h3>Total</h3>
 <h1 id="totalQuestions">0</h1>
 </div>
 
-<div class="result-card">
+<div class="result-box">
 <h3>Attempted</h3>
 <h1 id="attemptedQuestions">0</h1>
 </div>
 
-<div class="result-card">
+<div class="result-box">
 <h3>Right</h3>
 <h1 id="rightQuestions">0</h1>
 </div>
 
-<div class="result-card">
+<div class="result-box">
 <h3>Wrong</h3>
 <h1 id="wrongQuestions">0</h1>
 </div>
 
-<div class="result-card">
+<div class="result-box">
 <h3>Accuracy</h3>
 <h1 id="accuracyPercent">0%</h1>
 </div>
@@ -370,29 +367,36 @@ id="timer">
 </div>
 
 
-<!-- QUESTION NAVIGATOR -->
+<!-- NAVIGATOR -->
 
-<div id="navigator" class="navigator">
+<div
+id="navigator"
+class="navigator">
 
 </div>
 
 
 <!-- QUESTIONS AREA -->
 
-<div id="questionsContainer">
+<div
+id="questionsContainer">
 
 </div>
 
 
 <!-- SUBMIT BUTTON -->
 
-<div style="text-align:center;margin-top:25px;">
+<div
+style="
+text-align:center;
+margin-top:20px;
+">
 
 <button
 id="submitBtn"
 class="primary"
 style="
-padding:15px 40px;
+padding:15px 35px;
 font-size:18px;
 ">
 
@@ -403,7 +407,7 @@ Submit Test
 </div>
 
 
-<!-- PDF BUTTON -->
+<!-- PDF EXPORT -->
 
 <div
 id="pdfArea"
@@ -412,6 +416,20 @@ display:none;
 text-align:center;
 margin-top:15px;
 ">
+
+<input
+type="text"
+id="watermarkName"
+placeholder="Watermark Name"
+style="
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+width:250px;
+max-width:90%;
+">
+
+<br><br>
 
 <button
 class="primary"
@@ -424,7 +442,7 @@ onclick="downloadPDF()">
 </div>
 
 
-<!-- RESTART BUTTON -->
+<!-- RESTART -->
 
 <div
 style="
@@ -433,7 +451,11 @@ margin-top:15px;
 ">
 
 <button
-onclick="restartTest()">
+onclick="restartTest()"
+style="
+padding:12px 25px;
+border-radius:10px;
+">
 
 🔄 Restart Test
 
@@ -442,11 +464,181 @@ onclick="restartTest()">
 </div>
 
 
+<!-- INSTAGRAM -->
+
+<div class="header">
+
+<h2>Instagram</h2>
+
+<p style="margin-top:10px;">
+Add your own Instagram link later.
+</p>
+
+<a
+href="https://instagram.com/"
+target="_blank">
+
+<button
+class="primary"
+style="margin-top:10px;">
+
+📸 Instagram
+
+</button>
+
+</a>
+
+</div>
+
+
+<!-- RATING -->
+
+<div class="header">
+
+<h2>⭐ Website Rating</h2>
+
+<div
+style="
+font-size:35px;
+margin-top:15px;
+">
+
+<span onclick="rateSite(1)">⭐</span>
+<span onclick="rateSite(2)">⭐</span>
+<span onclick="rateSite(3)">⭐</span>
+<span onclick="rateSite(4)">⭐</span>
+<span onclick="rateSite(5)">⭐</span>
+
+</div>
+
+<h3 style="margin-top:15px;">
+
+Average Rating :
+<span id="avgRating">
+
+0
+
+</span>
+
+</h3>
+
+<h3>
+
+Total Ratings :
+<span id="totalRatings">
+
+0
+
+</span>
+
+</h3>
+
+</div>
+
+
+<!-- COMMENTS -->
+
+<div class="header">
+
+<h2>💬 Public Comments</h2>
+
+<input
+id="commentName"
+placeholder="Your Name"
+style="
+width:100%;
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+">
+
+<br><br>
+
+<textarea
+id="commentText"
+placeholder="Write Comment"
+style="
+width:100%;
+height:100px;
+padding:10px;
+border-radius:10px;
+">
+
+</textarea>
+
+<br><br>
+
+<button
+class="primary"
+onclick="addComment()">
+
+Post Comment
+
+</button>
+
+<div
+id="commentsArea"
+style="margin-top:20px;">
+
+</div>
+
+</div>
+
+
+<!-- HELP -->
+
+<div class="header">
+
+<h2>🛠 Help Center</h2>
+
+<p>
+Only Admin Can Access Messages
+</p>
+
+<textarea
+id="helpMessage"
+placeholder="Type Your Help Message"
+style="
+width:100%;
+height:120px;
+padding:10px;
+border-radius:10px;
+">
+
+</textarea>
+
+<br><br>
+
+<button
+class="primary"
+onclick="sendHelpMessage()">
+
+Send Help Request
+
+</button>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<div
+style="
+text-align:center;
+padding:25px;
+font-size:14px;
+">
+
+© Student55 Advanced OMR V2
+
+</div>
+
+
 <script>
 
-/* ==========================
-QUESTIONS DATA
-========================== */
+/* ======================
+QUESTIONS
+====================== */
 
 const questions = [
 
@@ -477,11 +669,6 @@ options:["A","B","C","D"]
 
 ];
 
-
-/* ==========================
-STATE VARIABLES
-========================== */
-
 let answers = {};
 
 let submitted = false;
@@ -490,10 +677,29 @@ let rightCount = 0;
 
 let wrongCount = 0;
 
+let totalStars = 0;
 
-/* ==========================
+let ratingUsers = 0;
+
+/* ======================
+START APP
+====================== */
+
+function startApp(){
+
+document
+.getElementById("welcomePage")
+.style.display="none";
+
+document
+.getElementById("app")
+.style.display="block";
+
+}
+
+/* ======================
 LOAD QUESTIONS
-========================== */
+====================== */
 
 function loadQuestions(){
 
@@ -502,9 +708,9 @@ document.getElementById(
 "questionsContainer"
 );
 
-container.innerHTML = "";
+container.innerHTML="";
 
-questions.forEach((question,index)=>{
+questions.forEach((q,index)=>{
 
 const card =
 document.createElement("div");
@@ -519,15 +725,13 @@ card.innerHTML = `
 
 <div class="question-title">
 
-${index+1}. ${question.q}
+${index+1}. ${q.q}
 
 </div>
 
 <div class="options">
 
-${question.options.map((opt,optIndex)=>
-
-`
+${q.options.map((opt,optIndex)=>`
 
 <div
 class="option"
@@ -537,17 +741,13 @@ ${opt}
 
 </div>
 
-`
-
-).join("")}
+`).join("")}
 
 </div>
 
-
 <div
 class="checking-panel"
-id="check-${index}"
-style="display:none;margin-top:15px;">
+id="check-${index}">
 
 <button
 class="right-btn"
@@ -575,14 +775,13 @@ container.appendChild(card);
 
 createNavigator();
 
-updateTotals();
+updateResult();
 
 }
 
-
-/* ==========================
+/* ======================
 NAVIGATOR
-========================== */
+====================== */
 
 function createNavigator(){
 
@@ -591,7 +790,7 @@ document.getElementById(
 "navigator"
 );
 
-nav.innerHTML = "";
+nav.innerHTML="";
 
 questions.forEach((q,index)=>{
 
@@ -604,7 +803,7 @@ btn.className =
 btn.innerText =
 index+1;
 
-btn.onclick = ()=>{
+btn.onclick=()=>{
 
 document
 .getElementById(
@@ -622,10 +821,9 @@ nav.appendChild(btn);
 
 }
 
-
-/* ==========================
+/* ======================
 OPTION SELECT
-========================== */
+====================== */
 
 function selectOption(
 qIndex,
@@ -655,39 +853,20 @@ element.classList.add(
 answers[qIndex] =
 optionIndex;
 
-updateTotals();
-
-}
-
-
-/* ==========================
-UPDATE ATTEMPTED
-========================== */
-
-function updateTotals(){
-
-document
-.getElementById(
-"totalQuestions"
-)
-innerText =
-questions.length;
-
 document
 .getElementById(
 "attemptedQuestions"
 )
-innerText =
+.innerText =
 Object.keys(
 answers
 ).length;
 
 }
 
-
-/* ==========================
-SUBMIT TEST
-========================== */
+/* ======================
+SUBMIT
+====================== */
 
 document
 .getElementById(
@@ -697,21 +876,19 @@ document
 "click",
 ()=>{
 
-submitted = true;
+submitted=true;
 
 document
 .getElementById(
 "resultPanel"
 )
-.style.display =
-"block";
+.style.display="block";
 
 document
 .getElementById(
 "pdfArea"
 )
-.style.display =
-"block";
+.style.display="block";
 
 questions.forEach((q,index)=>{
 
@@ -719,8 +896,7 @@ document
 .getElementById(
 "check-"+index
 )
-.style.display =
-"flex";
+.style.display="flex";
 
 });
 
@@ -730,9 +906,10 @@ alert(
 
 }
 );
-/* ==========================
-MARK RIGHT
-========================== */
+
+/* ======================
+RIGHT
+====================== */
 
 function markRight(index){
 
@@ -742,8 +919,12 @@ document.getElementById(
 );
 
 if(
-card.classList.contains("correct-row") ||
-card.classList.contains("wrong-row")
+card.classList.contains(
+"correct-row"
+) ||
+card.classList.contains(
+"wrong-row"
+)
 ){
 return;
 }
@@ -754,19 +935,18 @@ card.classList.add(
 
 rightCount++;
 
-updateResult();
-
 highlightSelected(
 index,
 true
 );
 
+updateResult();
+
 }
 
-
-/* ==========================
-MARK WRONG
-========================== */
+/* ======================
+WRONG
+====================== */
 
 function markWrong(index){
 
@@ -776,8 +956,12 @@ document.getElementById(
 );
 
 if(
-card.classList.contains("correct-row") ||
-card.classList.contains("wrong-row")
+card.classList.contains(
+"correct-row"
+) ||
+card.classList.contains(
+"wrong-row"
+)
 ){
 return;
 }
@@ -788,28 +972,36 @@ card.classList.add(
 
 wrongCount++;
 
-updateResult();
-
 highlightSelected(
 index,
 false
 );
 
+updateResult();
+
 }
 
-
-/* ==========================
-HIGHLIGHT SELECTED OPTION
-========================== */
+/* ======================
+OPTION COLOR
+====================== */
 
 function highlightSelected(
-qIndex,
-isCorrect
+index,
+correct
 ){
+
+const selected =
+answers[index];
+
+if(
+selected===undefined
+){
+return;
+}
 
 const card =
 document.getElementById(
-"question-"+qIndex
+"question-"+index
 );
 
 const options =
@@ -817,35 +1009,42 @@ card.querySelectorAll(
 ".option"
 );
 
-const selected =
-answers[qIndex];
-
-if(
-selected === undefined
-) return;
-
 options[selected]
 .style.background =
-isCorrect
-? "#16a34a"
-: "#dc2626";
+
+correct
+?
+"#16a34a"
+:
+"#dc2626";
 
 options[selected]
 .style.color =
 "#fff";
 
-options[selected]
-.style.border =
-"none";
-
 }
 
-
-/* ==========================
-RESULT UPDATE
-========================== */
+/* ======================
+RESULT
+====================== */
 
 function updateResult(){
+
+document
+.getElementById(
+"totalQuestions"
+)
+.innerText =
+questions.length;
+
+document
+.getElementById(
+"attemptedQuestions"
+)
+.innerText =
+Object.keys(
+answers
+).length;
 
 document
 .getElementById(
@@ -861,16 +1060,10 @@ document
 .innerText =
 wrongCount;
 
-let attempted =
-Object.keys(
-answers
-).length;
-
 let accuracy = 0;
 
 if(
-(rightCount+wrongCount)
->0
+(rightCount+wrongCount)>0
 ){
 
 accuracy =
@@ -890,78 +1083,23 @@ document
 "accuracyPercent"
 )
 .innerText =
-accuracy + "%";
+accuracy+"%";
 
 }
 
-
-/* ==========================
-RESTART TEST
-========================== */
+/* ======================
+RESTART
+====================== */
 
 function restartTest(){
 
-if(
-!confirm(
-"Restart Test?"
-)
-){
-return;
-}
-
-answers = {};
-
-submitted = false;
-
-rightCount = 0;
-
-wrongCount = 0;
-
-document
-.getElementById(
-"resultPanel"
-)
-.style.display =
-"none";
-
-document
-.getElementById(
-"pdfArea"
-)
-.style.display =
-"none";
-
-loadQuestions();
+location.reload();
 
 }
 
-
-/* ==========================
-START APP
-========================== */
-
-function startApp(){
-
-document
-.getElementById(
-"welcomePage"
-)
-.style.display =
-"none";
-
-document
-.getElementById(
-"app"
-)
-.style.display =
-"block";
-
-}
-
-
-/* ==========================
+/* ======================
 DARK MODE
-========================== */
+====================== */
 
 function toggleDarkMode(){
 
@@ -972,87 +1110,11 @@ document.body
 
 }
 
-
-/* ==========================
-THEME SYSTEM
-========================== */
-
-document
-.getElementById(
-"themeSelector"
-)
-.addEventListener(
-"change",
-function(){
-
-const value =
-this.value;
-
-if(
-value==="blue"
-){
-
-document
-.documentElement
-.style
-.setProperty(
-"--primary",
-"#2563eb"
-);
-
-}
-
-if(
-value==="green"
-){
-
-document
-.documentElement
-.style
-.setProperty(
-"--primary",
-"#16a34a"
-);
-
-}
-
-if(
-value==="purple"
-){
-
-document
-.documentElement
-.style
-.setProperty(
-"--primary",
-"#7c3aed"
-);
-
-}
-
-if(
-value==="red"
-){
-
-document
-.documentElement
-.style
-.setProperty(
-"--primary",
-"#dc2626"
-);
-
-}
-
-}
-);
-
-
-/* ==========================
+/* ======================
 TIMER
-========================== */
+====================== */
 
-let seconds = 0;
+let seconds=0;
 
 setInterval(()=>{
 
@@ -1070,7 +1132,7 @@ document
 .getElementById(
 "timer"
 )
-.innerText =
+.innerText=
 
 String(mins)
 .padStart(2,"0")
@@ -1086,220 +1148,9 @@ String(sec)
 
 },1000);
 
-
-/* ==========================
-INITIAL LOAD
-========================== */
-
-loadQuestions();
-<!-- ==========================
-CUSTOM WATERMARK
-========================== -->
-
-<div class="header" style="margin-top:25px;">
-
-<h2>PDF Settings</h2>
-
-<input
-type="text"
-id="watermarkName"
-placeholder="Enter Watermark Name"
-style="
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:10px;
-border:1px solid #ccc;
-">
-
-</div>
-
-
-<!-- ==========================
-INSTAGRAM
-========================== -->
-
-<div class="header">
-
-<h2>Instagram</h2>
-
-<p style="margin-top:10px;">
-Follow us on Instagram
-</p>
-
-<a
-href="https://instagram.com/"
-target="_blank">
-
-<button
-class="primary"
-style="margin-top:10px;">
-
-📸 Instagram
-
-</button>
-
-</a>
-
-</div>
-
-
-<!-- ==========================
-RATING SYSTEM
-========================== -->
-
-<div class="header">
-
-<h2>Rate This Website</h2>
-
-<div
-id="ratingStars"
-style="
-font-size:35px;
-margin-top:15px;
-cursor:pointer;
-">
-
-<span onclick="rateSite(1)">⭐</span>
-<span onclick="rateSite(2)">⭐</span>
-<span onclick="rateSite(3)">⭐</span>
-<span onclick="rateSite(4)">⭐</span>
-<span onclick="rateSite(5)">⭐</span>
-
-</div>
-
-<h3 style="margin-top:15px;">
-
-Average Rating:
-<span id="avgRating">
-
-0
-
-</span>
-
-</h3>
-
-<h3>
-
-Total Ratings:
-<span id="totalRatings">
-
-0
-
-</span>
-
-</h3>
-
-</div>
-
-
-<!-- ==========================
-COMMENTS
-========================== -->
-
-<div class="header">
-
-<h2>Public Comments</h2>
-
-<input
-id="commentName"
-placeholder="Your Name"
-style="
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:10px;
-border:1px solid #ccc;
-">
-
-<textarea
-id="commentText"
-placeholder="Write Comment"
-style="
-width:100%;
-height:100px;
-margin-top:10px;
-padding:10px;
-border-radius:10px;
-">
-
-</textarea>
-
-<button
-class="primary"
-style="margin-top:10px;"
-onclick="addComment()">
-
-Post Comment
-
-</button>
-
-<div
-id="commentsArea"
-style="margin-top:20px;">
-
-</div>
-
-</div>
-
-
-<!-- ==========================
-HELP BOX
-========================== -->
-
-<div class="header">
-
-<h2>Help Center</h2>
-
-<p>
-Only Admin Can View Help Messages
-</p>
-
-<textarea
-id="helpMessage"
-placeholder="Type Your Help Message"
-style="
-width:100%;
-height:120px;
-padding:10px;
-margin-top:10px;
-border-radius:10px;
-">
-
-</textarea>
-
-<button
-class="primary"
-style="margin-top:10px;"
-onclick="sendHelpMessage()">
-
-Send Help Request
-
-</button>
-
-</div>
-
-
-<!-- ==========================
-FOOTER
-========================== -->
-
-<div
-style="
-text-align:center;
-padding:30px;
-font-size:15px;
-">
-
-© Student55 Advanced OMR V2
-
-</div>
-
-<script>
-
-/* ==========================
+/* ======================
 PDF EXPORT
-========================== */
+====================== */
 
 function downloadPDF(){
 
@@ -1310,7 +1161,7 @@ document
 )
 .value || "Student55";
 
-const pdfContent =
+const text =
 
 `
 Student55 Advanced OMR V2
@@ -1332,45 +1183,40 @@ ${wrongCount}
 
 Accuracy:
 ${document.getElementById("accuracyPercent").innerText}
-
-Generated:
-${new Date().toLocaleString()}
 `;
 
 const blob =
 new Blob(
-[pdfContent],
+[text],
 {
 type:"text/plain"
 }
 );
 
 const a =
-document.createElement("a");
+document.createElement(
+"a"
+);
 
-a.href =
+a.href=
 URL.createObjectURL(
 blob
 );
 
-a.download =
-"Student55_Result.pdf";
+a.download=
+"Student55_Result.txt";
 
 a.click();
 
 }
 
-
-/* ==========================
-RATING SYSTEM
-========================== */
-
-let totalStars = 0;
-let ratingUsers = 0;
+/* ======================
+RATING
+====================== */
 
 function rateSite(stars){
 
-totalStars += stars;
+totalStars+=stars;
 
 ratingUsers++;
 
@@ -1378,10 +1224,10 @@ document
 .getElementById(
 "avgRating"
 )
-.innerText =
+.innerText=
 
 (
-totalStars /
+totalStars/
 ratingUsers
 ).toFixed(2);
 
@@ -1389,15 +1235,14 @@ document
 .getElementById(
 "totalRatings"
 )
-.innerText =
+.innerText=
 ratingUsers;
 
 }
 
-
-/* ==========================
+/* ======================
 COMMENTS
-========================== */
+====================== */
 
 function addComment(){
 
@@ -1428,19 +1273,19 @@ document
 "div"
 );
 
-box.style.marginBottom =
+box.style.padding=
 "15px";
 
-box.style.padding =
+box.style.marginBottom=
 "15px";
 
-box.style.border =
-"1px solid #ddd";
+box.style.border=
+"1px solid #ccc";
 
-box.style.borderRadius =
+box.style.borderRadius=
 "10px";
 
-box.innerHTML =
+box.innerHTML=
 
 `
 <b>${name}</b>
@@ -1458,13 +1303,11 @@ Delete
 </button>
 `;
 
-const area =
 document
 .getElementById(
 "commentsArea"
-);
-
-area.prepend(box);
+)
+.prepend(box);
 
 document
 .getElementById(
@@ -1480,10 +1323,9 @@ document
 
 }
 
-
-/* ==========================
-HELP MESSAGE
-========================== */
+/* ======================
+HELP
+====================== */
 
 function sendHelpMessage(){
 
@@ -1509,6 +1351,12 @@ document
 .value="";
 
 }
+
+/* ======================
+INITIAL LOAD
+====================== */
+
+loadQuestions();
 
 </script>
 
