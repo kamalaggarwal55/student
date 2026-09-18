@@ -1343,24 +1343,19 @@ acc+"%";
 TIMER
 ====================== */
 
-setInterval(()=>{
+let timerInterval=setInterval(()=>{
 
 seconds++;
 
-const m =
-Math.floor(
-seconds/60
-);
+const m=Math.floor(seconds/60);
 
-const s =
-seconds%60;
+const s=seconds%60;
 
 document.getElementById(
 "timer"
 ).innerText=
 
-String(m)
-.padStart(2,"0")
+String(m).padStart(2,"0")
 
 +
 
@@ -1368,8 +1363,7 @@ String(m)
 
 +
 
-String(s)
-.padStart(2,"0");
+String(s).padStart(2,"0");
 
 },1000);
 
