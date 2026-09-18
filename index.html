@@ -411,6 +411,8 @@ document.getElementById(
 ).value
 );
 
+selectedAnswers = {};
+
 document.getElementById(
 "welcomePage"
 ).style.display =
@@ -425,6 +427,16 @@ document.getElementById(
 "timer"
 ).style.display =
 "block";
+
+document.getElementById(
+"attemptedLive"
+).innerText =
+"0";
+
+document.getElementById(
+"remainingLive"
+).innerText =
+totalQuestions;
 
 generateQuestions();
 
@@ -500,37 +512,31 @@ row.className =
 
 row.innerHTML = `
 
-<div>
-${qno}
-</div>
+<div>${qno}</div>
 
 <div class="option">
-<input
-type="radio"
+<input type="radio"
 name="q${i}"
 value="A"
 onchange="saveAnswer(${i},'A')">
 </div>
 
 <div class="option">
-<input
-type="radio"
+<input type="radio"
 name="q${i}"
 value="B"
 onchange="saveAnswer(${i},'B')">
 </div>
 
 <div class="option">
-<input
-type="radio"
+<input type="radio"
 name="q${i}"
 value="C"
 onchange="saveAnswer(${i},'C')">
 </div>
 
 <div class="option">
-<input
-type="radio"
+<input type="radio"
 name="q${i}"
 value="D"
 onchange="saveAnswer(${i},'D')">
@@ -548,8 +554,7 @@ border:none;
 padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
-"
->
+">
 ✔
 </button>
 
@@ -563,14 +568,11 @@ border:none;
 padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
-"
->
+">
 ✖
 </button>
 
-<span
-id="status${i}">
-</span>
+<span id="status${i}"></span>
 
 </div>
 
@@ -653,6 +655,7 @@ remaining.join(", ")
 }
 
 </script>
+
 
 <script>
 
