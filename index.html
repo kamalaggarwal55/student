@@ -377,30 +377,53 @@ font-weight:600;
 
 .option{
 
-width:52px;
-height:52px;
-
-border-radius:50%;
-
-border:2px solid #9ca3af;
+width:68px;
+height:68px;
 
 display:flex;
-
-justify-content:center;
-
 align-items:center;
+justify-content:center;
 
 margin:auto;
 
 cursor:pointer;
 
-font-size:22px;
+font-size:42px;
 
 font-weight:700;
 
-background:white;
+border:none;
+
+background:transparent;
 
 transition:.2s;
+
+}
+
+.option.selected{
+
+transform:scale(1.15);
+
+filter:drop-shadow(
+0 0 8px rgba(0,0,0,.25)
+);
+
+}
+
+.correct-option{
+
+color:#16a34a !important;
+
+transform:scale(1.15);
+
+}
+
+.wrong-option{
+
+color:#dc2626 !important;
+
+transform:scale(1.15);
+
 }
 
 .option.selected{
