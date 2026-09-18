@@ -20,23 +20,24 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#f4f6fb;
+background:#eef4ff;
 padding:15px;
+transition:.3s;
 }
 
 .container{
-max-width:1200px;
+max-width:1400px;
 margin:auto;
 background:white;
 padding:20px;
 border-radius:20px;
-box-shadow:0 0 15px rgba(0,0,0,.08);
+box-shadow:0 0 15px rgba(0,0,0,.1);
 }
 
 .logo{
-text-align:center;
-font-size:32px;
+font-size:40px;
 font-weight:bold;
+text-align:center;
 color:var(--theme);
 margin-bottom:20px;
 }
@@ -46,22 +47,18 @@ text-align:center;
 padding:40px 20px;
 }
 
-.start-screen h1{
-margin-bottom:15px;
-}
-
 .start-btn{
 background:var(--theme);
 color:white;
 border:none;
-padding:15px 30px;
-font-size:20px;
-border-radius:10px;
+padding:15px 35px;
+font-size:22px;
+border-radius:12px;
 cursor:pointer;
 }
 
 .theme-box{
-margin-top:20px;
+margin-top:25px;
 }
 
 .theme-btn{
@@ -73,13 +70,26 @@ cursor:pointer;
 margin:5px;
 }
 
+#customColor{
+width:80px;
+height:40px;
+cursor:pointer;
+margin-top:10px;
+}
+
 .timer{
 display:none;
-text-align:center;
+position:sticky;
+top:10px;
+z-index:999;
+background:white;
+padding:10px;
+border-radius:10px;
 font-size:24px;
 font-weight:bold;
+text-align:center;
 margin-bottom:15px;
-color:var(--theme);
+box-shadow:0 0 10px rgba(0,0,0,.1);
 }
 
 .omr-section{
@@ -88,19 +98,21 @@ display:none;
 
 .header-row{
 display:grid;
-grid-template-columns:70px repeat(4,1fr);
-background:#eef2ff;
-padding:10px;
-font-weight:bold;
+grid-template-columns:80px repeat(4,1fr) 140px;
+background:#e8edff;
+padding:12px;
 border-radius:10px;
+font-size:20px;
+font-weight:bold;
 }
 
 .question-row{
 display:grid;
-grid-template-columns:70px repeat(4,1fr);
+grid-template-columns:80px repeat(4,1fr) 140px;
+padding:12px;
+border-bottom:1px solid #ddd;
 align-items:center;
-padding:10px;
-border-bottom:1px solid #eee;
+font-size:20px;
 }
 
 .qno{
@@ -112,8 +124,8 @@ text-align:center;
 }
 
 .option input{
-width:24px;
-height:24px;
+width:28px;
+height:28px;
 cursor:pointer;
 }
 
@@ -135,17 +147,22 @@ cursor:pointer;
 
 .summary{
 display:none;
-margin-top:25px;
+margin-top:20px;
 padding:15px;
+background:#f7f7f7;
 border-radius:12px;
-background:#f8fafc;
 }
 
 .card{
 margin-top:20px;
 padding:15px;
-border-radius:12px;
 background:#fafafa;
+border-radius:12px;
+}
+
+.star{
+font-size:35px;
+cursor:pointer;
 }
 
 textarea,
@@ -153,33 +170,35 @@ input[type=text]{
 width:100%;
 padding:10px;
 margin-top:10px;
-border:1px solid #ddd;
+border:1px solid #ccc;
 border-radius:8px;
 }
 
-.star{
-font-size:32px;
-cursor:pointer;
+.watermark{
+position:fixed;
+bottom:10px;
+left:10px;
+opacity:.15;
+font-size:18px;
+font-weight:bold;
+pointer-events:none;
 }
 
-@media(max-width:700px){
+@media(max-width:768px){
 
-.header-row{
-grid-template-columns:55px repeat(4,1fr);
-font-size:14px;
+.logo{
+font-size:28px;
 }
 
+.header-row,
 .question-row{
-grid-template-columns:55px repeat(4,1fr);
+font-size:15px;
+grid-template-columns:55px repeat(4,1fr) 100px;
 }
 
 .option input{
 width:22px;
 height:22px;
-}
-
-.logo{
-font-size:24px;
 }
 
 }
@@ -188,6 +207,10 @@ font-size:24px;
 </head>
 
 <body>
+
+<div class="watermark">
+student55.netlify.app
+</div>
 
 <div class="container">
 
@@ -199,8 +222,8 @@ Student55 OMR Test
 
 <h1>Welcome</h1>
 
-<p>
-100 Questions OMR Practice Test
+<p style="margin-top:10px">
+100 Question OMR Practice Test
 </p>
 
 <div class="theme-box">
@@ -227,6 +250,15 @@ onclick="setTheme('#dc2626')"></button>
 style="background:#111827"
 onclick="setTheme('#111827')"></button>
 
+<br><br>
+
+<h3>Custom Background</h3>
+
+<input
+type="color"
+id="customColor"
+oninput="changeBg(this.value)">
+
 </div>
 
 <br>
@@ -243,124 +275,53 @@ START TEST
 00:00:00
 </div>
 
-<div
-id="omrSection"
-class="omr-section">
+<div id="omrSection" class="omr-section">
 
 <div class="header-row">
-
 <div>Q</div>
 <div>A</div>
 <div>B</div>
 <div>C</div>
 <div>D</div>
-
+<div>Check</div>
 </div>
 
 <div id="questions"></div>
 
 <div class="controls">
 
-<button
-class="btn"
+<button class="btn"
 onclick="submitOMR()">
 Submit
 </button>
 
-<button
-class="btn"
+<button class="btn"
 onclick="restartOMR()">
 Restart
 </button>
 
-<button
-class="btn"
+<button class="btn"
 onclick="downloadResult()">
 Download
 </button>
 
 </div>
 
-<div
-id="summary"
-class="summary">
+<div id="summary" class="summary">
 
 <h2>Result Summary</h2>
 
-<p>
-Attempted:
-<span id="attempted">0</span>
-</p>
+<p>Attempted :
+<span id="attempted">0</span></p>
 
-<p>
-Right:
-<span id="rightCount">0</span>
-</p>
+<p>Right :
+<span id="rightCount">0</span></p>
 
-<p>
-Wrong:
-<span id="wrongCount">0</span>
-</p>
+<p>Wrong :
+<span id="wrongCount">0</span></p>
 
-<p>
-Unattempted:
-<span id="unattempted">100</span>
-</p>
-
-</div>
-
-<div class="card">
-
-<h2>Rate This Site</h2>
-
-<div>
-
-<span class="star">⭐</span>
-<span class="star">⭐</span>
-<span class="star">⭐</span>
-<span class="star">⭐</span>
-<span class="star">⭐</span>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<h2>Review</h2>
-
-<textarea
-id="review"
-rows="5"
-placeholder="Write review here">
-</textarea>
-
-</div>
-
-<div class="card">
-
-<h2>Contact & Help</h2>
-
-<input
-type="text"
-placeholder="Your Name">
-
-<textarea
-rows="5"
-placeholder="Write your message">
-</textarea>
-
-</div>
-
-<div class="card">
-
-<h2>Instagram</h2>
-
-<a href="#" id="instaLink">
-Visit Instagram
-</a>
-
-</div>
+<p>Unattempted :
+<span id="unattempted">100</span></p>
 
 </div>
 
@@ -385,25 +346,26 @@ color
 
 }
 
+function changeBg(color){
+
+document.body.style.background=
+color;
+
+}
+
 function startTest(){
 
-document
-.getElementById(
-'startScreen'
-)
-.style.display='none';
+document.getElementById(
+"startScreen"
+).style.display="none";
 
-document
-.getElementById(
-'omrSection'
-)
-.style.display='block';
+document.getElementById(
+"omrSection"
+).style.display="block";
 
-document
-.getElementById(
-'timer'
-)
-.style.display='block';
+document.getElementById(
+"timer"
+).style.display="block";
 
 timerInterval=
 setInterval(()=>{
@@ -413,25 +375,23 @@ seconds++;
 let h=
 String(
 Math.floor(seconds/3600)
-).padStart(2,'0');
+).padStart(2,"0");
 
 let m=
 String(
 Math.floor(
 (seconds%3600)/60
 )
-).padStart(2,'0');
+).padStart(2,"0");
 
 let s=
 String(
 seconds%60
-).padStart(2,'0');
+).padStart(2,"0");
 
-document
-.getElementById(
-'timer'
-)
-.innerText=
+document.getElementById(
+"timer"
+).innerHTML=
 `${h}:${m}:${s}`;
 
 },1000);
@@ -442,6 +402,8 @@ document
 
 <script>
 
+/* 100 QUESTIONS GENERATE */
+
 const questionsDiv =
 document.getElementById(
 "questions"
@@ -449,21 +411,19 @@ document.getElementById(
 
 for(let i=1;i<=100;i++){
 
-let num =
-String(i).padStart(
-3,
-"0"
-);
+let num=
+String(i)
+.padStart(3,"0");
 
-let row =
+let row=
 document.createElement(
 "div"
 );
 
-row.className =
+row.className=
 "question-row";
 
-row.innerHTML = `
+row.innerHTML=`
 
 <div class="qno">
 ${num}
@@ -493,6 +453,49 @@ name="q${i}"
 value="D">
 </div>
 
+<div>
+
+<button
+id="right${i}"
+style="
+display:none;
+background:#16a34a;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+margin-right:4px;
+"
+onclick="markRight(${i})">
+✔
+</button>
+
+<button
+id="wrong${i}"
+style="
+display:none;
+background:#dc2626;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+"
+onclick="markWrong(${i})">
+✖
+</button>
+
+<span
+id="status${i}"
+style="
+font-weight:bold;
+margin-left:5px;
+">
+</span>
+
+</div>
+
 `;
 
 questionsDiv.appendChild(
@@ -500,6 +503,8 @@ row
 );
 
 }
+
+/* SUBMIT */
 
 function submitOMR(){
 
@@ -521,7 +526,7 @@ i<=100;
 i++
 ){
 
-let selected =
+let selected=
 document.querySelector(
 `input[name="q${i}"]:checked`
 );
@@ -529,6 +534,20 @@ document.querySelector(
 if(selected){
 
 attempted++;
+
+document
+.getElementById(
+`right${i}`
+)
+.style.display=
+"inline-block";
+
+document
+.getElementById(
+`wrong${i}`
+)
+.style.display=
+"inline-block";
 
 }
 
@@ -569,14 +588,89 @@ alert(
 "Test Submitted"
 );
 
-window.scrollTo({
-top:
-document.body.scrollHeight,
-behavior:
-"smooth"
-});
+}
+
+/* RIGHT */
+
+function markRight(q){
+
+let status=
+document.getElementById(
+`status${q}`
+);
+
+status.innerHTML=
+"✔";
+
+status.style.color=
+"#16a34a";
+
+document
+.getElementById(
+`right${q}`
+)
+.disabled=true;
+
+document
+.getElementById(
+`wrong${q}`
+)
+.disabled=true;
+
+rightCount++;
+
+document
+.getElementById(
+"rightCount"
+)
+.innerText=
+rightCount;
 
 }
+
+/* WRONG */
+
+function markWrong(q){
+
+let status=
+document.getElementById(
+`status${q}`
+);
+
+status.innerHTML=
+"✖";
+
+status.style.color=
+"#dc2626";
+
+document
+.getElementById(
+`right${q}`
+)
+.disabled=true;
+
+document
+.getElementById(
+`wrong${q}`
+)
+.disabled=true;
+
+wrongCount++;
+
+document
+.getElementById(
+"wrongCount"
+)
+.innerText=
+wrongCount;
+
+}
+
+</script>
+
+<script>
+
+/* RESTART */
 
 function restartOMR(){
 
@@ -593,54 +687,128 @@ location.reload();
 
 }
 
-let stars =
-document.querySelectorAll(
-".star"
+/* RESULT CARD */
+
+function updateFinalResult(){
+
+let total =
+rightCount + wrongCount;
+
+if(total===0){
+return;
+}
+
+let percentage =
+(
+(rightCount/total)
+*100
+).toFixed(2);
+
+let grade="D";
+let result="FAIL";
+
+if(percentage>=90){
+grade="A+";
+result="PASS";
+}
+else if(percentage>=75){
+grade="A";
+result="PASS";
+}
+else if(percentage>=60){
+grade="B";
+result="PASS";
+}
+else if(percentage>=40){
+grade="C";
+result="PASS";
+}
+
+let old =
+document.getElementById(
+"finalCard"
 );
 
-stars.forEach(
-(star,index)=>{
+if(old){
+old.remove();
+}
 
-star.addEventListener(
-"click",
-()=>{
+let card =
+document.createElement(
+"div"
+);
 
-selectedRating=
-index+1;
+card.id="finalCard";
 
-stars.forEach(
-(s,i)=>{
+card.className=
+"card";
 
-if(i<=index){
+card.innerHTML=`
 
-s.innerHTML=
-"⭐";
+<h2>Final Result</h2>
 
-}else{
+<p>
+Percentage :
+<b>${percentage}%</b>
+</p>
 
-s.innerHTML=
-"☆";
+<p>
+Grade :
+<b>${grade}</b>
+</p>
+
+<p>
+Status :
+<b>${result}</b>
+</p>
+
+`;
+
+document
+.getElementById(
+"summary"
+)
+.appendChild(card);
 
 }
 
-});
+/* UPDATE AFTER RIGHT */
 
-});
+const oldMarkRight =
+markRight;
 
-});
+markRight = function(q){
+
+oldMarkRight(q);
+
+updateFinalResult();
+
+}
+
+/* UPDATE AFTER WRONG */
+
+const oldMarkWrong =
+markWrong;
+
+markWrong = function(q){
+
+oldMarkWrong(q);
+
+updateFinalResult();
+
+}
+
+/* DOWNLOAD RESULT */
 
 function downloadResult(){
 
-if(
-!submitted
-){
+if(!submitted){
 
 alert(
-"Submit First"
+"Submit Test First"
 );
 
 return;
-
 }
 
 let report="";
@@ -652,7 +820,7 @@ report +=
 "Website : student55.netlify.app\n\n";
 
 report +=
-"Time Taken : "
+"Time : "
 +
 document
 .getElementById(
@@ -690,27 +858,6 @@ report +=
 +
 "\n\n";
 
-report +=
-"Rating : "
-+
-selectedRating
-+
-"/5\n\n";
-
-report +=
-"Review : \n"
-+
-document
-.getElementById(
-"review"
-)
-.value
-+
-"\n\n";
-
-report +=
-"Watermark : student55.netlify.app\n\n";
-
 for(
 let i=1;
 i<=100;
@@ -743,12 +890,14 @@ ans
 
 }
 
+report +=
+"\nstudent55.netlify.app";
+
 let blob =
 new Blob(
 [report],
 {
-type:
-"text/plain"
+type:"text/plain"
 }
 );
 
@@ -769,331 +918,7 @@ link.click();
 
 }
 
-</script>
-    <script>
-
-/* RIGHT / WRONG SYSTEM */
-
-for(let i=1;i<=100;i++){
-
-let row =
-document.querySelectorAll(
-".question-row"
-)[i-1];
-
-let div =
-document.createElement(
-"div"
-);
-
-div.style.marginTop="8px";
-
-div.innerHTML = `
-
-<button
-id="right${i}"
-onclick="markRight(${i})"
-style="
-display:none;
-background:#16a34a;
-color:white;
-border:none;
-padding:5px 10px;
-border-radius:6px;
-cursor:pointer;
-margin-right:5px;
-">
-✔ Right
-</button>
-
-<button
-id="wrong${i}"
-onclick="markWrong(${i})"
-style="
-display:none;
-background:#dc2626;
-color:white;
-border:none;
-padding:5px 10px;
-border-radius:6px;
-cursor:pointer;
-">
-✖ Wrong
-</button>
-
-<span
-id="status${i}"
-style="
-display:none;
-font-weight:bold;
-margin-left:10px;
-">
-</span>
-
-`;
-
-row.appendChild(div);
-
-}
-
-function showCheckButtons(){
-
-for(
-let i=1;
-i<=100;
-i++
-){
-
-let selected =
-document.querySelector(
-`input[name="q${i}"]:checked`
-);
-
-if(selected){
-
-document
-.getElementById(
-`right${i}`
-)
-.style.display=
-"inline-block";
-
-document
-.getElementById(
-`wrong${i}`
-)
-.style.display=
-"inline-block";
-
-}
-
-}
-
-}
-
-const oldSubmit =
-submitOMR;
-
-submitOMR = function(){
-
-oldSubmit();
-
-showCheckButtons();
-
-}
-
-function markRight(q){
-
-let status =
-document.getElementById(
-`status${q}`
-);
-
-status.style.display=
-"inline";
-
-status.style.color=
-"#16a34a";
-
-status.innerHTML=
-"✔ RIGHT";
-
-document
-.getElementById(
-`right${q}`
-)
-.disabled=true;
-
-document
-.getElementById(
-`wrong${q}`
-)
-.disabled=true;
-
-rightCount++;
-
-document
-.getElementById(
-"rightCount"
-)
-.innerText=
-rightCount;
-
-}
-
-function markWrong(q){
-
-let status =
-document.getElementById(
-`status${q}`
-);
-
-status.style.display=
-"inline";
-
-status.style.color=
-"#dc2626";
-
-status.innerHTML=
-"✖ WRONG";
-
-document
-.getElementById(
-`right${q}`
-)
-.disabled=true;
-
-document
-.getElementById(
-`wrong${q}`
-)
-.disabled=true;
-
-wrongCount++;
-
-document
-.getElementById(
-"wrongCount"
-)
-.innerText=
-wrongCount;
-
-}
-
-    </script>
-    <script>
-
-/* RESULT CARD UPGRADE */
-
-function updateFinalResult(){
-
-let totalChecked =
-rightCount + wrongCount;
-
-if(totalChecked===0){
-return;
-}
-
-let percentage =
-(
-(rightCount/totalChecked)
-*100
-).toFixed(2);
-
-let grade = "D";
-let status = "FAIL";
-
-if(percentage>=90){
-
-grade="A+";
-status="PASS";
-
-}
-else if(percentage>=75){
-
-grade="A";
-status="PASS";
-
-}
-else if(percentage>=60){
-
-grade="B";
-status="PASS";
-
-}
-else if(percentage>=40){
-
-grade="C";
-status="PASS";
-
-}
-
-let oldCard =
-document.getElementById(
-"finalResultCard"
-);
-
-if(oldCard){
-oldCard.remove();
-}
-
-let card =
-document.createElement(
-"div"
-);
-
-card.id =
-"finalResultCard";
-
-card.className =
-"card";
-
-card.innerHTML = `
-
-<h2>Final Result</h2>
-
-<p>
-Percentage :
-<b>${percentage}%</b>
-</p>
-
-<p>
-Grade :
-<b>${grade}</b>
-</p>
-
-<p>
-Status :
-<b>${status}</b>
-</p>
-
-<p>
-Right :
-<b>${rightCount}</b>
-</p>
-
-<p>
-Wrong :
-<b>${wrongCount}</b>
-</p>
-
-`;
-
-document
-.getElementById(
-"summary"
-)
-.appendChild(
-card
-);
-
-}
-
-/* AUTO UPDATE RESULT */
-
-const oldRight =
-markRight;
-
-markRight = function(q){
-
-oldRight(q);
-
-updateFinalResult();
-
-}
-
-const oldWrong =
-markWrong;
-
-markWrong = function(q){
-
-oldWrong(q);
-
-updateFinalResult();
-
-}
-
-/* SCROLL TO TOP BUTTON */
+/* SCROLL TO TOP */
 
 let topBtn =
 document.createElement(
@@ -1106,10 +931,10 @@ topBtn.innerHTML =
 topBtn.style.position =
 "fixed";
 
-topBtn.style.bottom =
+topBtn.style.right =
 "20px";
 
-topBtn.style.right =
+topBtn.style.bottom =
 "20px";
 
 topBtn.style.padding =
@@ -1127,9 +952,6 @@ topBtn.style.cursor =
 topBtn.style.display =
 "none";
 
-topBtn.style.zIndex =
-"999";
-
 document.body.appendChild(
 topBtn
 );
@@ -1141,15 +963,11 @@ window.addEventListener(
 if(
 window.scrollY>300
 ){
-
 topBtn.style.display=
 "block";
-
 }else{
-
 topBtn.style.display=
 "none";
-
 }
 
 }
@@ -1162,53 +980,157 @@ top:0,
 behavior:"smooth"
 });
 
-};
+}
 
-/* DOWNLOAD REPORT IMPROVEMENT */
+</script>
 
-const oldDownload =
-downloadResult;
+<script>
 
-downloadResult = function(){
+/* STAR RATING */
 
-oldDownload();
-
-alert(
-"Result Downloaded Successfully"
+let ratingBox =
+document.createElement(
+"div"
 );
 
-};
+ratingBox.className =
+"card";
 
-    </script>
-    <script>
+ratingBox.innerHTML = `
 
-/* FLOATING TIMER */
+<h2>Rate This Site</h2>
 
-let timerBox =
-document.getElementById(
-"timer"
+<div id="stars">
+
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+
+</div>
+
+<p id="ratingText">
+No Rating Selected
+</p>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+ratingBox
 );
 
-timerBox.style.position =
-"sticky";
+let stars =
+document.querySelectorAll(
+".star"
+);
 
-timerBox.style.top =
-"10px";
+stars.forEach(
+(star,index)=>{
 
-timerBox.style.zIndex =
-"999";
+star.addEventListener(
+"click",
+()=>{
 
-timerBox.style.background =
-"white";
+selectedRating=
+index+1;
 
-timerBox.style.padding =
-"10px";
+stars.forEach(
+(s,i)=>{
 
-timerBox.style.borderRadius =
-"10px";
+if(i<=index){
 
-timerBox.style.boxShadow =
-"0 0 10px rgba(0,0,0,.1)";
+s.innerHTML="⭐";
+
+}else{
+
+s.innerHTML="☆";
+
+}
+
+});
+
+document
+.getElementById(
+"ratingText"
+)
+.innerHTML=
+"Selected Rating : "
++
+selectedRating
++
+"/5";
+
+});
+
+});
+
+/* REVIEW */
+
+let reviewCard =
+document.createElement(
+"div"
+);
+
+reviewCard.className=
+"card";
+
+reviewCard.innerHTML=`
+
+<h2>Review</h2>
+
+<textarea
+id="review"
+rows="5"
+placeholder="Write your review">
+</textarea>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+reviewCard
+);
+
+/* CONTACT */
+
+let contactCard =
+document.createElement(
+"div"
+);
+
+contactCard.className=
+"card";
+
+contactCard.innerHTML=`
+
+<h2>Contact & Help</h2>
+
+<input
+type="text"
+placeholder="Your Name">
+
+<textarea
+rows="5"
+placeholder="Write your message">
+</textarea>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+contactCard
+);
 
 /* DARK MODE */
 
@@ -1217,14 +1139,11 @@ document.createElement(
 "button"
 );
 
-darkBtn.innerHTML =
-"🌙 Dark Mode";
-
-darkBtn.className =
+darkBtn.className=
 "btn";
 
-darkBtn.style.marginLeft =
-"10px";
+darkBtn.innerHTML=
+"🌙 Dark Mode";
 
 document
 .querySelector(
@@ -1258,7 +1177,7 @@ document
 }else{
 
 document.body.style.background=
-"#f4f6fb";
+"#eef4ff";
 
 document.body.style.color=
 "black";
@@ -1274,39 +1193,34 @@ document
 
 };
 
-/* PAGE WATERMARK */
+/* INSTAGRAM */
 
-let watermark =
+let instaCard =
 document.createElement(
 "div"
 );
 
-watermark.innerHTML =
-"student55.netlify.app";
+instaCard.className=
+"card";
 
-watermark.style.position =
-"fixed";
+instaCard.innerHTML=`
 
-watermark.style.bottom =
-"10px";
+<h2>Instagram</h2>
 
-watermark.style.left =
-"10px";
+<a
+href="#"
+id="instaLink">
+Visit Instagram
+</a>
 
-watermark.style.opacity =
-"0.15";
+`;
 
-watermark.style.fontSize =
-"18px";
-
-watermark.style.fontWeight =
-"bold";
-
-watermark.style.pointerEvents =
-"none";
-
-document.body.appendChild(
-watermark
+document
+.querySelector(
+".container"
+)
+.appendChild(
+instaCard
 );
 
 /* FOOTER */
@@ -1316,46 +1230,34 @@ document.createElement(
 "div"
 );
 
-footer.style.marginTop =
+footer.style.marginTop=
 "30px";
 
-footer.style.padding =
+footer.style.padding=
 "20px";
 
-footer.style.textAlign =
+footer.style.textAlign=
 "center";
 
-footer.innerHTML = `
+footer.innerHTML=`
 
 <hr><br>
 
-<h3>Student55 OMR</h3>
+<h3>
+Student55 OMR
+</h3>
 
 <p>
-Practice • Test • Learn
+Practice • Learn • Improve
 </p>
 
 <br>
 
-<a href="#"
-style="
-text-decoration:none;
-font-weight:bold;
-">
-Instagram
-</a>
+<p>
+student55.netlify.app
+</p>
 
-&nbsp; | &nbsp;
-
-<a href="#"
-style="
-text-decoration:none;
-font-weight:bold;
-">
-Contact
-</a>
-
-<br><br>
+<br>
 
 <p>
 © Student55
@@ -1371,28 +1273,50 @@ document
 footer
 );
 
-/* BETTER STAR DISPLAY */
+</script>
+<script>
 
-let ratingText =
+/* STAR RATING */
+
+let ratingBox =
 document.createElement(
 "div"
 );
 
-ratingText.id =
-"ratingText";
+ratingBox.className =
+"card";
 
-ratingText.style.marginTop =
-"10px";
+ratingBox.innerHTML = `
 
-ratingText.innerHTML =
-"No Rating Selected";
+<h2>Rate This Site</h2>
+
+<div id="stars">
+
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+
+</div>
+
+<p id="ratingText">
+No Rating Selected
+</p>
+
+`;
 
 document
 .querySelector(
-".card"
+".container"
 )
 .appendChild(
-ratingText
+ratingBox
+);
+
+let stars =
+document.querySelectorAll(
+".star"
 );
 
 stars.forEach(
@@ -1402,18 +1326,245 @@ star.addEventListener(
 "click",
 ()=>{
 
-ratingText.innerHTML =
+selectedRating=
+index+1;
+
+stars.forEach(
+(s,i)=>{
+
+if(i<=index){
+
+s.innerHTML="⭐";
+
+}else{
+
+s.innerHTML="☆";
+
+}
+
+});
+
+document
+.getElementById(
+"ratingText"
+)
+.innerHTML=
 "Selected Rating : "
 +
-(index+1)
+selectedRating
 +
-"/5 ⭐";
+"/5";
 
 });
 
 });
 
-    </script>
+/* REVIEW */
+
+let reviewCard =
+document.createElement(
+"div"
+);
+
+reviewCard.className=
+"card";
+
+reviewCard.innerHTML=`
+
+<h2>Review</h2>
+
+<textarea
+id="review"
+rows="5"
+placeholder="Write your review">
+</textarea>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+reviewCard
+);
+
+/* CONTACT */
+
+let contactCard =
+document.createElement(
+"div"
+);
+
+contactCard.className=
+"card";
+
+contactCard.innerHTML=`
+
+<h2>Contact & Help</h2>
+
+<input
+type="text"
+placeholder="Your Name">
+
+<textarea
+rows="5"
+placeholder="Write your message">
+</textarea>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+contactCard
+);
+
+/* DARK MODE */
+
+let darkBtn =
+document.createElement(
+"button"
+);
+
+darkBtn.className=
+"btn";
+
+darkBtn.innerHTML=
+"🌙 Dark Mode";
+
+document
+.querySelector(
+".controls"
+)
+.appendChild(
+darkBtn
+);
+
+let dark=false;
+
+darkBtn.onclick=()=>{
+
+dark=!dark;
+
+if(dark){
+
+document.body.style.background=
+"#111827";
+
+document.body.style.color=
+"white";
+
+document
+.querySelector(
+".container"
+)
+.style.background=
+"#1f2937";
+
+}else{
+
+document.body.style.background=
+"#eef4ff";
+
+document.body.style.color=
+"black";
+
+document
+.querySelector(
+".container"
+)
+.style.background=
+"white";
+
+}
+
+};
+
+/* INSTAGRAM */
+
+let instaCard =
+document.createElement(
+"div"
+);
+
+instaCard.className=
+"card";
+
+instaCard.innerHTML=`
+
+<h2>Instagram</h2>
+
+<a
+href="#"
+id="instaLink">
+Visit Instagram
+</a>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+instaCard
+);
+
+/* FOOTER */
+
+let footer =
+document.createElement(
+"div"
+);
+
+footer.style.marginTop=
+"30px";
+
+footer.style.padding=
+"20px";
+
+footer.style.textAlign=
+"center";
+
+footer.innerHTML=`
+
+<hr><br>
+
+<h3>
+Student55 OMR
+</h3>
+
+<p>
+Practice • Learn • Improve
+</p>
+
+<br>
+
+<p>
+student55.netlify.app
+</p>
+
+<br>
+
+<p>
+© Student55
+</p>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+footer
+);
+
+</script>
+</div>
 
 </body>
 </html>
