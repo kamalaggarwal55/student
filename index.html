@@ -961,7 +961,32 @@ let ratingUsers = 0;
 let seconds = 0;
 
 let checkedQuestions = {};
-  /* ======================
+
+window.onload=()=>{
+
+if(sessionStorage.getItem("omrStarted")==="yes"){
+
+document.getElementById("welcomePage").style.display="none";
+
+document.getElementById("app").style.display="block";
+
+generateOMR();
+
+updateResult();
+
+document.getElementById("resultPanel").style.display="block";
+
+seconds=0;
+answers={};
+checkedQuestions={};
+rightCount=0;
+wrongCount=0;
+
+}
+
+};
+
+/* ======================
 START APP
 ====================== */
 
@@ -996,6 +1021,11 @@ document.getElementById(
 generateOMR();
 
 updateResult();
+
+sessionStorage.setItem(
+"omrStarted",
+"yes"
+);
 
 document.getElementById(
 "resultPanel"
@@ -1347,6 +1377,8 @@ RESTART
 ====================== */
 
 function restartTest(){
+
+sessionStorage.removeItem("omrStarted");
 
 location.reload();
 
