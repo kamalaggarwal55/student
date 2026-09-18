@@ -966,15 +966,25 @@ window.onload=()=>{
 
 if(sessionStorage.getItem("omrStarted")==="yes"){
 
-document.getElementById("welcomePage").style.display="none";
+totalQuestions=parseInt(
+sessionStorage.getItem("questionCount")
+)||10;
 
-document.getElementById("app").style.display="block";
+document.getElementById(
+"welcomePage"
+).style.display="none";
+
+document.getElementById(
+"app"
+).style.display="block";
 
 generateOMR();
 
 updateResult();
 
-document.getElementById("resultPanel").style.display="block";
+document.getElementById(
+"resultPanel"
+).style.display="block";
 
 seconds=0;
 answers={};
@@ -983,6 +993,8 @@ rightCount=0;
 wrongCount=0;
 
 }
+
+};
 
 };
 
