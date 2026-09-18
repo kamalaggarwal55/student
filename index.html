@@ -3,120 +3,492 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OMR Answer Sheet</title>
+
+<title>OMR Evaluation Sheet</title>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
 body{
-    font-family: Arial, sans-serif;
-    background:#f5f5f5;
-    padding:20px;
+background:#f4f4f4;
+padding:20px;
 }
 
 .container{
-    max-width:1000px;
-    margin:auto;
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
+max-width:1100px;
+margin:auto;
+background:#fff;
+padding:30px;
+border-radius:20px;
+box-shadow:0 0 15px rgba(0,0,0,.1);
 }
 
-h2{
-    text-align:center;
+.title-small{
+font-size:18px;
+color:#8e44ad;
+font-weight:bold;
+letter-spacing:3px;
+margin-bottom:10px;
 }
 
-.question{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    padding:10px;
-    border-bottom:1px solid #ddd;
+.title-big{
+font-size:48px;
+font-weight:300;
+margin-bottom:30px;
+}
+
+.info{
+display:flex;
+justify-content:space-between;
+margin-bottom:30px;
+flex-wrap:wrap;
+}
+
+.info-box{
+margin:10px 0;
+}
+
+.info-label{
+font-size:16px;
+color:#888;
+font-weight:bold;
+}
+
+.info-value{
+font-size:28px;
+margin-top:8px;
+}
+
+.status{
+color:#e67e22;
+font-weight:bold;
+}
+
+.omr-box{
+border:2px solid #ddd;
+border-radius:25px;
+padding:20px;
+margin-top:20px;
+}
+
+.header-row{
+display:grid;
+grid-template-columns:100px repeat(4,1fr) 100px 100px;
+font-weight:bold;
+font-size:22px;
+padding-bottom:15px;
+border-bottom:2px solid #eee;
+}
+
+.question-row{
+display:grid;
+grid-template-columns:100px repeat(4,1fr) 100px 100px;
+align-items:center;
+padding:12px 0;
+border-bottom:1px solid #f1f1f1;
 }
 
 .qno{
-    width:50px;
-    font-weight:bold;
+font-size:24px;
+color:#7f8c8d;
 }
 
-.options label{
-    margin-right:15px;
-    cursor:pointer;
+.option{
+display:flex;
+justify-content:center;
+}
+
+.option input{
+width:35px;
+height:35px;
+cursor:pointer;
+}
+
+.mark-btn{
+padding:8px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:18px;
+display:none;
+}
+
+.right{
+background:#27ae60;
+color:white;
+}
+
+.wrong{
+background:#c0392b;
+color:white;
+}
+
+.controls{
+margin-top:30px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
 }
 
 button{
-    margin-top:20px;
-    padding:10px 20px;
-    font-size:16px;
-    cursor:pointer;
+padding:12px 20px;
+font-size:16px;
+border:none;
+border-radius:10px;
+cursor:pointer;
 }
 
-#result{
-    margin-top:15px;
-    font-weight:bold;
+.submit-btn{
+background:#3498db;
+color:white;
 }
+
+.restart-btn{
+background:#e74c3c;
+color:white;
+}
+
+.download-btn{
+background:#2ecc71;
+color:white;
+}
+
+.summary{
+margin-top:30px;
+padding:20px;
+background:#f8f9fa;
+border-radius:15px;
+display:none;
+}
+
+.summary h2{
+margin-bottom:15px;
+}
+
+.summary p{
+font-size:18px;
+margin:8px 0;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="container">
-    <h2>OMR Answer Sheet (1 - 100)</h2>
 
-    <div id="questions"></div>
+<div class="title-small">
+OMR EVALUATION SHEET
+</div>
 
-    <button onclick="submitOMR()">Submit</button>
+<div class="title-big">
+Standard 100-Question Matrix
+</div>
 
-    <div id="result"></div>
+<div class="info">
+
+<div class="info-box">
+<div class="info-label">SHEET NO</div>
+<div class="info-value">
+OMR-2026-99A
+</div>
+</div>
+
+<div class="info-box">
+<div class="info-label">STATUS</div>
+<div class="info-value status" id="status">
+IN PROGRESS
+</div>
+</div>
+
+</div>
+
+<div class="omr-box">
+
+<div class="header-row">
+<div>Q.</div>
+<div>A</div>
+<div>B</div>
+<div>C</div>
+<div>D</div>
+<div>✔</div>
+<div>✖</div>
+</div>
+
+<div id="questions"></div>
+
+</div>
+
+<div class="controls">
+
+<button class="submit-btn" onclick="submitOMR()">
+Submit
+</button>
+
+<button class="restart-btn" onclick="restartOMR()">
+Restart
+</button>
+
+<button class="download-btn" onclick="downloadResult()">
+Download Result
+</button>
+
+</div>
+
+<div class="summary" id="summary">
+
+<h2>Result Summary</h2>
+
+<p>Attempted: <span id="attempted">0</span></p>
+
+<p>Right: <span id="rightCount">0</span></p>
+
+<p>Wrong: <span id="wrongCount">0</span></p>
+
+<p>Unattempted: <span id="unattempted">100</span></p>
+
+</div>
+
 </div>
 
 <script>
+
 const questionsDiv = document.getElementById("questions");
 
-// Create 100 Questions
-for(let i = 1; i <= 100; i++){
+for(let i=1;i<=100;i++){
 
-    let row = document.createElement("div");
-    row.className = "question";
+let num = String(i).padStart(3,"0");
 
-    row.innerHTML = `
-        <div class="qno">Q${i}</div>
+let row = document.createElement("div");
+row.className = "question-row";
 
-        <div class="options">
-            <label><input type="radio" name="q${i}" value="A"> A</label>
-            <label><input type="radio" name="q${i}" value="B"> B</label>
-            <label><input type="radio" name="q${i}" value="C"> C</label>
-            <label><input type="radio" name="q${i}" value="D"> D</label>
-        </div>
-    `;
+row.innerHTML = `
 
-    questionsDiv.appendChild(row);
+<div class="qno">${num}</div>
+
+<div class="option">
+<input type="radio" name="q${i}" value="A">
+</div>
+
+<div class="option">
+<input type="radio" name="q${i}" value="B">
+</div>
+
+<div class="option">
+<input type="radio" name="q${i}" value="C">
+</div>
+
+<div class="option">
+<input type="radio" name="q${i}" value="D">
+</div>
+
+<div class="option">
+<button class="mark-btn right"
+id="right${i}"
+onclick="markRight(${i})">
+✔
+</button>
+</div>
+
+<div class="option">
+<button class="mark-btn wrong"
+id="wrong${i}"
+onclick="markWrong(${i})">
+✖
+</button>
+</div>
+
+`;
+
+questionsDiv.appendChild(row);
+
 }
 
-// Submit Function
+let submitted = false;
+
+let attempted = 0;
+let rightCount = 0;
+let wrongCount = 0;
+
+const checkedQuestions = new Set();
+
+</script>
+    <script>
+
 function submitOMR(){
 
-    let answers = {};
-    let attempted = 0;
+if(submitted) return;
 
-    for(let i = 1; i <= 100; i++){
+submitted = true;
 
-        let selected = document.querySelector(
-            `input[name="q${i}"]:checked`
-        );
+attempted = 0;
 
-        if(selected){
-            answers["Q"+i] = selected.value;
-            attempted++;
-        }
-    }
+for(let i=1;i<=100;i++){
 
-    document.getElementById("result").innerHTML =
-        `Attempted ${attempted} out of 100 Questions`;
+let selected =
+document.querySelector(
+`input[name="q${i}"]:checked`
+);
 
-    console.log("Selected Answers:", answers);
-
-    // Yahan API ya database me save kar sakte ho
+if(selected){
+attempted++;
 }
+
+document
+.querySelectorAll(
+`input[name="q${i}"]`
+)
+.forEach(el=>{
+el.disabled = true;
+});
+
+document.getElementById(
+`right${i}`
+).style.display="inline-block";
+
+document.getElementById(
+`wrong${i}`
+).style.display="inline-block";
+
+}
+
+document.getElementById(
+"status"
+).innerText="SUBMITTED";
+
+document.getElementById(
+"summary"
+).style.display="block";
+
+document.getElementById(
+"attempted"
+).innerText=attempted;
+
+document.getElementById(
+"unattempted"
+).innerText=100-attempted;
+
+}
+
+function markRight(q){
+
+if(checkedQuestions.has("Q"+q))
+return;
+
+checkedQuestions.add("Q"+q);
+
+rightCount++;
+
+document.getElementById(
+"rightCount"
+).innerText=rightCount;
+
+document.getElementById(
+"right"+q
+).disabled=true;
+
+document.getElementById(
+"wrong"+q
+).disabled=true;
+
+}
+
+function markWrong(q){
+
+if(checkedQuestions.has("Q"+q))
+return;
+
+checkedQuestions.add("Q"+q);
+
+wrongCount++;
+
+document.getElementById(
+"wrongCount"
+).innerText=wrongCount;
+
+document.getElementById(
+"right"+q
+).disabled=true;
+
+document.getElementById(
+"wrong"+q
+).disabled=true;
+
+}
+
 </script>
+    <script>
+
+function restartOMR(){
+
+if(!confirm(
+"Restart OMR Sheet?"
+)) return;
+
+location.reload();
+
+}
+
+function downloadResult(){
+
+let report = `
+OMR RESULT REPORT
+
+Date : ${new Date().toLocaleString()}
+
+Status : SUBMITTED
+
+Attempted : ${attempted}
+
+Right : ${rightCount}
+
+Wrong : ${wrongCount}
+
+Unattempted : ${100-attempted}
+
+--------------------------------
+`;
+
+for(let i=1;i<=100;i++){
+
+let selected =
+document.querySelector(
+`input[name="q${i}"]:checked`
+);
+
+report +=
+`Q${String(i).padStart(3,"0")} : ${
+selected ? selected.value : "Not Attempted"
+}
+\n`;
+
+}
+
+let blob = new Blob(
+[report],
+{type:"text/plain"}
+);
+
+let link =
+document.createElement("a");
+
+link.href =
+URL.createObjectURL(blob);
+
+link.download =
+"OMR_Result.txt";
+
+link.click();
+
+}
+
+    </script>
 
 </body>
 </html>
