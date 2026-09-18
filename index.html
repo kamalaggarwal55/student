@@ -424,20 +424,10 @@ border-radius:50%;
 
 }
 
-.correct-option{
-
-color:#16a34a !important;
-
-transform:scale(1.15);
-
-}
-
+.correct-option,
 .wrong-option{
-
-color:#dc2626 !important;
-
-transform:scale(1.15);
-
+background:none !important;
+transform:none !important;
 }
 
 .option.selected{
@@ -1214,37 +1204,10 @@ RIGHT
 
 function markRight(qNo){
 
-if(
-checkedQuestions[qNo]
-) return;
+const row=document.getElementById("row-"+qNo);
 
-checkedQuestions[qNo]=true;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.classList.add(
-"correct-row"
-);
-
-const selected =
-row.querySelector(
-".selected"
-);
-
-if(selected){
-
-selected.classList.add(
-"correct-option"
-);
-
-selected.innerHTML += " ✓";
-
-}
-
-rightCount++;
+row.classList.remove("wrong-row");
+row.classList.add("correct-row");
 
 updateResult();
 
@@ -1256,37 +1219,10 @@ WRONG
 
 function markWrong(qNo){
 
-if(
-checkedQuestions[qNo]
-) return;
+const row=document.getElementById("row-"+qNo);
 
-checkedQuestions[qNo]=true;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.classList.add(
-"wrong-row"
-);
-
-const selected =
-row.querySelector(
-".selected"
-);
-
-if(selected){
-
-selected.classList.add(
-"wrong-option"
-);
-
-selected.innerHTML += " ✗";
-
-}
-
-wrongCount++;
+row.classList.remove("correct-row");
+row.classList.add("wrong-row");
 
 updateResult();
 
