@@ -1103,6 +1103,11 @@ btn.className="nav-btn";
 
 btn.innerText=i;
 
+btn.setAttribute(
+"data-q",
+i
+);
+
 btn.onclick=()=>{
 
 document.getElementById(
@@ -1162,6 +1167,12 @@ if(navBtn){
 navBtn.classList.add(
 "done"
 );
+
+}
+
+updateResult();
+
+}
 
 }
 
