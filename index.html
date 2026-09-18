@@ -1246,6 +1246,8 @@ RIGHT
 
 function markRight(qNo){
 
+if(!answers[qNo]) return;
+
 const row=document.getElementById("row-"+qNo);
 
 if(row.classList.contains("wrong-row")){
@@ -1267,6 +1269,8 @@ WRONG
 ====================== */
 
 function markWrong(qNo){
+
+if(!answers[qNo]) return;
 
 const row=document.getElementById("row-"+qNo);
 
