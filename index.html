@@ -634,6 +634,14 @@ Student55 Advanced OMR V4
 
 <button
 class="btn"
+onclick="goHome()">
+
+🏠 Home
+
+</button>
+
+<button
+class="btn"
 onclick="toggleDarkMode()">
 
 Dark Mode
@@ -1466,6 +1474,16 @@ document.body
 );
 
 }
+
+ function goHome(){
+
+sessionStorage.removeItem(
+"omrStarted"
+);
+
+location.reload();
+
+ }
 
 /* ======================
 RESTART
