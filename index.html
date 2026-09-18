@@ -1,661 +1,571 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Student55 Advanced OMR V3</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Student55 Advanced OMR V2</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-
-:root{
---primary:#2563eb;
---success:#16a34a;
---danger:#dc2626;
---bg:#f4f6f9;
---card:#ffffff;
---text:#111827;
---border:#d1d5db;
-}
-
-body.dark{
---bg:#111827;
---card:#1f2937;
---text:#f9fafb;
---border:#374151;
-}
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial,sans-serif;
+font-family:'Poppins',sans-serif;
+}
+
+:root{
+--primary:#2563eb;
+--secondary:#7c3aed;
+--bg:#f5f7fb;
+--card:#ffffff;
+--text:#111827;
 }
 
 body{
 background:var(--bg);
 color:var(--text);
+transition:.3s;
+}
+
+.dark{
+--bg:#111827;
+--card:#1f2937;
+--text:#ffffff;
+}
+
+.container{
+width:95%;
+max-width:1400px;
+margin:auto;
+padding:20px;
+}
+
+/* =========================
+WELCOME PAGE
+========================= */
+
+#welcomePage{
+
+min-height:100vh;
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#7c3aed,
+#ec4899
+);
+
+display:flex;
+justify-content:center;
+align-items:center;
+padding:30px;
+}
+
+.welcome-box{
+
+max-width:900px;
+width:100%;
+
+background:rgba(255,255,255,.12);
+
+backdrop-filter:blur(20px);
+
+border-radius:30px;
+
+padding:50px;
+
+text-align:center;
+
+color:white;
+
+box-shadow:
+0 20px 50px rgba(0,0,0,.25);
+}
+
+.welcome-box h1{
+font-size:55px;
+margin-bottom:15px;
+}
+
+.welcome-box p{
+font-size:18px;
+line-height:1.8;
+margin-bottom:25px;
+}
+
+.start-btn{
+
+padding:15px 40px;
+
+font-size:18px;
+
+font-weight:700;
+
+border:none;
+
+border-radius:50px;
+
+cursor:pointer;
+
+background:white;
+
+color:#2563eb;
+}
+
+.feature-grid{
+
+margin-top:40px;
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(200px,1fr));
+
+gap:20px;
+}
+
+.feature-card{
+
+background:rgba(255,255,255,.15);
+
+padding:20px;
+
+border-radius:20px;
+}
+
+.feature-card i{
+font-size:30px;
+margin-bottom:10px;
+}
+
+.feature-card h3{
+margin-bottom:10px;
+}
+
+/* =========================
+MAIN APP
+========================= */
+
+#app{
+display:none;
 }
 
 .header{
+
+background:var(--card);
+
+padding:20px;
+
+border-radius:20px;
+
+margin-bottom:20px;
+
+box-shadow:
+0 5px 15px rgba(0,0,0,.1);
+}
+
+.header-top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+gap:10px;
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+button,
+select{
+
+padding:10px 15px;
+
+border:none;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-weight:600;
+}
+
+.primary{
 background:var(--primary);
 color:white;
-padding:15px;
-text-align:center;
-font-size:24px;
-font-weight:bold;
-}
-
-.topbar{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-justify-content:center;
-padding:15px;
-}
-
-.topbar button,
-.topbar select{
-padding:10px 15px;
-border:none;
-border-radius:8px;
-cursor:pointer;
 }
 
 .timer{
-text-align:center;
-font-size:22px;
-font-weight:bold;
-margin:10px;
-}
-
-.main{
-display:flex;
-gap:15px;
-padding:15px;
-}
-
-.navigator{
-width:140px;
-background:var(--card);
-padding:10px;
-border-radius:10px;
-height:fit-content;
-}
-
-.navigator h3{
-text-align:center;
-margin-bottom:10px;
-}
-
-.nav-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:6px;
-}
-
-.nav-btn{
-padding:10px;
-text-align:center;
-border-radius:6px;
-background:#d1d5db;
-cursor:pointer;
-font-weight:bold;
-}
-
-.questions{
-flex:1;
-}
-
-.question-card{
-background:var(--card);
-padding:15px;
-border-radius:10px;
-margin-bottom:15px;
-border:1px solid var(--border);
-}
-
-.question-title{
-font-size:18px;
-font-weight:bold;
-margin-bottom:12px;
-}
-
-.option{
-padding:10px;
-border:1px solid var(--border);
-border-radius:8px;
-margin-bottom:8px;
-cursor:pointer;
-}
-
-.option.selected{
-background:#dbeafe;
-border-color:var(--primary);
-}
-
-.correct-row{
-border-left:6px solid var(--success);
-}
-
-.wrong-row{
-border-left:6px solid var(--danger);
-}
-
-.submit-area{
-text-align:center;
-margin:20px;
-}
-
-.submit-btn{
-background:var(--primary);
+background:#111827;
 color:white;
-padding:12px 25px;
-font-size:18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
+font-weight:700;
 }
 
-.result-panel{
-display:none;
-background:var(--card);
-padding:15px;
-margin:15px;
-border-radius:10px;
+.dark .timer{
+background:#000;
 }
 
-.result-panel h2{
-margin-bottom:15px;
-}
-
-.result-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-gap:10px;
-}
-
-.result-box{
-background:#e5e7eb;
-padding:15px;
-border-radius:8px;
-text-align:center;
-font-weight:bold;
-}
-
-.feedback-panel{
-background:var(--card);
-padding:15px;
-margin:15px;
-border-radius:10px;
-display:none;
-}
-
-.feedback-panel h2{
-margin-bottom:10px;
-}
-
-#stars{
-font-size:35px;
-}
-
-#stars span{
-cursor:pointer;
-}
-
-textarea,
-input{
-width:100%;
-padding:10px;
-border:1px solid var(--border);
-border-radius:8px;
-margin-top:8px;
-margin-bottom:10px;
-}
-
-.action-btn{
-background:var(--primary);
-color:white;
-padding:10px 15px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.instagram-btn{
-background:#e1306c;
-color:white;
-padding:10px 15px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.check-buttons{
-margin-top:12px;
-display:flex;
-gap:10px;
-}
-
-.right-btn{
-background:var(--success);
-color:white;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.wrong-btn{
-background:var(--danger);
-color:white;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-cursor:pointer;
-}
-
-@media(max-width:900px){
-
-.main{
-flex-direction:column;
-}
-
-.navigator{
-width:100%;
-}
-
-}
+/* next parts continue */
 
 </style>
 </head>
 
 <body>
 
-<div class="header">
-Student55 Advanced OMR V3
-</div>
+<!-- WELCOME PAGE -->
 
-<div class="timer" id="timer">
-00:00:00
-</div>
+<section id="welcomePage">
 
-<div class="topbar">
+<div class="welcome-box">
 
-<button onclick="toggleDarkMode()">
-Dark Mode
+<h1>🎯 Welcome To Student55 Advanced OMR V2</h1>
+
+<p>
+
+Practice, Check, Analyse and Export
+your OMR tests with advanced features.
+
+</p>
+
+<button class="start-btn"
+onclick="startApp()">
+
+Start Test
+
 </button>
+
+<div class="feature-grid">
+
+<div class="feature-card">
+<i class="fas fa-file-pdf"></i>
+<h3>PDF Export</h3>
+</div>
+
+<div class="feature-card">
+<i class="fas fa-chart-line"></i>
+<h3>Analytics</h3>
+</div>
+
+<div class="feature-card">
+<i class="fas fa-star"></i>
+<h3>Rating System</h3>
+</div>
+
+<div class="feature-card">
+<i class="fab fa-instagram"></i>
+<h3>Instagram</h3>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MAIN APP -->
+
+<div id="app">
+
+<div class="container">
+
+<div class="header">
+
+<div class="header-top">
+
+<div class="logo">
+
+Student55 Advanced OMR V2
+
+</div>
+
+<div class="controls">
 
 <select id="themeSelector">
-<option value="#2563eb">Blue</option>
-<option value="#16a34a">Green</option>
-<option value="#dc2626">Red</option>
-<option value="#9333ea">Purple</option>
+
+<option value="blue">Blue</option>
+<option value="green">Green</option>
+<option value="purple">Purple</option>
+<option value="red">Red</option>
+
 </select>
 
-<button onclick="restartTest()">
-Restart Test
-</button>
-
-<button onclick="exportPDF()">
-Export PDF
-</button>
-
-</div>
-
-<div class="main">
-
-<div class="navigator">
-
-<h3>Questions</h3>
-
-<div class="nav-grid" id="navigator">
-</div>
-
-</div>
-
-<div class="questions" id="questionContainer">
-</div>
-
-</div>
-
-<div class="submit-area">
-
 <button
-class="submit-btn"
-onclick="submitTest()">
-Submit Test
+class="primary"
+onclick="toggleDarkMode()">
+
+Dark Mode
+
 </button>
+
+<div class="timer"
+id="timer">
+
+00:00
 
 </div>
 
-<div
-class="result-panel"
-id="resultPanel">
+</div>
 
-<h2>Result Summary</h2>
+</div>
+
+</div>
+<!-- RESULT PANEL -->
+
+<div id="resultPanel" class="result-panel">
+
+<h2 style="margin-bottom:15px;">
+📊 Test Analysis
+</h2>
 
 <div class="result-grid">
 
-<div class="result-box">
-Total
-<h3 id="totalQ">0</h3>
+<div class="result-card">
+<h3>Total</h3>
+<h1 id="totalQuestions">0</h1>
 </div>
 
-<div class="result-box">
-Attempted
-<h3 id="attemptedQ">0</h3>
+<div class="result-card">
+<h3>Attempted</h3>
+<h1 id="attemptedQuestions">0</h1>
 </div>
 
-<div class="result-box">
-Right
-<h3 id="rightQ">0</h3>
+<div class="result-card">
+<h3>Right</h3>
+<h1 id="rightQuestions">0</h1>
 </div>
 
-<div class="result-box">
-Wrong
-<h3 id="wrongQ">0</h3>
+<div class="result-card">
+<h3>Wrong</h3>
+<h1 id="wrongQuestions">0</h1>
 </div>
 
-<div class="result-box">
-Accuracy
-<h3 id="accuracyQ">0%</h3>
-</div>
-
+<div class="result-card">
+<h3>Accuracy</h3>
+<h1 id="accuracyPercent">0%</h1>
 </div>
 
 </div>
+
+</div>
+
+
+<!-- QUESTION NAVIGATOR -->
+
+<div id="navigator" class="navigator">
+
+</div>
+
+
+<!-- QUESTIONS AREA -->
+
+<div id="questionsContainer">
+
+</div>
+
+
+<!-- SUBMIT BUTTON -->
+
+<div style="text-align:center;margin-top:25px;">
+
+<button
+id="submitBtn"
+class="primary"
+style="
+padding:15px 40px;
+font-size:18px;
+">
+
+Submit Test
+
+</button>
+
+</div>
+
+
+<!-- PDF BUTTON -->
 
 <div
-class="feedback-panel"
-id="feedbackPanel">
+id="pdfArea"
+style="
+display:none;
+text-align:center;
+margin-top:15px;
+">
 
-<h2>Rate This Test</h2>
+<button
+class="primary"
+onclick="downloadPDF()">
 
-<div id="stars">
+📄 Download PDF
 
-<span onclick="setRating(1)">⭐</span>
-<span onclick="setRating(2)">⭐</span>
-<span onclick="setRating(3)">⭐</span>
-<span onclick="setRating(4)">⭐</span>
-<span onclick="setRating(5)">⭐</span>
+</button>
 
 </div>
 
-<textarea
-id="reviewText"
-placeholder="Write Review">
-</textarea>
+
+<!-- RESTART BUTTON -->
+
+<div
+style="
+text-align:center;
+margin-top:15px;
+">
 
 <button
-class="action-btn"
-onclick="submitReview()">
+onclick="restartTest()">
 
-Submit Review
-
-</button>
-
-<hr style="margin:20px 0;">
-
-<h2>Private Message To Admin</h2>
-
-<input
-type="text"
-id="instaId"
-placeholder="Instagram ID">
-
-<textarea
-id="adminMsg"
-placeholder="Message For Admin">
-</textarea>
-
-<button
-class="action-btn"
-onclick="sendAdminMessage()">
-
-Send Message
+🔄 Restart Test
 
 </button>
-
-<br><br>
-
-<a
-href="https://instagram.com/YOUR_USERNAME"
-target="_blank">
-
-<button
-class="instagram-btn">
-
-Instagram
-
-</button>
-
-</a>
 
 </div>
+
 
 <script>
 
-/* PART 2 YAHAN AAYEGA */
-    // =====================
-// QUESTIONS
-// =====================
+/* ==========================
+QUESTIONS DATA
+========================== */
 
 const questions = [
+
 {
-question:"What is the capital of India?",
-options:["Mumbai","Delhi","Kolkata","Chennai"],
-answer:1
+q:"Question 1",
+options:["A","B","C","D"]
 },
+
 {
-question:"2 + 2 = ?",
-options:["2","3","4","5"],
-answer:2
+q:"Question 2",
+options:["A","B","C","D"]
 },
+
 {
-question:"National Animal of India?",
-options:["Lion","Tiger","Elephant","Leopard"],
-answer:1
+q:"Question 3",
+options:["A","B","C","D"]
 },
+
 {
-question:"Largest Planet?",
-options:["Earth","Mars","Jupiter","Venus"],
-answer:2
+q:"Question 4",
+options:["A","B","C","D"]
 },
+
 {
-question:"HTML Stands For?",
-options:[
-"Hyper Text Markup Language",
-"High Text Machine Language",
-"Home Tool Markup Language",
-"None"
-],
-answer:0
+q:"Question 5",
+options:["A","B","C","D"]
 }
+
 ];
 
-// =====================
-// VARIABLES
-// =====================
 
-let userAnswers =
-new Array(
-questions.length
-).fill(null);
+/* ==========================
+STATE VARIABLES
+========================== */
 
-let checkingMode = false;
-let selectedRating = 0;
+let answers = {};
 
-// =====================
-// TIMER
-// =====================
+let submitted = false;
 
-let totalSeconds = 0;
-let timerInterval;
+let rightCount = 0;
 
-function startTimer(){
+let wrongCount = 0;
 
-timerInterval =
-setInterval(()=>{
 
-totalSeconds++;
+/* ==========================
+LOAD QUESTIONS
+========================== */
 
-let h =
-Math.floor(
-totalSeconds/3600
-);
-
-let m =
-Math.floor(
-(totalSeconds%3600)/60
-);
-
-let s =
-totalSeconds%60;
-
-document
-.getElementById("timer")
-.innerText =
-
-String(h)
-.padStart(2,'0')
-
-+ ":" +
-
-String(m)
-.padStart(2,'0')
-
-+ ":" +
-
-String(s)
-.padStart(2,'0');
-
-},1000);
-
-}
-
-startTimer();
-
-// =====================
-// RENDER QUESTIONS
-// =====================
-
-function renderQuestions(){
+function loadQuestions(){
 
 const container =
 document.getElementById(
-"questionContainer"
+"questionsContainer"
 );
 
 container.innerHTML = "";
 
-questions.forEach((q,index)=>{
-
-let rowClass = "";
-
-if(
-checkingMode &&
-userAnswers[index] !== null
-){
-
-if(
-userAnswers[index]
-=== q.answer
-){
-rowClass =
-"correct-row";
-}
-else{
-rowClass =
-"wrong-row";
-}
-
-}
+questions.forEach((question,index)=>{
 
 const card =
 document.createElement("div");
 
 card.className =
-"question-card " +
-rowClass;
+"question-card";
 
 card.id =
-"q" + index;
+"question-"+index;
 
 card.innerHTML = `
 
 <div class="question-title">
-Q${index+1}.
-${q.question}
+
+${index+1}. ${question.q}
+
 </div>
 
-${q.options.map(
-(opt,optIndex)=>`
+<div class="options">
+
+${question.options.map((opt,optIndex)=>
+
+`
 
 <div
-class="option
-${userAnswers[index]
-=== optIndex
-?
-'selected'
-:
-''}"
+class="option"
+onclick="selectOption(${index},${optIndex},this)">
 
-onclick="
-${checkingMode
-?
-''
-:
-`selectOption(
-${index},
-${optIndex}
-)`
-}
-">
-
-${String.fromCharCode(
-65+optIndex
-)}.
 ${opt}
 
 </div>
 
 `
+
 ).join("")}
 
-${
-checkingMode ?
+</div>
 
-`
 
 <div
-class="check-buttons">
+class="checking-panel"
+id="check-${index}"
+style="display:none;margin-top:15px;">
 
 <button
 class="right-btn"
-onclick="
-markRight(
-${index}
-)">
-Right
+onclick="markRight(${index})">
+
+✅ Right
+
 </button>
 
 <button
 class="wrong-btn"
-onclick="
-markWrong(
-${index}
-)">
-Wrong
+onclick="markWrong(${index})">
+
+❌ Wrong
+
 </button>
 
 </div>
-
-`
-
-:
-''
-}
 
 `;
 
@@ -663,30 +573,16 @@ container.appendChild(card);
 
 });
 
-}
+createNavigator();
 
-// =====================
-// OPTION SELECT
-// =====================
-
-function selectOption(
-questionIndex,
-optionIndex
-){
-
-userAnswers[
-questionIndex
-] = optionIndex;
-
-renderQuestions();
-
-updateNavigator();
+updateTotals();
 
 }
 
-// =====================
-// NAVIGATOR
-// =====================
+
+/* ==========================
+NAVIGATOR
+========================== */
 
 function createNavigator(){
 
@@ -697,19 +593,13 @@ document.getElementById(
 
 nav.innerHTML = "";
 
-questions.forEach(
-(q,index)=>{
+questions.forEach((q,index)=>{
 
 const btn =
-document.createElement(
-"div"
-);
+document.createElement("button");
 
 btn.className =
 "nav-btn";
-
-btn.id =
-"nav"+index;
 
 btn.innerText =
 index+1;
@@ -718,7 +608,7 @@ btn.onclick = ()=>{
 
 document
 .getElementById(
-"q"+index
+"question-"+index
 )
 .scrollIntoView({
 behavior:"smooth"
@@ -732,182 +622,82 @@ nav.appendChild(btn);
 
 }
 
-// =====================
-// NAV UPDATE
-// =====================
 
-function updateNavigator(){
+/* ==========================
+OPTION SELECT
+========================== */
 
-questions.forEach(
-(q,index)=>{
+function selectOption(
+qIndex,
+optionIndex,
+element
+){
 
-const btn =
-document.getElementById(
-"nav"+index
+if(submitted) return;
+
+const parent =
+element.parentElement;
+
+parent
+.querySelectorAll(".option")
+.forEach(opt=>{
+
+opt.classList.remove(
+"selected"
 );
-
-if(!btn) return;
-
-if(
-userAnswers[index]
-!== null
-){
-
-btn.style.background =
-"#16a34a";
-
-btn.style.color =
-"white";
-
-}
-else{
-
-btn.style.background =
-"#d1d5db";
-
-btn.style.color =
-"black";
-
-}
-
-if(
-checkingMode &&
-userAnswers[index]
-!== null
-){
-
-if(
-userAnswers[index]
-=== q.answer
-){
-
-btn.style.background =
-"#16a34a";
-
-}
-else{
-
-btn.style.background =
-"#dc2626";
-
-}
-
-}
 
 });
 
-}
-
-// =====================
-// SUBMIT
-// =====================
-
-function submitTest(){
-
-checkingMode = true;
-
-clearInterval(
-timerInterval
+element.classList.add(
+"selected"
 );
 
-renderQuestions();
+answers[qIndex] =
+optionIndex;
 
-updateNavigator();
+updateTotals();
 
-calculateResult();
+}
+
+
+/* ==========================
+UPDATE ATTEMPTED
+========================== */
+
+function updateTotals(){
 
 document
 .getElementById(
-"feedbackPanel"
+"totalQuestions"
 )
-.style.display =
-"block";
-
-}
-
-// =====================
-// RESULT
-// =====================
-
-function calculateResult(){
-
-let total =
+innerText =
 questions.length;
 
-let attempted = 0;
-let right = 0;
-let wrong = 0;
-
-questions.forEach(
-(q,index)=>{
-
-if(
-userAnswers[index]
-!== null
-){
-
-attempted++;
-
-if(
-userAnswers[index]
-=== q.answer
-){
-right++;
-}
-else{
-wrong++;
-}
+document
+.getElementById(
+"attemptedQuestions"
+)
+innerText =
+Object.keys(
+answers
+).length;
 
 }
 
-});
 
-let accuracy = 0;
-
-if(attempted>0){
-
-accuracy =
-(
-right/
-attempted
-*100
-).toFixed(2);
-
-}
+/* ==========================
+SUBMIT TEST
+========================== */
 
 document
 .getElementById(
-"totalQ"
+"submitBtn"
 )
-.innerText = total;
+.addEventListener(
+"click",
+()=>{
 
-document
-.getElementById(
-"attemptedQ"
-)
-.innerText =
-attempted;
-
-document
-.getElementById(
-"rightQ"
-)
-.innerText =
-right;
-
-document
-.getElementById(
-"wrongQ"
-)
-.innerText =
-wrong;
-
-document
-.getElementById(
-"accuracyQ"
-)
-.innerText =
-accuracy + "%";
+submitted = true;
 
 document
 .getElementById(
@@ -916,49 +706,199 @@ document
 .style.display =
 "block";
 
-}
+document
+.getElementById(
+"pdfArea"
+)
+.style.display =
+"block";
 
-// =====================
-// RIGHT WRONG
-// =====================
+questions.forEach((q,index)=>{
+
+document
+.getElementById(
+"check-"+index
+)
+.style.display =
+"flex";
+
+});
+
+alert(
+"Checking Mode Enabled"
+);
+
+}
+);
+    
+/* ==========================
+MARK RIGHT
+========================== */
 
 function markRight(index){
 
 const card =
 document.getElementById(
-"q"+index
+"question-"+index
 );
 
-card.classList.remove(
-"wrong-row"
-);
+if(
+card.classList.contains("correct-row") ||
+card.classList.contains("wrong-row")
+){
+return;
+}
 
 card.classList.add(
 "correct-row"
 );
 
+rightCount++;
+
+updateResult();
+
+highlightSelected(
+index,
+true
+);
+
 }
+
+
+/* ==========================
+MARK WRONG
+========================== */
 
 function markWrong(index){
 
 const card =
 document.getElementById(
-"q"+index
+"question-"+index
 );
 
-card.classList.remove(
-"correct-row"
-);
+if(
+card.classList.contains("correct-row") ||
+card.classList.contains("wrong-row")
+){
+return;
+}
 
 card.classList.add(
 "wrong-row"
 );
 
+wrongCount++;
+
+updateResult();
+
+highlightSelected(
+index,
+false
+);
+
 }
 
-// =====================
-// RESTART
-// =====================
+
+/* ==========================
+HIGHLIGHT SELECTED OPTION
+========================== */
+
+function highlightSelected(
+qIndex,
+isCorrect
+){
+
+const card =
+document.getElementById(
+"question-"+qIndex
+);
+
+const options =
+card.querySelectorAll(
+".option"
+);
+
+const selected =
+answers[qIndex];
+
+if(
+selected === undefined
+) return;
+
+options[selected]
+.style.background =
+isCorrect
+? "#16a34a"
+: "#dc2626";
+
+options[selected]
+.style.color =
+"#fff";
+
+options[selected]
+.style.border =
+"none";
+
+}
+
+
+/* ==========================
+RESULT UPDATE
+========================== */
+
+function updateResult(){
+
+document
+.getElementById(
+"rightQuestions"
+)
+.innerText =
+rightCount;
+
+document
+.getElementById(
+"wrongQuestions"
+)
+.innerText =
+wrongCount;
+
+let attempted =
+Object.keys(
+answers
+).length;
+
+let accuracy = 0;
+
+if(
+(rightCount+wrongCount)
+>0
+){
+
+accuracy =
+(
+rightCount /
+(
+rightCount+
+wrongCount
+)
+*100
+).toFixed(2);
+
+}
+
+document
+.getElementById(
+"accuracyPercent"
+)
+.innerText =
+accuracy + "%";
+
+}
+
+
+/* ==========================
+RESTART TEST
+========================== */
 
 function restartTest(){
 
@@ -970,14 +910,13 @@ if(
 return;
 }
 
-userAnswers =
-new Array(
-questions.length
-).fill(null);
+answers = {};
 
-checkingMode = false;
+submitted = false;
 
-selectedRating = 0;
+rightCount = 0;
+
+wrongCount = 0;
 
 document
 .getElementById(
@@ -988,28 +927,42 @@ document
 
 document
 .getElementById(
-"feedbackPanel"
+"pdfArea"
 )
 .style.display =
 "none";
 
-totalSeconds = 0;
-
-clearInterval(
-timerInterval
-);
-
-startTimer();
-
-renderQuestions();
-
-updateNavigator();
+loadQuestions();
 
 }
 
-// =====================
-// DARK MODE
-// =====================
+
+/* ==========================
+START APP
+========================== */
+
+function startApp(){
+
+document
+.getElementById(
+"welcomePage"
+)
+.style.display =
+"none";
+
+document
+.getElementById(
+"app"
+)
+.style.display =
+"block";
+
+}
+
+
+/* ==========================
+DARK MODE
+========================== */
 
 function toggleDarkMode(){
 
@@ -1020,9 +973,10 @@ document.body
 
 }
 
-// =====================
-// THEME
-// =====================
+
+/* ==========================
+THEME SYSTEM
+========================== */
 
 document
 .getElementById(
@@ -1032,124 +986,536 @@ document
 "change",
 function(){
 
+const value =
+this.value;
+
+if(
+value==="blue"
+){
+
 document
 .documentElement
 .style
 .setProperty(
 "--primary",
-this.value
-);
-
-}
-);
-
-// =====================
-// PDF
-// =====================
-
-function exportPDF(){
-
-window.print();
-
-}
-
-// =====================
-// RATING
-// =====================
-
-function setRating(value){
-
-selectedRating =
-value;
-
-alert(
-value +
-" Star Selected"
+"#2563eb"
 );
 
 }
 
-// =====================
-// REVIEW
-// =====================
+if(
+value==="green"
+){
 
-function submitReview(){
+document
+.documentElement
+.style
+.setProperty(
+"--primary",
+"#16a34a"
+);
 
-const review =
+}
+
+if(
+value==="purple"
+){
+
+document
+.documentElement
+.style
+.setProperty(
+"--primary",
+"#7c3aed"
+);
+
+}
+
+if(
+value==="red"
+){
+
+document
+.documentElement
+.style
+.setProperty(
+"--primary",
+"#dc2626"
+);
+
+}
+
+}
+);
+
+
+/* ==========================
+TIMER
+========================== */
+
+let seconds = 0;
+
+setInterval(()=>{
+
+seconds++;
+
+let mins =
+Math.floor(
+seconds/60
+);
+
+let sec =
+seconds%60;
+
 document
 .getElementById(
-"reviewText"
+"timer"
+)
+.innerText =
+
+String(mins)
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(sec)
+.padStart(2,"0");
+
+},1000);
+
+
+/* ==========================
+INITIAL LOAD
+========================== */
+
+loadQuestions();
+    
+<!-- ==========================
+CUSTOM WATERMARK
+========================== -->
+
+<div class="header" style="margin-top:25px;">
+
+<h2>PDF Settings</h2>
+
+<input
+type="text"
+id="watermarkName"
+placeholder="Enter Watermark Name"
+style="
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ccc;
+">
+
+</div>
+
+
+<!-- ==========================
+INSTAGRAM
+========================== -->
+
+<div class="header">
+
+<h2>Instagram</h2>
+
+<p style="margin-top:10px;">
+Follow us on Instagram
+</p>
+
+<a
+href="https://instagram.com/"
+target="_blank">
+
+<button
+class="primary"
+style="margin-top:10px;">
+
+📸 Instagram
+
+</button>
+
+</a>
+
+</div>
+
+
+<!-- ==========================
+RATING SYSTEM
+========================== -->
+
+<div class="header">
+
+<h2>Rate This Website</h2>
+
+<div
+id="ratingStars"
+style="
+font-size:35px;
+margin-top:15px;
+cursor:pointer;
+">
+
+<span onclick="rateSite(1)">⭐</span>
+<span onclick="rateSite(2)">⭐</span>
+<span onclick="rateSite(3)">⭐</span>
+<span onclick="rateSite(4)">⭐</span>
+<span onclick="rateSite(5)">⭐</span>
+
+</div>
+
+<h3 style="margin-top:15px;">
+
+Average Rating:
+<span id="avgRating">
+
+0
+
+</span>
+
+</h3>
+
+<h3>
+
+Total Ratings:
+<span id="totalRatings">
+
+0
+
+</span>
+
+</h3>
+
+</div>
+
+
+<!-- ==========================
+COMMENTS
+========================== -->
+
+<div class="header">
+
+<h2>Public Comments</h2>
+
+<input
+id="commentName"
+placeholder="Your Name"
+style="
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ccc;
+">
+
+<textarea
+id="commentText"
+placeholder="Write Comment"
+style="
+width:100%;
+height:100px;
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+">
+
+</textarea>
+
+<button
+class="primary"
+style="margin-top:10px;"
+onclick="addComment()">
+
+Post Comment
+
+</button>
+
+<div
+id="commentsArea"
+style="margin-top:20px;">
+
+</div>
+
+</div>
+
+
+<!-- ==========================
+HELP BOX
+========================== -->
+
+<div class="header">
+
+<h2>Help Center</h2>
+
+<p>
+Only Admin Can View Help Messages
+</p>
+
+<textarea
+id="helpMessage"
+placeholder="Type Your Help Message"
+style="
+width:100%;
+height:120px;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+">
+
+</textarea>
+
+<button
+class="primary"
+style="margin-top:10px;"
+onclick="sendHelpMessage()">
+
+Send Help Request
+
+</button>
+
+</div>
+
+
+<!-- ==========================
+FOOTER
+========================== -->
+
+<div
+style="
+text-align:center;
+padding:30px;
+font-size:15px;
+">
+
+© Student55 Advanced OMR V2
+
+</div>
+
+<script>
+
+/* ==========================
+PDF EXPORT
+========================== */
+
+function downloadPDF(){
+
+const watermark =
+document
+.getElementById(
+"watermarkName"
+)
+.value || "Student55";
+
+const pdfContent =
+
+`
+Student55 Advanced OMR V2
+
+Watermark:
+${watermark}
+
+Total:
+${questions.length}
+
+Attempted:
+${Object.keys(answers).length}
+
+Right:
+${rightCount}
+
+Wrong:
+${wrongCount}
+
+Accuracy:
+${document.getElementById("accuracyPercent").innerText}
+
+Generated:
+${new Date().toLocaleString()}
+`;
+
+const blob =
+new Blob(
+[pdfContent],
+{
+type:"text/plain"
+}
+);
+
+const a =
+document.createElement("a");
+
+a.href =
+URL.createObjectURL(
+blob
+);
+
+a.download =
+"Student55_Result.pdf";
+
+a.click();
+
+}
+
+
+/* ==========================
+RATING SYSTEM
+========================== */
+
+let totalStars = 0;
+let ratingUsers = 0;
+
+function rateSite(stars){
+
+totalStars += stars;
+
+ratingUsers++;
+
+document
+.getElementById(
+"avgRating"
+)
+.innerText =
+
+(
+totalStars /
+ratingUsers
+).toFixed(2);
+
+document
+.getElementById(
+"totalRatings"
+)
+.innerText =
+ratingUsers;
+
+}
+
+
+/* ==========================
+COMMENTS
+========================== */
+
+function addComment(){
+
+const name =
+document
+.getElementById(
+"commentName"
+)
+.value;
+
+const text =
+document
+.getElementById(
+"commentText"
 )
 .value;
 
 if(
-selectedRating===0
+name==="" ||
+text===""
 ){
-
-alert(
-"Select Rating"
-);
-
 return;
 }
 
-alert(
-
-"Review Submitted\n\n" +
-
-"Rating: " +
-selectedRating +
-
-"\nReview: " +
-review
-
+const box =
+document
+.createElement(
+"div"
 );
+
+box.style.marginBottom =
+"15px";
+
+box.style.padding =
+"15px";
+
+box.style.border =
+"1px solid #ddd";
+
+box.style.borderRadius =
+"10px";
+
+box.innerHTML =
+
+`
+<b>${name}</b>
+
+<br><br>
+
+${text}
+
+<br><br>
+
+<button onclick="this.parentElement.remove()">
+
+Delete
+
+</button>
+`;
+
+const area =
+document
+.getElementById(
+"commentsArea"
+);
+
+area.prepend(box);
+
+document
+.getElementById(
+"commentName"
+)
+.value="";
+
+document
+.getElementById(
+"commentText"
+)
+.value="";
 
 }
 
-// =====================
-// ADMIN MSG
-// =====================
 
-function sendAdminMessage(){
+/* ==========================
+HELP MESSAGE
+========================== */
 
-const insta =
-document
-.getElementById(
-"instaId"
-)
-.value;
+function sendHelpMessage(){
 
 const msg =
 document
 .getElementById(
-"adminMsg"
+"helpMessage"
 )
 .value;
 
+if(msg===""){
+return;
+}
+
 alert(
-
-"Message Sent\n\n" +
-
-"Instagram: " +
-insta +
-
-"\nMessage: " +
-msg
-
+"Help Request Sent"
 );
+
+document
+.getElementById(
+"helpMessage"
+)
+.value="";
 
 }
 
-// =====================
-// INIT
-// =====================
-
-createNavigator();
-renderQuestions();
-updateNavigator();
-
 </script>
+
+</div>
+</div>
 
 </body>
 </html>
