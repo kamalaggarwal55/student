@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Student55 OMR Test</title>
+<title>Student55 Advanced OMR</title>
 
 <style>
 
@@ -29,36 +30,66 @@ transition:.3s;
 max-width:1400px;
 margin:auto;
 background:white;
-padding:20px;
 border-radius:20px;
+padding:20px;
 box-shadow:0 0 15px rgba(0,0,0,.1);
 }
 
 .logo{
-font-size:40px;
+font-size:42px;
 font-weight:bold;
 text-align:center;
 color:var(--theme);
 margin-bottom:20px;
 }
 
-.start-screen{
+.welcome{
 text-align:center;
 padding:40px 20px;
 }
 
-.start-btn{
-background:var(--theme);
-color:white;
-border:none;
-padding:15px 35px;
-font-size:22px;
-border-radius:12px;
-cursor:pointer;
+.welcome h1{
+font-size:48px;
+color:var(--theme);
+margin-bottom:10px;
+}
+
+.welcome p{
+font-size:20px;
+color:#666;
+margin-bottom:25px;
+}
+
+.card{
+background:#f8fafc;
+padding:20px;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+.input-group{
+margin-bottom:15px;
+text-align:left;
+}
+
+.input-group label{
+display:block;
+font-size:18px;
+font-weight:bold;
+margin-bottom:8px;
+}
+
+.input-group input,
+.input-group select{
+width:100%;
+padding:12px;
+font-size:18px;
+border:1px solid #ccc;
+border-radius:10px;
 }
 
 .theme-box{
-margin-top:25px;
+margin-top:20px;
 }
 
 .theme-btn{
@@ -70,11 +101,21 @@ cursor:pointer;
 margin:5px;
 }
 
-#customColor{
+.start-btn{
+margin-top:20px;
+padding:15px 35px;
+font-size:22px;
+background:var(--theme);
+color:white;
+border:none;
+border-radius:12px;
+cursor:pointer;
+}
+
+#customBg{
 width:80px;
 height:40px;
 cursor:pointer;
-margin-top:10px;
 }
 
 .timer{
@@ -84,39 +125,56 @@ top:10px;
 z-index:999;
 background:white;
 padding:10px;
-border-radius:10px;
 font-size:24px;
 font-weight:bold;
 text-align:center;
-margin-bottom:15px;
+border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,.1);
+margin-bottom:15px;
 }
 
 .omr-section{
 display:none;
 }
 
-.header-row{
-display:grid;
-grid-template-columns:80px repeat(4,1fr) 140px;
-background:#e8edff;
+.live-panel{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:15px;
+}
+
+.live-box{
+background:#f1f5f9;
+padding:10px 15px;
+border-radius:10px;
+font-weight:bold;
+}
+
+.remaining{
+background:#fff8e1;
 padding:12px;
 border-radius:10px;
+margin-bottom:15px;
+}
+
+.header-row{
+display:grid;
+grid-template-columns:80px repeat(4,1fr) 160px;
+padding:12px;
+background:#e8edff;
 font-size:20px;
 font-weight:bold;
+border-radius:10px;
 }
 
 .question-row{
 display:grid;
-grid-template-columns:80px repeat(4,1fr) 140px;
+grid-template-columns:80px repeat(4,1fr) 160px;
 padding:12px;
 border-bottom:1px solid #ddd;
 align-items:center;
 font-size:20px;
-}
-
-.qno{
-font-weight:bold;
 }
 
 .option{
@@ -129,71 +187,20 @@ height:28px;
 cursor:pointer;
 }
 
-.controls{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:20px;
-}
-
-.btn{
-background:var(--theme);
-color:white;
-border:none;
-padding:12px 18px;
-border-radius:10px;
-cursor:pointer;
-}
-
-.summary{
-display:none;
-margin-top:20px;
-padding:15px;
-background:#f7f7f7;
-border-radius:12px;
-}
-
-.card{
-margin-top:20px;
-padding:15px;
-background:#fafafa;
-border-radius:12px;
-}
-
-.star{
-font-size:35px;
-cursor:pointer;
-}
-
-textarea,
-input[type=text]{
-width:100%;
-padding:10px;
-margin-top:10px;
-border:1px solid #ccc;
-border-radius:8px;
-}
-
-.watermark{
-position:fixed;
-bottom:10px;
-left:10px;
-opacity:.15;
-font-size:18px;
-font-weight:bold;
-pointer-events:none;
-}
-
 @media(max-width:768px){
 
 .logo{
 font-size:28px;
 }
 
+.welcome h1{
+font-size:32px;
+}
+
 .header-row,
 .question-row{
-font-size:15px;
 grid-template-columns:55px repeat(4,1fr) 100px;
+font-size:15px;
 }
 
 .option input{
@@ -204,31 +211,66 @@ height:22px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="watermark">
-student55.netlify.app
-</div>
-
 <div class="container">
 
 <div class="logo">
-Student55 OMR Test
+Student55 Advanced OMR
 </div>
 
-<div id="startScreen" class="start-screen">
+<div id="welcomePage" class="welcome">
 
-<h1>Welcome</h1>
+<h1>WELCOME</h1>
 
-<p style="margin-top:10px">
-100 Question OMR Practice Test
+<p>
+Practice • Test • Improve
 </p>
+
+<div class="card">
+
+<div class="input-group">
+
+<label>
+Student Name
+</label>
+
+<input
+type="text"
+id="studentName"
+placeholder="Enter Your Name">
+
+</div>
+
+<div class="input-group">
+
+<label>
+Select Question Count
+</label>
+
+<select id="questionCount">
+
+<option value="10">10 Questions</option>
+<option value="20">20 Questions</option>
+<option value="30">30 Questions</option>
+<option value="40">40 Questions</option>
+<option value="50">50 Questions</option>
+<option value="60">60 Questions</option>
+<option value="70">70 Questions</option>
+<option value="80">80 Questions</option>
+<option value="90">90 Questions</option>
+<option value="100">100 Questions</option>
+
+</select>
+
+</div>
 
 <div class="theme-box">
 
-<h3>Select Theme</h3>
+<h3>Theme Color</h3>
 
 <button class="theme-btn"
 style="background:#2563eb"
@@ -256,12 +298,10 @@ onclick="setTheme('#111827')"></button>
 
 <input
 type="color"
-id="customColor"
+id="customBg"
 oninput="changeBg(this.value)">
 
 </div>
-
-<br>
 
 <button
 class="start-btn"
@@ -271,68 +311,53 @@ START TEST
 
 </div>
 
+</div>
+
 <div id="timer" class="timer">
 00:00:00
 </div>
 
 <div id="omrSection" class="omr-section">
 
+<div class="live-panel">
+
+<div class="live-box">
+Attempted:
+<span id="attemptedLive">0</span>
+</div>
+
+<div class="live-box">
+Remaining:
+<span id="remainingLive">0</span>
+</div>
+
+</div>
+
+<div
+id="remainingQuestions"
+class="remaining">
+
+Remaining Questions:
+
+</div>
+
 <div class="header-row">
+
 <div>Q</div>
 <div>A</div>
 <div>B</div>
 <div>C</div>
 <div>D</div>
 <div>Check</div>
+
 </div>
 
 <div id="questions"></div>
 
-<div class="controls">
-
-<button class="btn"
-onclick="submitOMR()">
-Submit
-</button>
-
-<button class="btn"
-onclick="restartOMR()">
-Restart
-</button>
-
-<button class="btn"
-onclick="downloadResult()">
-Download
-</button>
-
-</div>
-
-<div id="summary" class="summary">
-
-<h2>Result Summary</h2>
-
-<p>Attempted :
-<span id="attempted">0</span></p>
-
-<p>Right :
-<span id="rightCount">0</span></p>
-
-<p>Wrong :
-<span id="wrongCount">0</span></p>
-
-<p>Unattempted :
-<span id="unattempted">100</span></p>
-
-</div>
-
 <script>
 
 let submitted=false;
-let attempted=0;
-let rightCount=0;
-let wrongCount=0;
-let selectedRating=0;
-
+let totalQuestions=0;
 let seconds=0;
 let timerInterval;
 
@@ -353,104 +378,162 @@ color;
 
 }
 
+</script>
+
+<script>
+
+let studentName = "";
+let selectedAnswers = {};
+
+/* START TEST */
+
 function startTest(){
 
+studentName =
 document.getElementById(
-"startScreen"
-).style.display="none";
+"studentName"
+).value.trim();
+
+if(studentName===""){
+
+alert(
+"Please Enter Your Name"
+);
+
+return;
+
+}
+
+totalQuestions =
+parseInt(
+document.getElementById(
+"questionCount"
+).value
+);
+
+document.getElementById(
+"welcomePage"
+).style.display =
+"none";
 
 document.getElementById(
 "omrSection"
-).style.display="block";
+).style.display =
+"block";
 
 document.getElementById(
 "timer"
-).style.display="block";
+).style.display =
+"block";
 
-timerInterval=
+generateQuestions();
+
+updateLiveTracker();
+
+startTimer();
+
+}
+
+/* TIMER */
+
+function startTimer(){
+
+timerInterval =
 setInterval(()=>{
 
 seconds++;
 
-let h=
+let hrs =
 String(
 Math.floor(seconds/3600)
 ).padStart(2,"0");
 
-let m=
+let mins =
 String(
 Math.floor(
 (seconds%3600)/60
 )
 ).padStart(2,"0");
 
-let s=
+let secs =
 String(
 seconds%60
 ).padStart(2,"0");
 
 document.getElementById(
 "timer"
-).innerHTML=
-`${h}:${m}:${s}`;
+).innerText =
+hrs + ":" + mins + ":" + secs;
 
 },1000);
 
 }
 
-</script>
+/* GENERATE QUESTIONS */
 
-<script>
+function generateQuestions(){
 
-/* 100 QUESTIONS GENERATE */
-
-const questionsDiv =
+let box =
 document.getElementById(
 "questions"
 );
 
-for(let i=1;i<=100;i++){
+box.innerHTML = "";
 
-let num=
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
+
+let qno =
 String(i)
 .padStart(3,"0");
 
-let row=
+let row =
 document.createElement(
 "div"
 );
 
-row.className=
+row.className =
 "question-row";
 
-row.innerHTML=`
+row.innerHTML = `
 
-<div class="qno">
-${num}
+<div>
+${qno}
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
-value="A">
+value="A"
+onchange="saveAnswer(${i},'A')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
-value="B">
+value="B"
+onchange="saveAnswer(${i},'B')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
-value="C">
+value="C"
+onchange="saveAnswer(${i},'C')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
-value="D">
+value="D"
+onchange="saveAnswer(${i},'D')">
 </div>
 
 <div>
@@ -465,9 +548,8 @@ border:none;
 padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
-margin-right:4px;
 "
-onclick="markRight(${i})">
+>
 ✔
 </button>
 
@@ -482,187 +564,91 @@ padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
 "
-onclick="markWrong(${i})">
+>
 ✖
 </button>
 
 <span
-id="status${i}"
-style="
-font-weight:bold;
-margin-left:5px;
-">
+id="status${i}">
 </span>
 
 </div>
 
 `;
 
-questionsDiv.appendChild(
+box.appendChild(
 row
 );
 
 }
 
-/* SUBMIT */
-
-function submitOMR(){
-
-if(submitted){
-return;
 }
 
-submitted=true;
+/* SAVE ANSWER */
 
-clearInterval(
-timerInterval
-);
+function saveAnswer(
+q,
+ans
+){
 
-attempted=0;
+selectedAnswers[q] =
+ans;
+
+updateLiveTracker();
+
+}
+
+/* LIVE TRACKER */
+
+function updateLiveTracker(){
+
+let attempted =
+Object.keys(
+selectedAnswers
+).length;
+
+let remaining =
+[];
 
 for(
 let i=1;
-i<=100;
+i<=totalQuestions;
 i++
 ){
 
-let selected=
-document.querySelector(
-`input[name="q${i}"]:checked`
-);
+if(
+!selectedAnswers[i]
+){
 
-if(selected){
-
-attempted++;
-
-document
-.getElementById(
-`right${i}`
-)
-.style.display=
-"inline-block";
-
-document
-.getElementById(
-`wrong${i}`
-)
-.style.display=
-"inline-block";
+remaining.push(i);
 
 }
 
-document
-.querySelectorAll(
-`input[name="q${i}"]`
-)
-.forEach(el=>{
-
-el.disabled=true;
-
-});
-
 }
 
-document
-.getElementById(
-"summary"
-)
-.style.display=
-"block";
-
-document
-.getElementById(
-"attempted"
-)
-.innerText=
+document.getElementById(
+"attemptedLive"
+).innerText =
 attempted;
 
-document
-.getElementById(
-"unattempted"
-)
-.innerText=
-100-attempted;
-
-alert(
-"Test Submitted"
-);
-
-}
-
-/* RIGHT */
-
-function markRight(q){
-
-let status=
 document.getElementById(
-`status${q}`
-);
+"remainingLive"
+).innerText =
+totalQuestions-attempted;
 
-status.innerHTML=
-"✔";
-
-status.style.color=
-"#16a34a";
-
-document
-.getElementById(
-`right${q}`
-)
-.disabled=true;
-
-document
-.getElementById(
-`wrong${q}`
-)
-.disabled=true;
-
-rightCount++;
-
-document
-.getElementById(
-"rightCount"
-)
-.innerText=
-rightCount;
-
-}
-
-/* WRONG */
-
-function markWrong(q){
-
-let status=
 document.getElementById(
-`status${q}`
+"remainingQuestions"
+).innerHTML =
+
+"<b>Remaining Questions:</b><br>" +
+
+(
+remaining.length
+?
+remaining.join(", ")
+:
+"All Questions Attempted ✅"
 );
-
-status.innerHTML=
-"✖";
-
-status.style.color=
-"#dc2626";
-
-document
-.getElementById(
-`right${q}`
-)
-.disabled=true;
-
-document
-.getElementById(
-`wrong${q}`
-)
-.disabled=true;
-
-wrongCount++;
-
-document
-.getElementById(
-"wrongCount"
-)
-.innerText=
-wrongCount;
 
 }
 
@@ -670,253 +656,1060 @@ wrongCount;
 
 <script>
 
-/* RESTART */
+let rightCount = 0;
+let wrongCount = 0;
 
-function restartOMR(){
+/* SUBMIT BUTTON */
 
-let ok =
-confirm(
-"Restart Test?"
-);
-
-if(!ok){
-return;
-}
-
-location.reload();
-
-}
-
-/* RESULT CARD */
-
-function updateFinalResult(){
-
-let total =
-rightCount + wrongCount;
-
-if(total===0){
-return;
-}
-
-let percentage =
-(
-(rightCount/total)
-*100
-).toFixed(2);
-
-let grade="D";
-let result="FAIL";
-
-if(percentage>=90){
-grade="A+";
-result="PASS";
-}
-else if(percentage>=75){
-grade="A";
-result="PASS";
-}
-else if(percentage>=60){
-grade="B";
-result="PASS";
-}
-else if(percentage>=40){
-grade="C";
-result="PASS";
-}
-
-let old =
-document.getElementById(
-"finalCard"
-);
-
-if(old){
-old.remove();
-}
-
-let card =
+let submitBox =
 document.createElement(
 "div"
 );
 
-card.id="finalCard";
+submitBox.style.textAlign =
+"center";
 
-card.className=
+submitBox.style.marginTop =
+"20px";
+
+submitBox.innerHTML =
+
+`
+
+<button
+id="submitBtn"
+onclick="submitTest()"
+style="
+padding:15px 35px;
+font-size:22px;
+background:var(--theme);
+color:white;
+border:none;
+border-radius:12px;
+cursor:pointer;
+">
+
+SUBMIT TEST
+
+</button>
+
+`;
+
+document
+.getElementById(
+"omrSection"
+)
+.appendChild(
+submitBox
+);
+
+/* SUBMIT TEST */
+
+function submitTest(){
+
+if(submitted){
+return;
+}
+
+submitted = true;
+
+clearInterval(
+timerInterval
+);
+
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
+
+document
+.querySelectorAll(
+`input[name="q${i}"]`
+)
+.forEach(input=>{
+
+input.disabled=true;
+
+});
+
+if(
+selectedAnswers[i]
+){
+
+document.getElementById(
+`right${i}`
+).style.display =
+"inline-block";
+
+document.getElementById(
+`wrong${i}`
+).style.display =
+"inline-block";
+
+}
+
+}
+
+showResultBox();
+
+alert(
+"Test Submitted Successfully"
+);
+
+}
+
+/* RIGHT MARK */
+
+function markRight(q){
+
+let status =
+document.getElementById(
+`status${q}`
+);
+
+status.innerHTML =
+" ✔ Correct";
+
+status.style.color =
+"#16a34a";
+
+document.getElementById(
+`right${q}`
+).disabled=true;
+
+document.getElementById(
+`wrong${q}`
+).disabled=true;
+
+rightCount++;
+
+updateResult();
+
+}
+
+/* WRONG MARK */
+
+function markWrong(q){
+
+let status =
+document.getElementById(
+`status${q}`
+);
+
+status.innerHTML =
+" ✖ Wrong";
+
+status.style.color =
+"#dc2626";
+
+document.getElementById(
+`right${q}`
+).disabled=true;
+
+document.getElementById(
+`wrong${q}`
+).disabled=true;
+
+wrongCount++;
+
+updateResult();
+
+}
+
+/* ATTACH BUTTON EVENTS */
+
+function attachCheckEvents(){
+
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
+
+let r =
+document.getElementById(
+`right${i}`
+);
+
+let w =
+document.getElementById(
+`wrong${i}`
+);
+
+if(r){
+
+r.onclick=()=>{
+
+markRight(i);
+
+};
+
+}
+
+if(w){
+
+w.onclick=()=>{
+
+markWrong(i);
+
+};
+
+}
+
+}
+
+}
+
+setTimeout(
+attachCheckEvents,
+1000
+);
+
+/* RESULT BOX */
+
+function showResultBox(){
+
+if(
+document.getElementById(
+"resultBox"
+)
+){
+return;
+}
+
+let div =
+document.createElement(
+"div"
+);
+
+div.id =
+"resultBox";
+
+div.className =
 "card";
 
-card.innerHTML=`
+div.innerHTML =
 
-<h2>Final Result</h2>
+`
+
+<h2>
+Result Summary
+</h2>
+
+<p>
+Name :
+<b id="resName">
+${studentName}
+</b>
+</p>
+
+<p>
+Attempted :
+<span id="attemptedResult">
+0
+</span>
+</p>
+
+<p>
+Right :
+<span id="rightResult">
+0
+</span>
+</p>
+
+<p>
+Wrong :
+<span id="wrongResult">
+0
+</span>
+</p>
+
+<p>
+Unattempted :
+<span id="unattemptedResult">
+0
+</span>
+</p>
 
 <p>
 Percentage :
-<b>${percentage}%</b>
+<span id="percentageResult">
+0%
+</span>
 </p>
 
 <p>
 Grade :
-<b>${grade}</b>
+<span id="gradeResult">
+-
+</span>
 </p>
 
 <p>
 Status :
-<b>${result}</b>
+<span id="statusResult">
+-
+</span>
 </p>
 
 `;
 
 document
 .getElementById(
-"summary"
+"omrSection"
 )
-.appendChild(card);
-
-}
-
-/* UPDATE AFTER RIGHT */
-
-const oldMarkRight =
-markRight;
-
-markRight = function(q){
-
-oldMarkRight(q);
-
-updateFinalResult();
-
-}
-
-/* UPDATE AFTER WRONG */
-
-const oldMarkWrong =
-markWrong;
-
-markWrong = function(q){
-
-oldMarkWrong(q);
-
-updateFinalResult();
-
-}
-
-/* DOWNLOAD RESULT */
-
-function downloadResult(){
-
-if(!submitted){
-
-alert(
-"Submit Test First"
+.appendChild(
+div
 );
 
-return;
+updateResult();
+
 }
 
-let report="";
+/* UPDATE RESULT */
 
-report +=
-"STUDENT55 OMR REPORT\n\n";
+function updateResult(){
 
-report +=
-"Website : student55.netlify.app\n\n";
+let attempted =
+rightCount + wrongCount;
 
-report +=
-"Time : "
-+
+let unattempted =
+totalQuestions - attempted;
+
+let percentage = 0;
+
+if(attempted>0){
+
+percentage =
+(
+rightCount /
+attempted
+)*100;
+
+}
+
+let grade="D";
+let result="FAIL";
+
+if(
+percentage>=90
+){
+
+grade="A+";
+result="PASS";
+
+}
+else if(
+percentage>=75
+){
+
+grade="A";
+result="PASS";
+
+}
+else if(
+percentage>=60
+){
+
+grade="B";
+result="PASS";
+
+}
+else if(
+percentage>=40
+){
+
+grade="C";
+result="PASS";
+
+}
+
+document.getElementById(
+"attemptedResult"
+).innerText =
+attempted;
+
+document.getElementById(
+"rightResult"
+).innerText =
+rightCount;
+
+document.getElementById(
+"wrongResult"
+).innerText =
+wrongCount;
+
+document.getElementById(
+"unattemptedResult"
+).innerText =
+unattempted;
+
+document.getElementById(
+"percentageResult"
+).innerText =
+percentage.toFixed(2)+"%";
+
+document.getElementById(
+"gradeResult"
+).innerText =
+grade;
+
+document.getElementById(
+"statusResult"
+).innerText =
+result;
+
+}
+
+</script>
+
+<!-- jsPDF -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+
+/* DOWNLOAD PANEL */
+
+let downloadPanel =
+document.createElement(
+"div"
+);
+
+downloadPanel.style.textAlign =
+"center";
+
+downloadPanel.style.marginTop =
+"20px";
+
+downloadPanel.innerHTML =
+
+`
+
+<button
+onclick="downloadUncheckedPDF()"
+style="
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
+">
+
+Download OMR PDF
+
+</button>
+
+<button
+onclick="downloadCheckedPDF()"
+style="
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
+">
+
+Download Checked PDF
+
+</button>
+
+<button
+onclick="restartTest()"
+style="
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
+">
+
+Restart Test
+
+</button>
+
+`;
+
 document
 .getElementById(
-"timer"
+"omrSection"
 )
-.innerText
-+
-"\n\n";
+.appendChild(
+downloadPanel
+);
 
-report +=
-"Attempted : "
-+
-attempted
-+
-"\n";
+/* RESTART */
 
-report +=
-"Right : "
-+
-rightCount
-+
-"\n";
+function restartTest(){
 
-report +=
-"Wrong : "
-+
-wrongCount
-+
-"\n";
+if(
+confirm(
+"Restart Test?"
+)
+){
 
-report +=
-"Unattempted : "
-+
-(100-attempted)
-+
-"\n\n";
+location.reload();
+
+}
+
+}
+
+/* UNCHECKED PDF */
+
+async function downloadUncheckedPDF(){
+
+const { jsPDF } =
+window.jspdf;
+
+const doc =
+new jsPDF();
+
+let y = 20;
+
+doc.setFontSize(18);
+
+doc.text(
+"STUDENT55 OMR SHEET",
+20,
+y
+);
+
+y += 10;
+
+doc.setFontSize(11);
+
+doc.text(
+"Name : " + studentName,
+20,
+y
+);
+
+y += 8;
+
+doc.text(
+"Time : " +
+document.getElementById(
+"timer"
+).innerText,
+20,
+y
+);
+
+y += 12;
 
 for(
 let i=1;
-i<=100;
+i<=totalQuestions;
 i++
 ){
 
-let selected =
-document.querySelector(
-`input[name="q${i}"]:checked`
-);
-
 let ans =
-selected
+selectedAnswers[i]
 ?
-selected.value
+selectedAnswers[i]
 :
-"NA";
+"-";
 
-report +=
-"Q"
-+
+doc.text(
+"Q"+
 String(i)
 .padStart(3,"0")
 +
-" : "
+"   A  B  C  D"
++
+"   Selected : "
++
+ans,
+20,
+y
+);
+
+y += 8;
+
+if(y>270){
+
+doc.addPage();
+
+y=20;
+
+}
+
+}
+
+doc.setFontSize(28);
+
+doc.setTextColor(
+220,
+220,
+220
+);
+
+doc.text(
+"student55.netlify.app",
+25,
+180,
+{
+angle:45
+}
+);
+
+doc.save(
+studentName +
+"_OMR.pdf"
+);
+
+}
+
+/* CHECKED PDF */
+
+async function downloadCheckedPDF(){
+
+const { jsPDF } =
+window.jspdf;
+
+const doc =
+new jsPDF();
+
+let y=20;
+
+doc.setFontSize(18);
+
+doc.text(
+"STUDENT55 CHECKED OMR",
+20,
+y
+);
+
+y+=10;
+
+doc.setFontSize(11);
+
+doc.text(
+"Name : " +
+studentName,
+20,
+y
+);
+
+y+=8;
+
+doc.text(
+"Right : " +
+rightCount,
+20,
+y
+);
+
+y+=8;
+
+doc.text(
+"Wrong : " +
+wrongCount,
+20,
+y
+);
+
+y+=8;
+
+doc.text(
+"Time : " +
+document.getElementById(
+"timer"
+).innerText,
+20,
+y
+);
+
+y+=12;
+
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
+
+let ans =
+selectedAnswers[i]
+?
+selectedAnswers[i]
+:
+"-";
+
+let status =
+document.getElementById(
+`status${i}`
+)
+?
+document.getElementById(
+`status${i}`
+)
+.innerText
+:
+"";
+
+doc.text(
+
+"Q"+
+String(i)
+.padStart(3,"0")
++
+"   A  B  C  D"
++
+"   "
 +
 ans
 +
-"\n";
+"   "
++
+status,
+
+20,
+y
+
+);
+
+y += 8;
+
+if(y>270){
+
+doc.addPage();
+
+y=20;
 
 }
 
-report +=
-"\nstudent55.netlify.app";
+}
 
-let blob =
-new Blob(
-[report],
+doc.setFontSize(28);
+
+doc.setTextColor(
+220,
+220,
+220
+);
+
+doc.text(
+"student55.netlify.app",
+25,
+180,
 {
-type:"text/plain"
+angle:45
 }
 );
 
-let link =
+doc.save(
+studentName +
+"_Checked_OMR.pdf"
+);
+
+}
+
+</script>
+
+<script>
+
+/* RATING SECTION */
+
+let ratingSection =
 document.createElement(
-"a"
+"div"
 );
 
-link.href =
-URL.createObjectURL(
-blob
+ratingSection.className =
+"card";
+
+ratingSection.innerHTML =
+
+`
+
+<h2>
+⭐ Rate This Site
+</h2>
+
+<br>
+
+<div id="starContainer">
+
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+<span class="star">☆</span>
+
+</div>
+
+<br>
+
+<p id="ratingValue">
+No Rating Selected
+</p>
+
+`;
+
+document
+.getElementById(
+"omrSection"
+)
+.appendChild(
+ratingSection
 );
 
-link.download =
-"Student55_Result.txt";
+let rating = 0;
 
-link.click();
+setTimeout(()=>{
+
+let stars =
+document.querySelectorAll(
+".star"
+);
+
+stars.forEach(
+(star,index)=>{
+
+star.style.fontSize =
+"35px";
+
+star.style.cursor =
+"pointer";
+
+star.onclick = ()=>{
+
+rating =
+index + 1;
+
+stars.forEach(
+(s,i)=>{
+
+s.innerHTML =
+i<=index
+?
+"⭐"
+:
+"☆";
+
+});
+
+document.getElementById(
+"ratingValue"
+).innerText =
+
+"Selected Rating : "
++
+rating
++
+"/5";
+
+};
+
+});
+
+},500);
+
+/* REVIEW SECTION */
+
+let reviewSection =
+document.createElement(
+"div"
+);
+
+reviewSection.className =
+"card";
+
+reviewSection.innerHTML =
+
+`
+
+<h2>
+📝 Review
+</h2>
+
+<br>
+
+<textarea
+id="reviewText"
+rows="6"
+style="
+width:100%;
+padding:10px;
+"
+placeholder="Write your review here">
+</textarea>
+
+`;
+
+document
+.getElementById(
+"omrSection"
+)
+.appendChild(
+reviewSection
+);
+
+/* CONTACT SECTION */
+
+let contactSection =
+document.createElement(
+"div"
+);
+
+contactSection.className =
+"card";
+
+contactSection.innerHTML =
+
+`
+
+<h2>
+📞 Contact & Help
+</h2>
+
+<br>
+
+<input
+type="text"
+placeholder="Your Name"
+style="
+width:100%;
+padding:10px;
+">
+
+<br><br>
+
+<textarea
+rows="6"
+style="
+width:100%;
+padding:10px;
+"
+placeholder="Write your message">
+</textarea>
+
+`;
+
+document
+.getElementById(
+"omrSection"
+)
+.appendChild(
+contactSection
+);
+
+/* INSTAGRAM */
+
+let instaSection =
+document.createElement(
+"div"
+);
+
+instaSection.className =
+"card";
+
+instaSection.innerHTML =
+
+`
+
+<h2>
+📷 Instagram
+</h2>
+
+<br>
+
+<a
+href="#"
+id="instaLink">
+
+Add Your Instagram Link Here
+
+</a>
+
+`;
+
+document
+.getElementById(
+"omrSection"
+)
+.appendChild(
+instaSection
+);
+
+</script>
+
+<script>
+
+/* DARK MODE */
+
+let darkMode = false;
+
+let darkBtn =
+document.createElement(
+"button"
+);
+
+darkBtn.innerHTML =
+"🌙 Dark Mode";
+
+darkBtn.style.position =
+"fixed";
+
+darkBtn.style.right =
+"20px";
+
+darkBtn.style.bottom =
+"20px";
+
+darkBtn.style.padding =
+"12px 18px";
+
+darkBtn.style.border =
+"none";
+
+darkBtn.style.borderRadius =
+"10px";
+
+darkBtn.style.cursor =
+"pointer";
+
+darkBtn.style.zIndex =
+"9999";
+
+document.body.appendChild(
+darkBtn
+);
+
+darkBtn.onclick = ()=>{
+
+darkMode = !darkMode;
+
+if(darkMode){
+
+document.body.style.background =
+"#111827";
+
+document.body.style.color =
+"white";
+
+document.querySelector(
+".container"
+).style.background =
+"#1f2937";
+
+darkBtn.innerHTML =
+"☀ Light Mode";
+
+}else{
+
+document.body.style.background =
+"#eef4ff";
+
+document.body.style.color =
+"black";
+
+document.querySelector(
+".container"
+).style.background =
+"white";
+
+darkBtn.innerHTML =
+"🌙 Dark Mode";
 
 }
+
+};
 
 /* SCROLL TO TOP */
 
@@ -926,25 +1719,25 @@ document.createElement(
 );
 
 topBtn.innerHTML =
-"⬆";
+"⬆ Top";
 
 topBtn.style.position =
 "fixed";
 
-topBtn.style.right =
+topBtn.style.left =
 "20px";
 
 topBtn.style.bottom =
 "20px";
 
 topBtn.style.padding =
-"12px";
+"12px 18px";
 
 topBtn.style.border =
 "none";
 
 topBtn.style.borderRadius =
-"50%";
+"10px";
 
 topBtn.style.cursor =
 "pointer";
@@ -952,276 +1745,41 @@ topBtn.style.cursor =
 topBtn.style.display =
 "none";
 
+topBtn.style.zIndex =
+"9999";
+
 document.body.appendChild(
 topBtn
 );
 
-window.addEventListener(
-"scroll",
-()=>{
+window.onscroll = ()=>{
 
 if(
-window.scrollY>300
+document.documentElement.scrollTop > 300
 ){
-topBtn.style.display=
+
+topBtn.style.display =
 "block";
+
 }else{
-topBtn.style.display=
+
+topBtn.style.display =
 "none";
-}
 
 }
-);
 
-topBtn.onclick=()=>{
+};
+
+topBtn.onclick = ()=>{
 
 window.scrollTo({
+
 top:0,
 behavior:"smooth"
-});
-
-}
-
-</script>
-
-<script>
-
-/* STAR RATING */
-
-let ratingBox =
-document.createElement(
-"div"
-);
-
-ratingBox.className =
-"card";
-
-ratingBox.innerHTML = `
-
-<h2>Rate This Site</h2>
-
-<div id="stars">
-
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-
-</div>
-
-<p id="ratingText">
-No Rating Selected
-</p>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-ratingBox
-);
-
-let stars =
-document.querySelectorAll(
-".star"
-);
-
-stars.forEach(
-(star,index)=>{
-
-star.addEventListener(
-"click",
-()=>{
-
-selectedRating=
-index+1;
-
-stars.forEach(
-(s,i)=>{
-
-if(i<=index){
-
-s.innerHTML="⭐";
-
-}else{
-
-s.innerHTML="☆";
-
-}
 
 });
-
-document
-.getElementById(
-"ratingText"
-)
-.innerHTML=
-"Selected Rating : "
-+
-selectedRating
-+
-"/5";
-
-});
-
-});
-
-/* REVIEW */
-
-let reviewCard =
-document.createElement(
-"div"
-);
-
-reviewCard.className=
-"card";
-
-reviewCard.innerHTML=`
-
-<h2>Review</h2>
-
-<textarea
-id="review"
-rows="5"
-placeholder="Write your review">
-</textarea>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-reviewCard
-);
-
-/* CONTACT */
-
-let contactCard =
-document.createElement(
-"div"
-);
-
-contactCard.className=
-"card";
-
-contactCard.innerHTML=`
-
-<h2>Contact & Help</h2>
-
-<input
-type="text"
-placeholder="Your Name">
-
-<textarea
-rows="5"
-placeholder="Write your message">
-</textarea>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-contactCard
-);
-
-/* DARK MODE */
-
-let darkBtn =
-document.createElement(
-"button"
-);
-
-darkBtn.className=
-"btn";
-
-darkBtn.innerHTML=
-"🌙 Dark Mode";
-
-document
-.querySelector(
-".controls"
-)
-.appendChild(
-darkBtn
-);
-
-let dark=false;
-
-darkBtn.onclick=()=>{
-
-dark=!dark;
-
-if(dark){
-
-document.body.style.background=
-"#111827";
-
-document.body.style.color=
-"white";
-
-document
-.querySelector(
-".container"
-)
-.style.background=
-"#1f2937";
-
-}else{
-
-document.body.style.background=
-"#eef4ff";
-
-document.body.style.color=
-"black";
-
-document
-.querySelector(
-".container"
-)
-.style.background=
-"white";
-
-}
 
 };
-
-/* INSTAGRAM */
-
-let instaCard =
-document.createElement(
-"div"
-);
-
-instaCard.className=
-"card";
-
-instaCard.innerHTML=`
-
-<h2>Instagram</h2>
-
-<a
-href="#"
-id="instaLink">
-Visit Instagram
-</a>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-instaCard
-);
 
 /* FOOTER */
 
@@ -1230,25 +1788,29 @@ document.createElement(
 "div"
 );
 
-footer.style.marginTop=
-"30px";
+footer.style.marginTop =
+"40px";
 
-footer.style.padding=
-"20px";
-
-footer.style.textAlign=
+footer.style.textAlign =
 "center";
 
-footer.innerHTML=`
+footer.style.padding =
+"25px";
+
+footer.innerHTML =
+
+`
 
 <hr><br>
 
-<h3>
-Student55 OMR
-</h3>
+<h2>
+Student55 Advanced OMR
+</h2>
+
+<br>
 
 <p>
-Practice • Learn • Improve
+Practice • Test • Improve
 </p>
 
 <br>
@@ -1260,311 +1822,437 @@ student55.netlify.app
 <br>
 
 <p>
-© Student55
+© Student55 All Rights Reserved
 </p>
 
 `;
 
 document
-.querySelector(
-".container"
+.getElementById(
+"omrSection"
 )
 .appendChild(
 footer
 );
 
 </script>
-<script>
 
-/* STAR RATING */
+<style>
 
-let ratingBox =
-document.createElement(
-"div"
-);
+/* SELECTED OPTION HIGHLIGHT */
 
-ratingBox.className =
-"card";
+.option input:checked{
 
-ratingBox.innerHTML = `
+transform:scale(1.3);
 
-<h2>Rate This Site</h2>
-
-<div id="stars">
-
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-
-</div>
-
-<p id="ratingText">
-No Rating Selected
-</p>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-ratingBox
-);
-
-let stars =
-document.querySelectorAll(
-".star"
-);
-
-stars.forEach(
-(star,index)=>{
-
-star.addEventListener(
-"click",
-()=>{
-
-selectedRating=
-index+1;
-
-stars.forEach(
-(s,i)=>{
-
-if(i<=index){
-
-s.innerHTML="⭐";
-
-}else{
-
-s.innerHTML="☆";
+accent-color:var(--theme);
 
 }
 
-});
+/* DESKTOP FONT BOOST */
+
+@media(min-width:1000px){
+
+.question-row{
+
+font-size:24px;
+
+}
+
+.header-row{
+
+font-size:24px;
+
+}
+
+.option input{
+
+width:32px;
+height:32px;
+
+}
+
+}
+
+/* MOBILE IMPROVEMENTS */
+
+@media(max-width:768px){
+
+.question-row{
+
+font-size:14px;
+
+}
+
+.header-row{
+
+font-size:14px;
+
+}
+
+.live-box{
+
+font-size:14px;
+
+}
+
+}
+
+/* QUESTION NAVIGATOR */
+
+#questionNavigator{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:8px;
+
+margin-top:15px;
+
+margin-bottom:15px;
+
+}
+
+.navBtn{
+
+width:45px;
+
+height:45px;
+
+border:none;
+
+border-radius:50%;
+
+cursor:pointer;
+
+font-weight:bold;
+
+background:#e5e7eb;
+
+}
+
+.navAnswered{
+
+background:#16a34a !important;
+
+color:white;
+
+}
+
+.navPending{
+
+background:#dc2626 !important;
+
+color:white;
+
+}
+
+</style>
+
+<script>
+
+/* QUESTION NAVIGATOR */
+
+let navigatorBox =
+document.createElement(
+"div"
+);
+
+navigatorBox.id =
+"questionNavigator";
 
 document
 .getElementById(
-"ratingText"
+"omrSection"
 )
-.innerHTML=
-"Selected Rating : "
-+
-selectedRating
-+
-"/5";
-
-});
-
-});
-
-/* REVIEW */
-
-let reviewCard =
-document.createElement(
-"div"
-);
-
-reviewCard.className=
-"card";
-
-reviewCard.innerHTML=`
-
-<h2>Review</h2>
-
-<textarea
-id="review"
-rows="5"
-placeholder="Write your review">
-</textarea>
-
-`;
-
-document
-.querySelector(
-".container"
+.insertBefore(
+navigatorBox,
+document.getElementById(
+"questions"
 )
-.appendChild(
-reviewCard
 );
 
-/* CONTACT */
+/* BUILD NAVIGATOR */
 
-let contactCard =
-document.createElement(
-"div"
-);
+function buildNavigator(){
 
-contactCard.className=
-"card";
+navigatorBox.innerHTML="";
 
-contactCard.innerHTML=`
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
 
-<h2>Contact & Help</h2>
-
-<input
-type="text"
-placeholder="Your Name">
-
-<textarea
-rows="5"
-placeholder="Write your message">
-</textarea>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-contactCard
-);
-
-/* DARK MODE */
-
-let darkBtn =
+let btn =
 document.createElement(
 "button"
 );
 
-darkBtn.className=
-"btn";
+btn.className =
+"navBtn navPending";
 
-darkBtn.innerHTML=
-"🌙 Dark Mode";
+btn.innerText =
+i;
 
-document
-.querySelector(
-".controls"
-)
-.appendChild(
-darkBtn
-);
-
-let dark=false;
-
-darkBtn.onclick=()=>{
-
-dark=!dark;
-
-if(dark){
-
-document.body.style.background=
-"#111827";
-
-document.body.style.color=
-"white";
+btn.onclick = ()=>{
 
 document
 .querySelector(
-".container"
+`input[name="q${i}"]`
 )
-.style.background=
-"#1f2937";
+.scrollIntoView({
 
-}else{
+behavior:"smooth",
+block:"center"
 
-document.body.style.background=
-"#eef4ff";
-
-document.body.style.color=
-"black";
-
-document
-.querySelector(
-".container"
-)
-.style.background=
-"white";
-
-}
+});
 
 };
 
-/* INSTAGRAM */
+navigatorBox.appendChild(
+btn
+);
 
-let instaCard =
+}
+
+}
+
+/* UPDATE NAVIGATOR */
+
+function updateNavigator(){
+
+let buttons =
+document.querySelectorAll(
+".navBtn"
+);
+
+buttons.forEach(
+(btn,index)=>{
+
+let q =
+index+1;
+
+if(
+selectedAnswers[q]
+){
+
+btn.className =
+"navBtn navAnswered";
+
+}else{
+
+btn.className =
+"navBtn navPending";
+
+}
+
+});
+
+}
+
+/* EXISTING FUNCTION KO EXTEND KARO */
+
+const oldUpdateTracker =
+updateLiveTracker;
+
+updateLiveTracker = function(){
+
+oldUpdateTracker();
+
+updateNavigator();
+
+};
+
+/* START TEST KE BAAD */
+
+const oldStartTest =
+startTest;
+
+startTest = function(){
+
+oldStartTest();
+
+buildNavigator();
+
+};
+
+</script>
+
+
+<script>
+
+/* PDF BUTTONS SUBMIT KE BAAD HI */
+
+document.querySelectorAll(
+"button"
+).forEach(btn=>{
+
+if(
+btn.innerText==="Download OMR PDF" ||
+btn.innerText==="Download Checked PDF"
+){
+
+btn.style.display="none";
+
+}
+
+});
+
+const oldSubmitTest =
+submitTest;
+
+submitTest = function(){
+
+oldSubmitTest();
+
+document.querySelectorAll(
+"button"
+).forEach(btn=>{
+
+if(
+btn.innerText==="Download OMR PDF" ||
+btn.innerText==="Download Checked PDF"
+){
+
+btn.style.display=
+"inline-block";
+
+}
+
+});
+
+};
+
+/* CHECKED PDF TABHI ALLOW HO
+JAB KAM SE KAM EK QUESTION
+RIGHT YA WRONG MARK HO */
+
+const oldCheckedPDF =
+downloadCheckedPDF;
+
+downloadCheckedPDF = function(){
+
+if(
+rightCount===0 &&
+wrongCount===0
+){
+
+alert(
+"First Mark Right/Wrong Answers"
+);
+
+return;
+
+}
+
+oldCheckedPDF();
+
+};
+
+/* WATERMARK IMPROVEMENT */
+
+function addWatermark(doc){
+
+doc.setFontSize(35);
+
+doc.setTextColor(
+230,
+230,
+230
+);
+
+doc.text(
+"student55.netlify.app",
+25,
+180,
+{
+angle:45
+}
+);
+
+}
+
+/* LIVE STATUS PANEL */
+
+let statusPanel =
 document.createElement(
 "div"
 );
 
-instaCard.className=
+statusPanel.className =
 "card";
 
-instaCard.innerHTML=`
+statusPanel.innerHTML =
 
-<h2>Instagram</h2>
+`
 
-<a
-href="#"
-id="instaLink">
-Visit Instagram
-</a>
-
-`;
-
-document
-.querySelector(
-".container"
-)
-.appendChild(
-instaCard
-);
-
-/* FOOTER */
-
-let footer =
-document.createElement(
-"div"
-);
-
-footer.style.marginTop=
-"30px";
-
-footer.style.padding=
-"20px";
-
-footer.style.textAlign=
-"center";
-
-footer.innerHTML=`
-
-<hr><br>
-
-<h3>
-Student55 OMR
-</h3>
+<h2>
+Live Test Status
+</h2>
 
 <p>
-Practice • Learn • Improve
+Student :
+<b id="liveStudent">
+-
+</b>
 </p>
 
-<br>
-
 <p>
-student55.netlify.app
-</p>
-
-<br>
-
-<p>
-© Student55
+Questions :
+<b id="liveTotal">
+0
+</b>
 </p>
 
 `;
 
 document
-.querySelector(
-".container"
+.getElementById(
+"omrSection"
 )
-.appendChild(
-footer
+.insertBefore(
+statusPanel,
+document.getElementById(
+"questionNavigator"
+)
+);
+
+const oldStart =
+startTest;
+
+startTest = function(){
+
+oldStart();
+
+document.getElementById(
+"liveStudent"
+).innerText =
+studentName;
+
+document.getElementById(
+"liveTotal"
+).innerText =
+totalQuestions;
+
+};
+
+/* FINAL SUCCESS MESSAGE */
+
+window.addEventListener(
+"load",
+()=>{
+
+console.log(
+"Student55 Advanced OMR Loaded"
+);
+
+}
 );
 
 </script>
-</div>
 
+</div>
 </body>
 </html>
