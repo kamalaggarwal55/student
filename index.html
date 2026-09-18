@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -33,6 +32,7 @@ background:white;
 border-radius:20px;
 padding:20px;
 box-shadow:0 0 15px rgba(0,0,0,.1);
+transition:.3s;
 }
 
 .logo{
@@ -112,10 +112,16 @@ border-radius:12px;
 cursor:pointer;
 }
 
-#customBg{
-width:80px;
-height:40px;
+.submit-btn{
+padding:15px 30px;
+background:#16a34a;
+color:white;
+border:none;
+border-radius:10px;
 cursor:pointer;
+font-size:18px;
+margin:15px auto;
+display:block;
 }
 
 .timer{
@@ -187,6 +193,38 @@ height:28px;
 cursor:pointer;
 }
 
+.option input:checked{
+transform:scale(1.2);
+accent-color:var(--theme);
+}
+
+#questionNavigator{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin:15px 0;
+}
+
+.navBtn{
+width:45px;
+height:45px;
+border:none;
+border-radius:50%;
+cursor:pointer;
+font-weight:bold;
+background:#e5e7eb;
+}
+
+.navAnswered{
+background:#16a34a !important;
+color:white;
+}
+
+.navPending{
+background:#dc2626 !important;
+color:white;
+}
+
 @media(max-width:768px){
 
 .logo{
@@ -211,7 +249,6 @@ height:22px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -233,16 +270,11 @@ Practice • Test • Improve
 <div class="card">
 
 <div class="input-group">
-
-<label>
-Student Name
-</label>
-
+<label>Student Name</label>
 <input
 type="text"
 id="studentName"
 placeholder="Enter Your Name">
-
 </div>
 
 <div class="input-group">
@@ -306,11 +338,12 @@ oninput="changeBg(this.value)">
 <button
 class="start-btn"
 onclick="startTest()">
+
 START TEST
+
 </button>
 
 </div>
-
 </div>
 
 <div id="timer" class="timer">
@@ -337,9 +370,11 @@ Remaining:
 id="remainingQuestions"
 class="remaining">
 
-Remaining Questions:
+Remaining Questions
 
 </div>
+
+<div id="questionNavigator"></div>
 
 <div class="header-row">
 
@@ -348,18 +383,27 @@ Remaining Questions:
 <div>B</div>
 <div>C</div>
 <div>D</div>
-<div>Check</div>
+<div>Status</div>
 
 </div>
 
 <div id="questions"></div>
-
 <script>
 
 let submitted=false;
 let totalQuestions=0;
 let seconds=0;
 let timerInterval;
+
+let studentName="";
+let selectedAnswers={};
+
+let rightCount=0;
+let wrongCount=0;
+
+/* =========================
+   THEME
+========================= */
 
 function setTheme(color){
 
@@ -373,19 +417,14 @@ color
 
 function changeBg(color){
 
-document.body.style.background=
+document.body.style.background =
 color;
 
 }
 
-</script>
-
-<script>
-
-let studentName = "";
-let selectedAnswers = {};
-
-/* START TEST */
+/* =========================
+   START TEST
+========================= */
 
 function startTest(){
 
@@ -411,7 +450,16 @@ document.getElementById(
 ).value
 );
 
-selectedAnswers = {};
+selectedAnswers={};
+
+rightCount=0;
+wrongCount=0;
+
+seconds=0;
+
+clearInterval(
+timerInterval
+);
 
 document.getElementById(
 "welcomePage"
@@ -428,17 +476,9 @@ document.getElementById(
 ).style.display =
 "block";
 
-document.getElementById(
-"attemptedLive"
-).innerText =
-"0";
-
-document.getElementById(
-"remainingLive"
-).innerText =
-totalQuestions;
-
 generateQuestions();
+
+buildNavigator();
 
 updateLiveTracker();
 
@@ -446,7 +486,9 @@ startTimer();
 
 }
 
-/* TIMER */
+/* =========================
+   TIMER
+========================= */
 
 function startTimer(){
 
@@ -457,7 +499,9 @@ seconds++;
 
 let hrs =
 String(
-Math.floor(seconds/3600)
+Math.floor(
+seconds/3600
+)
 ).padStart(2,"0");
 
 let mins =
@@ -475,13 +519,20 @@ seconds%60
 document.getElementById(
 "timer"
 ).innerText =
-hrs + ":" + mins + ":" + secs;
+
+hrs +
+":" +
+mins +
+":" +
+secs;
 
 },1000);
 
 }
 
-/* GENERATE QUESTIONS */
+/* =========================
+   QUESTIONS
+========================= */
 
 function generateQuestions(){
 
@@ -490,7 +541,7 @@ document.getElementById(
 "questions"
 );
 
-box.innerHTML = "";
+box.innerHTML="";
 
 for(
 let i=1;
@@ -510,7 +561,12 @@ document.createElement(
 row.className =
 "question-row";
 
-row.innerHTML = `
+row.id =
+"row"+i;
+
+row.innerHTML =
+
+`
 
 <div>
 ${qno}
@@ -562,7 +618,9 @@ padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
 ">
+
 ✔
+
 </button>
 
 <button
@@ -577,10 +635,14 @@ padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
 ">
+
 ✖
+
 </button>
 
-<span id="status${i}"></span>
+<span
+id="status${i}">
+</span>
 
 </div>
 
@@ -592,9 +654,29 @@ row
 
 }
 
+let submitBtn =
+document.createElement(
+"button"
+);
+
+submitBtn.className =
+"submit-btn";
+
+submitBtn.innerText =
+"Submit Test";
+
+submitBtn.onclick =
+submitTest;
+
+box.appendChild(
+submitBtn
+);
+
 }
 
-/* SAVE ANSWER */
+/* =========================
+   SAVE ANSWER
+========================= */
 
 function saveAnswer(
 q,
@@ -604,11 +686,23 @@ ans
 selectedAnswers[q] =
 ans;
 
+document.getElementById(
+"right"+q
+).style.display =
+"inline-block";
+
+document.getElementById(
+"wrong"+q
+).style.display =
+"inline-block";
+
 updateLiveTracker();
 
 }
 
-/* LIVE TRACKER */
+/* =========================
+   LIVE TRACKER
+========================= */
 
 function updateLiveTracker(){
 
@@ -617,8 +711,7 @@ Object.keys(
 selectedAnswers
 ).length;
 
-let remaining =
-[];
+let remaining=[];
 
 for(
 let i=1;
@@ -644,7 +737,8 @@ attempted;
 document.getElementById(
 "remainingLive"
 ).innerText =
-totalQuestions-attempted;
+totalQuestions -
+attempted;
 
 document.getElementById(
 "remainingQuestions"
@@ -660,112 +754,204 @@ remaining.join(", ")
 "All Questions Attempted ✅"
 );
 
+updateNavigator();
+
 }
 
-</script>
+/* =========================
+   NAVIGATOR
+========================= */
 
-<button
-id="right${i}"
-onclick="markRight(${i})"
-style="
-display:none;
-background:#16a34a;
-color:white;
-border:none;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-">
-✔
-</button>
+function buildNavigator(){
 
-<button
-id="wrong${i}"
-onclick="markWrong(${i})"
-style="
-display:none;
-background:#dc2626;
-color:white;
-border:none;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-">
-✖
-</button>
-
-</script>
-
-<!-- jsPDF -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script>
-
-/* DOWNLOAD PANEL */
-
-let downloadPanel =
-document.createElement(
-"div"
+let nav =
+document.getElementById(
+"questionNavigator"
 );
 
-downloadPanel.style.textAlign =
-"center";
+nav.innerHTML="";
 
-downloadPanel.style.marginTop =
-"20px";
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
 
-downloadPanel.innerHTML =
+let btn =
+document.createElement(
+"button"
+);
 
-`
+btn.className =
+"navBtn navPending";
 
-<button
-onclick="downloadUncheckedPDF()"
-style="
-padding:12px 20px;
-margin:5px;
-cursor:pointer;
-">
+btn.innerText=i;
 
-Download OMR PDF
-
-</button>
-
-<button
-onclick="downloadCheckedPDF()"
-style="
-padding:12px 20px;
-margin:5px;
-cursor:pointer;
-">
-
-Download Checked PDF
-
-</button>
-
-<button
-onclick="restartTest()"
-style="
-padding:12px 20px;
-margin:5px;
-cursor:pointer;
-">
-
-Restart Test
-
-</button>
-
-`;
+btn.onclick=()=>{
 
 document
 .getElementById(
-"omrSection"
+"row"+i
 )
-.appendChild(
-downloadPanel
+.scrollIntoView({
+
+behavior:"smooth",
+block:"center"
+
+});
+
+};
+
+nav.appendChild(
+btn
 );
 
-/* RESTART */
+}
+
+}
+
+function updateNavigator(){
+
+let buttons =
+document.querySelectorAll(
+".navBtn"
+);
+
+buttons.forEach(
+(btn,index)=>{
+
+let q =
+index+1;
+
+if(
+selectedAnswers[q]
+){
+
+btn.className =
+"navBtn navAnswered";
+
+}else{
+
+btn.className =
+"navBtn navPending";
+
+}
+
+});
+
+}
+  /* =========================
+   RIGHT / WRONG
+========================= */
+
+function markRight(q){
+
+let status =
+document.getElementById(
+"status"+q
+);
+
+if(
+status.innerText ===
+"✔ Right"
+){
+return;
+}
+
+if(
+status.innerText ===
+"✖ Wrong"
+){
+wrongCount--;
+}
+
+rightCount++;
+
+status.innerText =
+"✔ Right";
+
+status.style.color =
+"green";
+
+}
+
+function markWrong(q){
+
+let status =
+document.getElementById(
+"status"+q
+);
+
+if(
+status.innerText ===
+"✖ Wrong"
+){
+return;
+}
+
+if(
+status.innerText ===
+"✔ Right"
+){
+rightCount--;
+}
+
+wrongCount++;
+
+status.innerText =
+"✖ Wrong";
+
+status.style.color =
+"red";
+
+}
+
+/* =========================
+   SUBMIT TEST
+========================= */
+
+function submitTest(){
+
+if(
+Object.keys(
+selectedAnswers
+).length===0
+){
+
+alert(
+"Attempt at least one question."
+);
+
+return;
+
+}
+
+submitted=true;
+
+clearInterval(
+timerInterval
+);
+
+alert(
+"Test Submitted Successfully ✅"
+);
+
+document
+.querySelectorAll(
+".pdfBtn"
+)
+.forEach(btn=>{
+
+btn.style.display =
+"inline-block";
+
+});
+
+}
+
+/* =========================
+   RESTART TEST
+========================= */
 
 function restartTest(){
 
@@ -781,7 +967,42 @@ location.reload();
 
 }
 
-/* UNCHECKED PDF */
+</script>
+
+<!-- jsPDF -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+
+/* =========================
+   WATERMARK
+========================= */
+
+function addWatermark(doc){
+
+doc.setFontSize(30);
+
+doc.setTextColor(
+230,
+230,
+230
+);
+
+doc.text(
+"student55.netlify.app",
+25,
+180,
+{
+angle:45
+}
+);
+
+}
+
+/* =========================
+   DOWNLOAD OMR PDF
+========================= */
 
 async function downloadUncheckedPDF(){
 
@@ -791,7 +1012,7 @@ window.jspdf;
 const doc =
 new jsPDF();
 
-let y = 20;
+let y=20;
 
 doc.setFontSize(18);
 
@@ -801,17 +1022,18 @@ doc.text(
 y
 );
 
-y += 10;
+y+=10;
 
 doc.setFontSize(11);
 
 doc.text(
-"Name : " + studentName,
+"Name : " +
+studentName,
 20,
 y
 );
 
-y += 8;
+y+=8;
 
 doc.text(
 "Time : " +
@@ -822,7 +1044,7 @@ document.getElementById(
 y
 );
 
-y += 12;
+y+=12;
 
 for(
 let i=1;
@@ -838,46 +1060,33 @@ selectedAnswers[i]
 "-";
 
 doc.text(
+
 "Q"+
 String(i)
 .padStart(3,"0")
 +
-"   A  B  C  D"
-+
 "   Selected : "
 +
 ans,
+
 20,
 y
+
 );
 
-y += 8;
+y+=8;
 
 if(y>270){
 
 doc.addPage();
-
 y=20;
 
 }
 
 }
 
-doc.setFontSize(28);
-
-doc.setTextColor(
-220,
-220,
-220
-);
-
-doc.text(
-"student55.netlify.app",
-25,
-180,
-{
-angle:45
-}
+addWatermark(
+doc
 );
 
 doc.save(
@@ -887,9 +1096,24 @@ studentName +
 
 }
 
-/* CHECKED PDF */
+/* =========================
+   DOWNLOAD CHECKED PDF
+========================= */
 
 async function downloadCheckedPDF(){
+
+if(
+rightCount===0 &&
+wrongCount===0
+){
+
+alert(
+"Mark at least one question Right/Wrong."
+);
+
+return;
+
+}
 
 const { jsPDF } =
 window.jspdf;
@@ -938,6 +1162,31 @@ y
 
 y+=8;
 
+let accuracy=0;
+
+if(
+(rightCount+wrongCount)>0
+){
+
+accuracy =
+(
+rightCount /
+(rightCount+wrongCount)
+*100
+).toFixed(2);
+
+}
+
+doc.text(
+"Accuracy : " +
+accuracy +
+"%",
+20,
+y
+);
+
+y+=8;
+
 doc.text(
 "Time : " +
 document.getElementById(
@@ -964,23 +1213,14 @@ selectedAnswers[i]
 
 let status =
 document.getElementById(
-`status${i}`
-)
-?
-document.getElementById(
-`status${i}`
-)
-.innerText
-:
-"";
+"status"+i
+).innerText;
 
 doc.text(
 
 "Q"+
 String(i)
 .padStart(3,"0")
-+
-"   A  B  C  D"
 +
 "   "
 +
@@ -995,33 +1235,19 @@ y
 
 );
 
-y += 8;
+y+=8;
 
 if(y>270){
 
 doc.addPage();
-
 y=20;
 
 }
 
 }
 
-doc.setFontSize(28);
-
-doc.setTextColor(
-220,
-220,
-220
-);
-
-doc.text(
-"student55.netlify.app",
-25,
-180,
-{
-angle:45
-}
+addWatermark(
+doc
 );
 
 doc.save(
@@ -1029,187 +1255,65 @@ studentName +
 "_Checked_OMR.pdf"
 );
 
-}
+  }
+  /* =========================
+   DOWNLOAD PANEL
+========================= */
 
-</script>
-
-<script>
-
-/* RATING SECTION */
-
-let ratingSection =
+let downloadPanel =
 document.createElement(
 "div"
 );
 
-ratingSection.className =
-"card";
+downloadPanel.style.textAlign =
+"center";
 
-ratingSection.innerHTML =
+downloadPanel.style.marginTop =
+"20px";
 
-`
-
-<h2>
-⭐ Rate This Site
-</h2>
-
-<br>
-
-<div id="starContainer">
-
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-<span class="star">☆</span>
-
-</div>
-
-<br>
-
-<p id="ratingValue">
-No Rating Selected
-</p>
-
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.appendChild(
-ratingSection
-);
-
-let rating = 0;
-
-setTimeout(()=>{
-
-let stars =
-document.querySelectorAll(
-".star"
-);
-
-stars.forEach(
-(star,index)=>{
-
-star.style.fontSize =
-"35px";
-
-star.style.cursor =
-"pointer";
-
-star.onclick = ()=>{
-
-rating =
-index + 1;
-
-stars.forEach(
-(s,i)=>{
-
-s.innerHTML =
-i<=index
-?
-"⭐"
-:
-"☆";
-
-});
-
-document.getElementById(
-"ratingValue"
-).innerText =
-
-"Selected Rating : "
-+
-rating
-+
-"/5";
-
-};
-
-});
-
-},500);
-
-/* REVIEW SECTION */
-
-let reviewSection =
-document.createElement(
-"div"
-);
-
-reviewSection.className =
-"card";
-
-reviewSection.innerHTML =
+downloadPanel.innerHTML =
 
 `
 
-<h2>
-📝 Review
-</h2>
-
-<br>
-
-<textarea
-id="reviewText"
-rows="6"
+<button
+class="pdfBtn"
+onclick="downloadUncheckedPDF()"
 style="
-width:100%;
-padding:10px;
-"
-placeholder="Write your review here">
-</textarea>
-
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.appendChild(
-reviewSection
-);
-
-/* CONTACT SECTION */
-
-let contactSection =
-document.createElement(
-"div"
-);
-
-contactSection.className =
-"card";
-
-contactSection.innerHTML =
-
-`
-
-<h2>
-📞 Contact & Help
-</h2>
-
-<br>
-
-<input
-type="text"
-placeholder="Your Name"
-style="
-width:100%;
-padding:10px;
+display:none;
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
 ">
 
-<br><br>
+Download OMR PDF
 
-<textarea
-rows="6"
+</button>
+
+<button
+class="pdfBtn"
+onclick="downloadCheckedPDF()"
 style="
-width:100%;
-padding:10px;
-"
-placeholder="Write your message">
-</textarea>
+display:none;
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
+">
+
+Download Checked PDF
+
+</button>
+
+<button
+onclick="restartTest()"
+style="
+padding:12px 20px;
+margin:5px;
+cursor:pointer;
+">
+
+Restart Test
+
+</button>
 
 `;
 
@@ -1218,54 +1322,14 @@ document
 "omrSection"
 )
 .appendChild(
-contactSection
+downloadPanel
 );
 
-/* INSTAGRAM */
+/* =========================
+   DARK MODE
+========================= */
 
-let instaSection =
-document.createElement(
-"div"
-);
-
-instaSection.className =
-"card";
-
-instaSection.innerHTML =
-
-`
-
-<h2>
-📷 Instagram
-</h2>
-
-<br>
-
-<a
-href="#"
-id="instaLink">
-
-Add Your Instagram Link Here
-
-</a>
-
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.appendChild(
-instaSection
-);
-
-</script>
-
-<script>
-
-/* DARK MODE */
-
-let darkMode = false;
+let darkMode=false;
 
 let darkBtn =
 document.createElement(
@@ -1305,7 +1369,12 @@ darkBtn
 
 darkBtn.onclick = ()=>{
 
-darkMode = !darkMode;
+darkMode=!darkMode;
+
+let container =
+document.querySelector(
+".container"
+);
 
 if(darkMode){
 
@@ -1315,9 +1384,7 @@ document.body.style.background =
 document.body.style.color =
 "white";
 
-document.querySelector(
-".container"
-).style.background =
+container.style.background =
 "#1f2937";
 
 darkBtn.innerHTML =
@@ -1331,9 +1398,7 @@ document.body.style.background =
 document.body.style.color =
 "black";
 
-document.querySelector(
-".container"
-).style.background =
+container.style.background =
 "white";
 
 darkBtn.innerHTML =
@@ -1343,7 +1408,9 @@ darkBtn.innerHTML =
 
 };
 
-/* SCROLL TO TOP */
+/* =========================
+   SCROLL TOP
+========================= */
 
 let topBtn =
 document.createElement(
@@ -1384,10 +1451,13 @@ document.body.appendChild(
 topBtn
 );
 
-window.onscroll = ()=>{
+window.addEventListener(
+"scroll",
+()=>{
 
 if(
-document.documentElement.scrollTop > 300
+document.documentElement
+.scrollTop > 300
 ){
 
 topBtn.style.display =
@@ -1400,7 +1470,8 @@ topBtn.style.display =
 
 }
 
-};
+}
+);
 
 topBtn.onclick = ()=>{
 
@@ -1413,7 +1484,9 @@ behavior:"smooth"
 
 };
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
 
 let footer =
 document.createElement(
@@ -1467,417 +1540,16 @@ document
 footer
 );
 
-</script>
-
-<style>
-
-/* SELECTED OPTION HIGHLIGHT */
-
-.option input:checked{
-
-transform:scale(1.3);
-
-accent-color:var(--theme);
-
-}
-
-/* DESKTOP FONT BOOST */
-
-@media(min-width:1000px){
-
-.question-row{
-
-font-size:24px;
-
-}
-
-.header-row{
-
-font-size:24px;
-
-}
-
-.option input{
-
-width:32px;
-height:32px;
-
-}
-
-}
-
-/* MOBILE IMPROVEMENTS */
-
-@media(max-width:768px){
-
-.question-row{
-
-font-size:14px;
-
-}
-
-.header-row{
-
-font-size:14px;
-
-}
-
-.live-box{
-
-font-size:14px;
-
-}
-
-}
-
-/* QUESTION NAVIGATOR */
-
-#questionNavigator{
-
-display:flex;
-
-flex-wrap:wrap;
-
-gap:8px;
-
-margin-top:15px;
-
-margin-bottom:15px;
-
-}
-
-.navBtn{
-
-width:45px;
-
-height:45px;
-
-border:none;
-
-border-radius:50%;
-
-cursor:pointer;
-
-font-weight:bold;
-
-background:#e5e7eb;
-
-}
-
-.navAnswered{
-
-background:#16a34a !important;
-
-color:white;
-
-}
-
-.navPending{
-
-background:#dc2626 !important;
-
-color:white;
-
-}
-
-</style>
-
-<script>
-
-/* QUESTION NAVIGATOR */
-
-let navigatorBox =
-document.createElement(
-"div"
-);
-
-navigatorBox.id =
-"questionNavigator";
-
-document
-.getElementById(
-"omrSection"
-)
-.insertBefore(
-navigatorBox,
-document.getElementById(
-"questions"
-)
-);
-
-/* BUILD NAVIGATOR */
-
-function buildNavigator(){
-
-navigatorBox.innerHTML="";
-
-for(
-let i=1;
-i<=totalQuestions;
-i++
-){
-
-let btn =
-document.createElement(
-"button"
-);
-
-btn.className =
-"navBtn navPending";
-
-btn.innerText =
-i;
-
-btn.onclick = ()=>{
-
-document
-.querySelector(
-`input[name="q${i}"]`
-)
-.scrollIntoView({
-
-behavior:"smooth",
-block:"center"
-
-});
-
-};
-
-navigatorBox.appendChild(
-btn
-);
-
-}
-
-}
-
-/* UPDATE NAVIGATOR */
-
-function updateNavigator(){
-
-let buttons =
-document.querySelectorAll(
-".navBtn"
-);
-
-buttons.forEach(
-(btn,index)=>{
-
-let q =
-index+1;
-
-if(
-selectedAnswers[q]
-){
-
-btn.className =
-"navBtn navAnswered";
-
-}else{
-
-btn.className =
-"navBtn navPending";
-
-}
-
-});
-
-}
-
-/* EXISTING FUNCTION KO EXTEND KARO */
-
-const oldUpdateTracker =
-updateLiveTracker;
-
-updateLiveTracker = function(){
-
-oldUpdateTracker();
-
-updateNavigator();
-
-};
-
-/* START TEST KE BAAD */
-
-const oldStartTest =
-startTest;
-
-startTest = function(){
-
-oldStartTest();
-
-buildNavigator();
-
-};
-
-</script>
-
-
-<script>
-
-/* PDF BUTTONS SUBMIT KE BAAD HI */
-
-document.querySelectorAll(
-"button"
-).forEach(btn=>{
-
-if(
-btn.innerText==="Download OMR PDF" ||
-btn.innerText==="Download Checked PDF"
-){
-
-btn.style.display="none";
-
-}
-
-});
-
-const oldSubmitTest =
-submitTest;
-
-submitTest = function(){
-
-oldSubmitTest();
-
-document.querySelectorAll(
-"button"
-).forEach(btn=>{
-
-if(
-btn.innerText==="Download OMR PDF" ||
-btn.innerText==="Download Checked PDF"
-){
-
-btn.style.display=
-"inline-block";
-
-}
-
-});
-
-};
-
-/* CHECKED PDF TABHI ALLOW HO
-JAB KAM SE KAM EK QUESTION
-RIGHT YA WRONG MARK HO */
-
-const oldCheckedPDF =
-downloadCheckedPDF;
-
-downloadCheckedPDF = function(){
-
-if(
-rightCount===0 &&
-wrongCount===0
-){
-
-alert(
-"First Mark Right/Wrong Answers"
-);
-
-return;
-
-}
-
-oldCheckedPDF();
-
-};
-
-/* WATERMARK IMPROVEMENT */
-
-function addWatermark(doc){
-
-doc.setFontSize(35);
-
-doc.setTextColor(
-230,
-230,
-230
-);
-
-doc.text(
-"student55.netlify.app",
-25,
-180,
-{
-angle:45
-}
-);
-
-}
-
-/* LIVE STATUS PANEL */
-
-let statusPanel =
-document.createElement(
-"div"
-);
-
-statusPanel.className =
-"card";
-
-statusPanel.innerHTML =
-
-`
-
-<h2>
-Live Test Status
-</h2>
-
-<p>
-Student :
-<b id="liveStudent">
--
-</b>
-</p>
-
-<p>
-Questions :
-<b id="liveTotal">
-0
-</b>
-</p>
-
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.insertBefore(
-statusPanel,
-document.getElementById(
-"questionNavigator"
-)
-);
-
-const oldStart =
-startTest;
-
-startTest = function(){
-
-oldStart();
-
-document.getElementById(
-"liveStudent"
-).innerText =
-studentName;
-
-document.getElementById(
-"liveTotal"
-).innerText =
-totalQuestions;
-
-};
-
-/* FINAL SUCCESS MESSAGE */
+/* =========================
+   PAGE LOADED
+========================= */
 
 window.addEventListener(
 "load",
 ()=>{
 
 console.log(
-"Student55 Advanced OMR Loaded"
+"Student55 Advanced OMR Loaded Successfully"
 );
 
 }
@@ -1886,5 +1558,8 @@ console.log(
 </script>
 
 </div>
+
+</div>
+
 </body>
 </html>
