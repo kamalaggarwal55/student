@@ -87,9 +87,10 @@ color:white;
 }
 
 .welcome-box h1{
-
-font-size:55px;
+font-size:clamp(32px,8vw,55px);
 margin-bottom:15px;
+line-height:1.2;
+word-break:break-word;
 }
 
 .welcome-box p{
@@ -486,6 +487,43 @@ background:#16a34a;
 
 .wrong-btn{
 background:#dc2626;
+}
+ /* YAHAN MEDIA CODE */
+
+@media(max-width:768px){
+
+.welcome-box{
+padding:25px;
+}
+
+.welcome-box h1{
+font-size:32px;
+}
+
+.omr-header,
+.omr-row{
+grid-template-columns:
+60px repeat(4,50px) 80px 80px;
+font-size:12px;
+}
+
+.option{
+width:40px;
+height:40px;
+font-size:18px;
+}
+
+.nav-btn{
+width:36px;
+height:36px;
+font-size:14px;
+}
+
+.check-btn{
+font-size:10px;
+padding:5px;
+}
+
 }
 
 </style>
