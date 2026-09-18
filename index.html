@@ -512,31 +512,37 @@ row.className =
 
 row.innerHTML = `
 
-<div>${qno}</div>
+<div>
+${qno}
+</div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
 value="A"
 onchange="saveAnswer(${i},'A')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
 value="B"
 onchange="saveAnswer(${i},'B')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
 value="C"
 onchange="saveAnswer(${i},'C')">
 </div>
 
 <div class="option">
-<input type="radio"
+<input
+type="radio"
 name="q${i}"
 value="D"
 onchange="saveAnswer(${i},'D')">
@@ -546,6 +552,7 @@ onchange="saveAnswer(${i},'D')">
 
 <button
 id="right${i}"
+onclick="markRight(${i})"
 style="
 display:none;
 background:#16a34a;
@@ -560,6 +567,7 @@ cursor:pointer;
 
 <button
 id="wrong${i}"
+onclick="markWrong(${i})"
 style="
 display:none;
 background:#dc2626;
@@ -656,414 +664,35 @@ remaining.join(", ")
 
 </script>
 
-
-<script>
-
-let rightCount = 0;
-let wrongCount = 0;
-
-/* SUBMIT BUTTON */
-
-let submitBox =
-document.createElement(
-"div"
-);
-
-submitBox.style.textAlign =
-"center";
-
-submitBox.style.marginTop =
-"20px";
-
-submitBox.innerHTML =
-
-`
-
 <button
-id="submitBtn"
-onclick="submitTest()"
+id="right${i}"
+onclick="markRight(${i})"
 style="
-padding:15px 35px;
-font-size:22px;
-background:var(--theme);
+display:none;
+background:#16a34a;
 color:white;
 border:none;
-border-radius:12px;
+padding:6px 10px;
+border-radius:6px;
 cursor:pointer;
 ">
-
-SUBMIT TEST
-
+✔
 </button>
 
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.appendChild(
-submitBox
-);
-
-/* SUBMIT TEST */
-
-function submitTest(){
-
-if(submitted){
-return;
-}
-
-submitted = true;
-
-clearInterval(
-timerInterval
-);
-
-for(
-let i=1;
-i<=totalQuestions;
-i++
-){
-
-document
-.querySelectorAll(
-`input[name="q${i}"]`
-)
-.forEach(input=>{
-
-input.disabled=true;
-
-});
-
-if(
-selectedAnswers[i]
-){
-
-document.getElementById(
-`right${i}`
-).style.display =
-"inline-block";
-
-document.getElementById(
-`wrong${i}`
-).style.display =
-"inline-block";
-
-}
-
-}
-
-showResultBox();
-
-alert(
-"Test Submitted Successfully"
-);
-
-}
-
-/* RIGHT MARK */
-
-function markRight(q){
-
-let status =
-document.getElementById(
-`status${q}`
-);
-
-status.innerHTML =
-" ✔ Correct";
-
-status.style.color =
-"#16a34a";
-
-document.getElementById(
-`right${q}`
-).disabled=true;
-
-document.getElementById(
-`wrong${q}`
-).disabled=true;
-
-rightCount++;
-
-updateResult();
-
-}
-
-/* WRONG MARK */
-
-function markWrong(q){
-
-let status =
-document.getElementById(
-`status${q}`
-);
-
-status.innerHTML =
-" ✖ Wrong";
-
-status.style.color =
-"#dc2626";
-
-document.getElementById(
-`right${q}`
-).disabled=true;
-
-document.getElementById(
-`wrong${q}`
-).disabled=true;
-
-wrongCount++;
-
-updateResult();
-
-}
-
-/* ATTACH BUTTON EVENTS */
-
-function attachCheckEvents(){
-
-for(
-let i=1;
-i<=totalQuestions;
-i++
-){
-
-let r =
-document.getElementById(
-`right${i}`
-);
-
-let w =
-document.getElementById(
-`wrong${i}`
-);
-
-if(r){
-
-r.onclick=()=>{
-
-markRight(i);
-
-};
-
-}
-
-if(w){
-
-w.onclick=()=>{
-
-markWrong(i);
-
-};
-
-}
-
-}
-
-}
-
-setTimeout(
-attachCheckEvents,
-1000
-);
-
-/* RESULT BOX */
-
-function showResultBox(){
-
-if(
-document.getElementById(
-"resultBox"
-)
-){
-return;
-}
-
-let div =
-document.createElement(
-"div"
-);
-
-div.id =
-"resultBox";
-
-div.className =
-"card";
-
-div.innerHTML =
-
-`
-
-<h2>
-Result Summary
-</h2>
-
-<p>
-Name :
-<b id="resName">
-${studentName}
-</b>
-</p>
-
-<p>
-Attempted :
-<span id="attemptedResult">
-0
-</span>
-</p>
-
-<p>
-Right :
-<span id="rightResult">
-0
-</span>
-</p>
-
-<p>
-Wrong :
-<span id="wrongResult">
-0
-</span>
-</p>
-
-<p>
-Unattempted :
-<span id="unattemptedResult">
-0
-</span>
-</p>
-
-<p>
-Percentage :
-<span id="percentageResult">
-0%
-</span>
-</p>
-
-<p>
-Grade :
-<span id="gradeResult">
--
-</span>
-</p>
-
-<p>
-Status :
-<span id="statusResult">
--
-</span>
-</p>
-
-`;
-
-document
-.getElementById(
-"omrSection"
-)
-.appendChild(
-div
-);
-
-updateResult();
-
-}
-
-/* UPDATE RESULT */
-
-function updateResult(){
-
-let attempted =
-rightCount + wrongCount;
-
-let unattempted =
-totalQuestions - attempted;
-
-let percentage = 0;
-
-if(attempted>0){
-
-percentage =
-(
-rightCount /
-attempted
-)*100;
-
-}
-
-let grade="D";
-let result="FAIL";
-
-if(
-percentage>=90
-){
-
-grade="A+";
-result="PASS";
-
-}
-else if(
-percentage>=75
-){
-
-grade="A";
-result="PASS";
-
-}
-else if(
-percentage>=60
-){
-
-grade="B";
-result="PASS";
-
-}
-else if(
-percentage>=40
-){
-
-grade="C";
-result="PASS";
-
-}
-
-document.getElementById(
-"attemptedResult"
-).innerText =
-attempted;
-
-document.getElementById(
-"rightResult"
-).innerText =
-rightCount;
-
-document.getElementById(
-"wrongResult"
-).innerText =
-wrongCount;
-
-document.getElementById(
-"unattemptedResult"
-).innerText =
-unattempted;
-
-document.getElementById(
-"percentageResult"
-).innerText =
-percentage.toFixed(2)+"%";
-
-document.getElementById(
-"gradeResult"
-).innerText =
-grade;
-
-document.getElementById(
-"statusResult"
-).innerText =
-result;
-
-}
+<button
+id="wrong${i}"
+onclick="markWrong(${i})"
+style="
+display:none;
+background:#dc2626;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+">
+✖
+</button>
 
 </script>
 
