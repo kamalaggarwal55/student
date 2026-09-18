@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Student55 Advanced OMR V3</title>
+<title>Student55 Advanced OMR V4</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -18,95 +18,88 @@ font-family:'Poppins',sans-serif;
 }
 
 :root{
-
---theme:#b46c3f;
-
---bg:#f8f1e8;
-
---card:#fffaf4;
-
---text:#222;
-
---border:#d8c5b5;
-
---selected:#2f80ed;
-
+--theme:#2563eb;
+--bg:#f5f7fb;
+--card:#ffffff;
+--text:#111827;
+--border:#d1d5db;
 }
 
 body{
-
 background:var(--bg);
-
 color:var(--text);
-
+transition:.3s;
 }
 
-/* =======================
+.dark{
+--bg:#111827;
+--card:#1f2937;
+--text:#ffffff;
+--border:#374151;
+}
+
+.container{
+width:95%;
+max-width:1600px;
+margin:auto;
+padding:20px;
+}
+
+/* ======================
 WELCOME PAGE
-======================= */
+====================== */
 
 #welcomePage{
 
 min-height:100vh;
 
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-padding:20px;
-
 background:
 linear-gradient(
 135deg,
-#f8efe3,
-#f4e3d0
+#2563eb,
+#7c3aed,
+#ec4899
 );
 
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
 }
 
 .welcome-box{
 
+max-width:1000px;
 width:100%;
-max-width:900px;
 
-background:white;
+background:
+rgba(255,255,255,.12);
+
+backdrop-filter:blur(15px);
+
+padding:50px;
 
 border-radius:30px;
 
-padding:40px;
-
-box-shadow:
-0 10px 40px rgba(0,0,0,.08);
-
 text-align:center;
 
+color:white;
 }
 
-.welcome-title{
+.welcome-box h1{
 
-font-size:42px;
-
-font-weight:700;
-
+font-size:55px;
 margin-bottom:15px;
-
-color:var(--theme);
-
 }
 
-.welcome-sub{
+.welcome-box p{
 
-font-size:17px;
-
+font-size:18px;
 line-height:1.8;
-
-margin-bottom:30px;
-
+margin-bottom:25px;
 }
 
-.selector-box{
+.selector-grid{
 
 display:grid;
 
@@ -115,38 +108,20 @@ repeat(auto-fit,minmax(250px,1fr));
 
 gap:20px;
 
-margin-top:20px;
-
+margin-top:25px;
 }
 
-.select-group{
-
-text-align:left;
-
-}
-
-.select-group label{
-
-font-weight:600;
-
-display:block;
-
-margin-bottom:8px;
-
-}
-
-.select-group select{
+.selector-grid select{
 
 width:100%;
 
 padding:12px;
 
+border:none;
+
 border-radius:12px;
 
-border:1px solid #ccc;
-
 font-size:15px;
-
 }
 
 .start-btn{
@@ -155,60 +130,66 @@ margin-top:30px;
 
 padding:15px 40px;
 
-border:none;
-
-border-radius:50px;
-
-background:var(--theme);
-
-color:white;
-
 font-size:18px;
 
 font-weight:700;
 
+border:none;
+
+border-radius:50px;
+
 cursor:pointer;
 
+background:white;
+
+color:#2563eb;
 }
 
-/* =======================
+.feature-grid{
+
+margin-top:35px;
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+
+gap:15px;
+}
+
+.feature{
+
+background:
+rgba(255,255,255,.15);
+
+padding:18px;
+
+border-radius:15px;
+}
+
+/* ======================
 APP
-======================= */
+====================== */
 
 #app{
-
 display:none;
-
 }
 
-.container{
-
-width:95%;
-
-max-width:1500px;
-
-margin:auto;
-
-padding:20px;
-
-}
-
-/* =======================
+/* ======================
 HEADER
-======================= */
+====================== */
 
 .header{
 
 background:var(--card);
 
-border-radius:20px;
-
 padding:20px;
+
+border-radius:20px;
 
 margin-bottom:20px;
 
 border:1px solid var(--border);
-
 }
 
 .header-top{
@@ -222,7 +203,6 @@ align-items:center;
 flex-wrap:wrap;
 
 gap:10px;
-
 }
 
 .logo{
@@ -232,7 +212,6 @@ font-size:28px;
 font-weight:700;
 
 color:var(--theme);
-
 }
 
 .controls{
@@ -242,10 +221,13 @@ display:flex;
 gap:10px;
 
 flex-wrap:wrap;
-
 }
 
 .btn{
+
+background:var(--theme);
+
+color:white;
 
 padding:10px 15px;
 
@@ -256,16 +238,11 @@ border-radius:10px;
 cursor:pointer;
 
 font-weight:600;
-
-background:var(--theme);
-
-color:white;
-
 }
 
 .timer{
 
-background:#111;
+background:#111827;
 
 color:white;
 
@@ -274,12 +251,11 @@ padding:10px 15px;
 border-radius:10px;
 
 font-weight:700;
-
 }
 
-/* =======================
+/* ======================
 RESULT PANEL
-======================= */
+====================== */
 
 .result-panel{
 
@@ -294,7 +270,6 @@ border-radius:20px;
 border:1px solid var(--border);
 
 margin-bottom:20px;
-
 }
 
 .result-grid{
@@ -305,24 +280,22 @@ grid-template-columns:
 repeat(auto-fit,minmax(150px,1fr));
 
 gap:15px;
-
 }
 
 .result-box{
 
-background:#f7eee4;
+background:#eef2ff;
 
 padding:15px;
 
 border-radius:15px;
 
 text-align:center;
-
 }
 
-/* =======================
+/* ======================
 NAVIGATOR
-======================= */
+====================== */
 
 .navigator{
 
@@ -333,13 +306,11 @@ flex-wrap:wrap;
 gap:8px;
 
 margin-bottom:20px;
-
 }
 
 .nav-btn{
 
 width:42px;
-
 height:42px;
 
 border:none;
@@ -350,24 +321,22 @@ cursor:pointer;
 
 font-weight:700;
 
-background:#ead7c5;
-
+background:#e5e7eb;
 }
 
-/* =======================
+/* ======================
 OMR SHEET
-======================= */
+====================== */
 
 .omr-sheet{
 
 background:var(--card);
 
-border-radius:20px;
-
 padding:20px;
 
-border:1px solid var(--border);
+border-radius:20px;
 
+border:1px solid var(--border);
 }
 
 .omr-header{
@@ -375,7 +344,9 @@ border:1px solid var(--border);
 display:grid;
 
 grid-template-columns:
-90px repeat(4,1fr);
+80px repeat(4,70px) 110px 110px;
+
+align-items:center;
 
 padding:12px;
 
@@ -384,7 +355,6 @@ font-weight:700;
 border-bottom:2px solid var(--border);
 
 margin-bottom:10px;
-
 }
 
 .omr-row{
@@ -392,31 +362,27 @@ margin-bottom:10px;
 display:grid;
 
 grid-template-columns:
-90px repeat(4,1fr);
+80px repeat(4,70px) 110px 110px;
 
 align-items:center;
 
-padding:12px;
+padding:10px;
 
 border-bottom:1px solid #eee;
-
 }
 
 .qno{
-
 font-weight:600;
-
 }
 
 .option{
 
-width:50px;
-
-height:50px;
+width:52px;
+height:52px;
 
 border-radius:50%;
 
-border:2px solid #bdbdbd;
+border:2px solid #9ca3af;
 
 display:flex;
 
@@ -424,54 +390,75 @@ justify-content:center;
 
 align-items:center;
 
-cursor:pointer;
-
 margin:auto;
 
-font-weight:700;
+cursor:pointer;
 
-font-size:20px;
+font-size:22px;
+
+font-weight:700;
 
 background:white;
 
 transition:.2s;
-
 }
 
 .option.selected{
 
-border:3px solid var(--selected);
+background:var(--theme);
 
-transform:scale(1.08);
+color:white;
 
-}
-
-.correct-row{
-
-background:#d9f8df !important;
-
-}
-
-.wrong-row{
-
-background:#ffe0e0 !important;
-
+border-color:var(--theme);
 }
 
 .correct-option{
 
-border:3px solid #16a34a !important;
+background:#16a34a !important;
 
-color:#16a34a;
+color:white !important;
 
+border-color:#16a34a !important;
 }
 
 .wrong-option{
 
-border:3px solid #dc2626 !important;
+background:#dc2626 !important;
 
-color:#dc2626;
+color:white !important;
 
+border-color:#dc2626 !important;
+}
+
+.correct-row{
+background:#dcfce7;
+}
+
+.wrong-row{
+background:#fee2e2;
+}
+
+.check-btn{
+
+display:none;
+
+padding:8px 12px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+color:white;
+}
+
+.right-btn{
+background:#16a34a;
+}
+
+.wrong-btn{
+background:#dc2626;
 }
 
 </style>
@@ -485,27 +472,17 @@ color:#dc2626;
 
 <div class="welcome-box">
 
-<div class="welcome-title">
+<h1>🎯 Student55 Advanced OMR V4</h1>
 
-Student55 Advanced OMR V3
+<p>
+Welcome to the Advanced OMR Practice Platform
+with PDF Export, Live Result, Navigator,
+Rating System and Dark Mode.
+</p>
 
-</div>
+<div class="selector-grid">
 
-<div class="welcome-sub">
-
-Choose number of questions and your favourite theme color.
-
-</div>
-
-<div class="selector-box">
-
-<div class="select-group">
-
-<label>
-
-OMR Size
-
-</label>
+<div>
 
 <select id="questionCount">
 
@@ -525,21 +502,15 @@ OMR Size
 
 </div>
 
-<div class="select-group">
-
-<label>
-
-Theme Color
-
-</label>
+<div>
 
 <select id="themeColor">
 
-<option value="#b46c3f">Brown</option>
 <option value="#2563eb">Blue</option>
 <option value="#16a34a">Green</option>
 <option value="#7c3aed">Purple</option>
 <option value="#dc2626">Red</option>
+<option value="#b46c3f">Brown</option>
 
 </select>
 
@@ -554,6 +525,15 @@ onclick="startApp()">
 Start Test
 
 </button>
+
+<div class="feature-grid">
+
+<div class="feature">📄 PDF Export</div>
+<div class="feature">📊 Live Result</div>
+<div class="feature">🌙 Dark Mode</div>
+<div class="feature">⭐ Rating</div>
+
+</div>
 
 </div>
 
@@ -570,9 +550,7 @@ Start Test
 <div class="header-top">
 
 <div class="logo">
-
-Student55 Advanced OMR V3
-
+Student55 Advanced OMR V4
 </div>
 
 <div class="controls">
@@ -605,7 +583,7 @@ id="resultPanel"
 class="result-panel">
 
 <h2 style="margin-bottom:15px;">
-📊 Result Analysis
+📊 Live Result
 </h2>
 
 <div class="result-grid">
@@ -657,20 +635,17 @@ class="navigator">
 
 <div>Q.No</div>
 
+<div style="text-align:center;">Ⓐ</div>
+<div style="text-align:center;">Ⓑ</div>
+<div style="text-align:center;">Ⓒ</div>
+<div style="text-align:center;">Ⓓ</div>
+
 <div style="text-align:center;">
-Ⓐ
+Right
 </div>
 
 <div style="text-align:center;">
-Ⓑ
-</div>
-
-<div style="text-align:center;">
-Ⓒ
-</div>
-
-<div style="text-align:center;">
-Ⓓ
+Wrong
 </div>
 
 </div>
@@ -695,7 +670,7 @@ margin-top:20px;
 id="submitBtn"
 class="btn"
 style="
-padding:15px 35px;
+padding:15px 40px;
 font-size:18px;
 ">
 
@@ -706,7 +681,7 @@ Submit Test
 </div>
 
 
-<!-- PDF SECTION -->
+<!-- PDF AREA -->
 
 <div
 id="pdfArea"
@@ -767,7 +742,7 @@ onclick="restartTest()">
 </h2>
 
 <p style="margin-top:10px;">
-Replace this link with your own Instagram.
+Replace link with your own profile.
 </p>
 
 <a
@@ -778,7 +753,7 @@ target="_blank">
 class="btn"
 style="margin-top:10px;">
 
-Open Instagram
+Instagram
 
 </button>
 
@@ -894,12 +869,12 @@ style="margin-top:20px;">
 </h2>
 
 <p>
-Only Admin Can View Help Requests
+Only Admin Can View Messages
 </p>
 
 <textarea
 id="helpMessage"
-placeholder="Type Your Message"
+placeholder="Type Message"
 style="
 width:100%;
 height:120px;
@@ -931,16 +906,16 @@ padding:30px;
 font-size:14px;
 ">
 
-© Student55 Advanced OMR V3
+© Student55 Advanced OMR V4
 
 </div>
 
 
 <script>
 
-/* =======================
+/* =====================
 GLOBAL VARIABLES
-======================= */
+===================== */
 
 let totalQuestions = 10;
 
@@ -957,14 +932,16 @@ let totalStars = 0;
 let ratingUsers = 0;
 
 let seconds = 0;
-  
-/* =======================
+
+let checkedQuestions = {};
+  /* ======================
 START APP
-======================= */
+====================== */
 
 function startApp(){
 
-totalQuestions = parseInt(
+totalQuestions =
+parseInt(
 document.getElementById(
 "questionCount"
 ).value
@@ -993,26 +970,29 @@ generateOMR();
 
 updateResult();
 
+document.getElementById(
+"resultPanel"
+).style.display="block";
+
 }
 
-/* =======================
+/* ======================
 GENERATE OMR
-======================= */
+====================== */
 
 function generateOMR(){
 
-const container =
+const omr =
 document.getElementById(
 "omrContainer"
 );
-
-container.innerHTML="";
 
 const nav =
 document.getElementById(
 "navigator"
 );
 
+omr.innerHTML="";
 nav.innerHTML="";
 
 for(let i=1;i<=totalQuestions;i++){
@@ -1020,13 +1000,10 @@ for(let i=1;i<=totalQuestions;i++){
 const row =
 document.createElement("div");
 
-row.className =
-"omr-row";
+row.className="omr-row";
+row.id="row-"+i;
 
-row.id =
-"row-"+i;
-
-row.innerHTML = `
+row.innerHTML=`
 
 <div class="qno">
 
@@ -1036,45 +1013,56 @@ ${String(i).padStart(3,"0")}
 
 <div class="option"
 onclick="selectOption(${i},'A',this)">
-
 Ⓐ
-
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'B',this)">
-
 Ⓑ
-
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'C',this)">
-
 Ⓒ
-
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'D',this)">
-
 Ⓓ
-
 </div>
+
+<button
+class="check-btn right-btn"
+id="right-${i}"
+onclick="markRight(${i})">
+
+✅ Right
+
+</button>
+
+<button
+class="check-btn wrong-btn"
+id="wrong-${i}"
+onclick="markWrong(${i})">
+
+❌ Wrong
+
+</button>
 
 `;
 
-container.appendChild(row);
+omr.appendChild(row);
 
-const navBtn =
+/* Navigator */
+
+const btn =
 document.createElement("button");
 
-navBtn.className =
-"nav-btn";
+btn.className="nav-btn";
 
-navBtn.innerText=i;
+btn.innerText=i;
 
-navBtn.onclick=()=>{
+btn.onclick=()=>{
 
 document.getElementById(
 "row-"+i
@@ -1084,15 +1072,15 @@ behavior:"smooth"
 
 };
 
-nav.appendChild(navBtn);
+nav.appendChild(btn);
 
 }
 
 }
 
-/* =======================
+/* ======================
 OPTION SELECT
-======================= */
+====================== */
 
 function selectOption(
 qNo,
@@ -1127,9 +1115,9 @@ updateResult();
 
 }
 
-/* =======================
+/* ======================
 SUBMIT
-======================= */
+====================== */
 
 document
 .getElementById(
@@ -1143,84 +1131,43 @@ submitted=true;
 
 document
 .getElementById(
-"resultPanel"
-)
-.style.display="block";
-
-document
-.getElementById(
 "pdfArea"
-)
-.style.display="block";
+).style.display="block";
 
-document
-.querySelectorAll(
-".omr-row"
-)
-.forEach(row=>{
+for(let i=1;i<=totalQuestions;i++){
 
-const box =
-document.createElement(
-"div"
-);
+document.getElementById(
+"right-"+i
+).style.display="block";
 
-box.style.marginTop=
-"10px";
+document.getElementById(
+"wrong-"+i
+).style.display="block";
 
-box.innerHTML=`
-
-<button
-class="btn"
-onclick="markRight('${row.id}')">
-
-✅ Right
-
-</button>
-
-<button
-class="btn"
-style="
-background:#dc2626;
-margin-left:8px;
-"
-onclick="markWrong('${row.id}')">
-
-❌ Wrong
-
-</button>
-
-`;
-
-row.appendChild(box);
-
-});
+}
 
 alert(
 "Checking Mode Enabled"
 );
 
-}
-);
+});
 
-/* =======================
+/* ======================
 RIGHT
-======================= */
+====================== */
 
-function markRight(id){
-
-const row =
-document.getElementById(id);
+function markRight(qNo){
 
 if(
-row.classList.contains(
-"correct-row"
-) ||
-row.classList.contains(
-"wrong-row"
-)
-){
-return;
-}
+checkedQuestions[qNo]
+) return;
+
+checkedQuestions[qNo]=true;
+
+const row =
+document.getElementById(
+"row-"+qNo
+);
 
 row.classList.add(
 "correct-row"
@@ -1247,25 +1194,22 @@ updateResult();
 
 }
 
-/* =======================
+/* ======================
 WRONG
-======================= */
+====================== */
 
-function markWrong(id){
-
-const row =
-document.getElementById(id);
+function markWrong(qNo){
 
 if(
-row.classList.contains(
-"correct-row"
-) ||
-row.classList.contains(
-"wrong-row"
-)
-){
-return;
-}
+checkedQuestions[qNo]
+) return;
+
+checkedQuestions[qNo]=true;
+
+const row =
+document.getElementById(
+"row-"+qNo
+);
 
 row.classList.add(
 "wrong-row"
@@ -1292,9 +1236,9 @@ updateResult();
 
 }
 
-/* =======================
+/* ======================
 RESULT
-======================= */
+====================== */
 
 function updateResult(){
 
@@ -1320,7 +1264,7 @@ document.getElementById(
 ).innerText=
 wrongCount;
 
-let acc=0;
+let acc = 0;
 
 if(
 (rightCount+wrongCount)>0
@@ -1329,7 +1273,10 @@ if(
 acc=
 (
 rightCount/
-(rightCount+wrongCount)
+(
+rightCount+
+wrongCount
+)
 *100
 ).toFixed(2);
 
@@ -1342,42 +1289,20 @@ acc+"%";
 
 }
 
-/* =======================
-RESTART
-======================= */
-
-function restartTest(){
-
-location.reload();
-
-}
-
-/* =======================
-DARK MODE
-======================= */
-
-function toggleDarkMode(){
-
-document.body.classList.toggle(
-"dark"
-);
-
-}
-
-/* =======================
+/* ======================
 TIMER
-======================= */
+====================== */
 
 setInterval(()=>{
 
 seconds++;
 
-let m =
+const m =
 Math.floor(
 seconds/60
 );
 
-let s =
+const s =
 seconds%60;
 
 document.getElementById(
@@ -1398,9 +1323,32 @@ String(s)
 
 },1000);
 
-/* =======================
-PDF
-======================= */
+/* ======================
+DARK MODE
+====================== */
+
+function toggleDarkMode(){
+
+document.body
+.classList.toggle(
+"dark"
+);
+
+}
+
+/* ======================
+RESTART
+====================== */
+
+function restartTest(){
+
+location.reload();
+
+}
+
+/* ======================
+PDF EXPORT
+====================== */
 
 function downloadPDF(){
 
@@ -1409,10 +1357,9 @@ document.getElementById(
 "watermarkName"
 ).value || "Student55";
 
-const text =
+let report =
 
-`
-Student55 Advanced OMR V3
+`Student55 Advanced OMR V4
 
 Watermark:
 ${watermark}
@@ -1431,18 +1378,31 @@ ${wrongCount}
 
 Accuracy:
 ${document.getElementById("accuracyPercent").innerText}
+
 `;
+
+for(let i=1;i<=totalQuestions;i++){
+
+report +=
+
+`${String(i).padStart(3,"0")}
+ : ${answers[i] || "-"}
+\n`;
+
+}
 
 const blob =
 new Blob(
-[text],
+[report],
 {
 type:"text/plain"
 }
 );
 
 const a =
-document.createElement("a");
+document.createElement(
+"a"
+);
 
 a.href=
 URL.createObjectURL(
@@ -1456,14 +1416,13 @@ a.click();
 
 }
 
-/* =======================
+/* ======================
 RATING
-======================= */
+====================== */
 
 function rateSite(stars){
 
-totalStars+=stars;
-
+totalStars += stars;
 ratingUsers++;
 
 document.getElementById(
@@ -1482,9 +1441,9 @@ ratingUsers;
 
 }
 
-/* =======================
+/* ======================
 COMMENTS
-======================= */
+====================== */
 
 function addComment(){
 
@@ -1493,30 +1452,33 @@ document.getElementById(
 "commentName"
 ).value;
 
-const text =
+const comment =
 document.getElementById(
 "commentText"
 ).value;
 
-if(!name || !text) return;
+if(
+!name ||
+!comment
+) return;
 
-const box =
+const div =
 document.createElement(
 "div"
 );
 
-box.style.padding="15px";
-box.style.marginBottom="10px";
-box.style.border="1px solid #ccc";
-box.style.borderRadius="10px";
+div.style.padding="12px";
+div.style.marginBottom="10px";
+div.style.border="1px solid #ddd";
+div.style.borderRadius="10px";
 
-box.innerHTML=`
+div.innerHTML=`
 
 <b>${name}</b>
 
 <br><br>
 
-${text}
+${comment}
 
 <br><br>
 
@@ -1530,7 +1492,7 @@ Delete
 
 document.getElementById(
 "commentsArea"
-).prepend(box);
+).prepend(div);
 
 document.getElementById(
 "commentName"
@@ -1542,9 +1504,9 @@ document.getElementById(
 
 }
 
-/* =======================
+/* ======================
 HELP
-======================= */
+====================== */
 
 function sendHelpMessage(){
 
