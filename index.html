@@ -4,9 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMR Evaluation Sheet</title>
+<title>Student55 OMR Test</title>
 
 <style>
+
+:root{
+--theme:#2563eb;
+}
 
 *{
 margin:0;
@@ -16,164 +20,168 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#f4f4f4;
-padding:20px;
+background:#f4f6fb;
+padding:15px;
 }
 
 .container{
-max-width:1100px;
+max-width:1200px;
 margin:auto;
-background:#fff;
-padding:30px;
-border-radius:20px;
-box-shadow:0 0 15px rgba(0,0,0,.1);
-}
-
-.title-small{
-font-size:18px;
-color:#8e44ad;
-font-weight:bold;
-letter-spacing:3px;
-margin-bottom:10px;
-}
-
-.title-big{
-font-size:48px;
-font-weight:300;
-margin-bottom:30px;
-}
-
-.info{
-display:flex;
-justify-content:space-between;
-margin-bottom:30px;
-flex-wrap:wrap;
-}
-
-.info-box{
-margin:10px 0;
-}
-
-.info-label{
-font-size:16px;
-color:#888;
-font-weight:bold;
-}
-
-.info-value{
-font-size:28px;
-margin-top:8px;
-}
-
-.status{
-color:#e67e22;
-font-weight:bold;
-}
-
-.omr-box{
-border:2px solid #ddd;
-border-radius:25px;
+background:white;
 padding:20px;
-margin-top:20px;
+border-radius:20px;
+box-shadow:0 0 15px rgba(0,0,0,.08);
 }
 
-.header-row{
-display:grid;
-grid-template-columns:100px repeat(4,1fr) 100px 100px;
+.logo{
+text-align:center;
+font-size:32px;
 font-weight:bold;
-font-size:22px;
-padding-bottom:15px;
-border-bottom:2px solid #eee;
+color:var(--theme);
+margin-bottom:20px;
 }
 
-.question-row{
-display:grid;
-grid-template-columns:100px repeat(4,1fr) 100px 100px;
-align-items:center;
-padding:12px 0;
-border-bottom:1px solid #f1f1f1;
+.start-screen{
+text-align:center;
+padding:40px 20px;
 }
 
-.qno{
-font-size:24px;
-color:#7f8c8d;
+.start-screen h1{
+margin-bottom:15px;
 }
 
-.option{
-display:flex;
-justify-content:center;
-}
-
-.option input{
-width:35px;
-height:35px;
-cursor:pointer;
-}
-
-.mark-btn{
-padding:8px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-size:18px;
-display:none;
-}
-
-.right{
-background:#27ae60;
+.start-btn{
+background:var(--theme);
 color:white;
-}
-
-.wrong{
-background:#c0392b;
-color:white;
-}
-
-.controls{
-margin-top:30px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
-
-button{
-padding:12px 20px;
-font-size:16px;
 border:none;
+padding:15px 30px;
+font-size:20px;
 border-radius:10px;
 cursor:pointer;
 }
 
-.submit-btn{
-background:#3498db;
-color:white;
+.theme-box{
+margin-top:20px;
 }
 
-.restart-btn{
-background:#e74c3c;
-color:white;
+.theme-btn{
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+cursor:pointer;
+margin:5px;
 }
 
-.download-btn{
-background:#2ecc71;
-color:white;
+.timer{
+display:none;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+margin-bottom:15px;
+color:var(--theme);
 }
 
-.summary{
-margin-top:30px;
-padding:20px;
-background:#f8f9fa;
-border-radius:15px;
+.omr-section{
 display:none;
 }
 
-.summary h2{
-margin-bottom:15px;
+.header-row{
+display:grid;
+grid-template-columns:70px repeat(4,1fr);
+background:#eef2ff;
+padding:10px;
+font-weight:bold;
+border-radius:10px;
 }
 
-.summary p{
-font-size:18px;
-margin:8px 0;
+.question-row{
+display:grid;
+grid-template-columns:70px repeat(4,1fr);
+align-items:center;
+padding:10px;
+border-bottom:1px solid #eee;
+}
+
+.qno{
+font-weight:bold;
+}
+
+.option{
+text-align:center;
+}
+
+.option input{
+width:24px;
+height:24px;
+cursor:pointer;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.btn{
+background:var(--theme);
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.summary{
+display:none;
+margin-top:25px;
+padding:15px;
+border-radius:12px;
+background:#f8fafc;
+}
+
+.card{
+margin-top:20px;
+padding:15px;
+border-radius:12px;
+background:#fafafa;
+}
+
+textarea,
+input[type=text]{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+.star{
+font-size:32px;
+cursor:pointer;
+}
+
+@media(max-width:700px){
+
+.header-row{
+grid-template-columns:55px repeat(4,1fr);
+font-size:14px;
+}
+
+.question-row{
+grid-template-columns:55px repeat(4,1fr);
+}
+
+.option input{
+width:22px;
+height:22px;
+}
+
+.logo{
+font-size:24px;
+}
+
 }
 
 </style>
@@ -183,75 +191,174 @@ margin:8px 0;
 
 <div class="container">
 
-<div class="title-small">
-OMR EVALUATION SHEET
+<div class="logo">
+Student55 OMR Test
 </div>
 
-<div class="title-big">
-Standard 100-Question Matrix
+<div id="startScreen" class="start-screen">
+
+<h1>Welcome</h1>
+
+<p>
+100 Questions OMR Practice Test
+</p>
+
+<div class="theme-box">
+
+<h3>Select Theme</h3>
+
+<button class="theme-btn"
+style="background:#2563eb"
+onclick="setTheme('#2563eb')"></button>
+
+<button class="theme-btn"
+style="background:#16a34a"
+onclick="setTheme('#16a34a')"></button>
+
+<button class="theme-btn"
+style="background:#9333ea"
+onclick="setTheme('#9333ea')"></button>
+
+<button class="theme-btn"
+style="background:#dc2626"
+onclick="setTheme('#dc2626')"></button>
+
+<button class="theme-btn"
+style="background:#111827"
+onclick="setTheme('#111827')"></button>
+
 </div>
 
-<div class="info">
+<br>
 
-<div class="info-box">
-<div class="info-label">SHEET NO</div>
-<div class="info-value">
-OMR-2026-99A
-</div>
-</div>
-
-<div class="info-box">
-<div class="info-label">STATUS</div>
-<div class="info-value status" id="status">
-IN PROGRESS
-</div>
-</div>
+<button
+class="start-btn"
+onclick="startTest()">
+START TEST
+</button>
 
 </div>
 
-<div class="omr-box">
+<div id="timer" class="timer">
+00:00:00
+</div>
+
+<div
+id="omrSection"
+class="omr-section">
 
 <div class="header-row">
-<div>Q.</div>
+
+<div>Q</div>
 <div>A</div>
 <div>B</div>
 <div>C</div>
 <div>D</div>
-<div>✔</div>
-<div>✖</div>
+
 </div>
 
 <div id="questions"></div>
 
-</div>
-
 <div class="controls">
 
-<button class="submit-btn" onclick="submitOMR()">
+<button
+class="btn"
+onclick="submitOMR()">
 Submit
 </button>
 
-<button class="restart-btn" onclick="restartOMR()">
+<button
+class="btn"
+onclick="restartOMR()">
 Restart
 </button>
 
-<button class="download-btn" onclick="downloadResult()">
-Download Result
+<button
+class="btn"
+onclick="downloadResult()">
+Download
 </button>
 
 </div>
 
-<div class="summary" id="summary">
+<div
+id="summary"
+class="summary">
 
 <h2>Result Summary</h2>
 
-<p>Attempted: <span id="attempted">0</span></p>
+<p>
+Attempted:
+<span id="attempted">0</span>
+</p>
 
-<p>Right: <span id="rightCount">0</span></p>
+<p>
+Right:
+<span id="rightCount">0</span>
+</p>
 
-<p>Wrong: <span id="wrongCount">0</span></p>
+<p>
+Wrong:
+<span id="wrongCount">0</span>
+</p>
 
-<p>Unattempted: <span id="unattempted">100</span></p>
+<p>
+Unattempted:
+<span id="unattempted">100</span>
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>Rate This Site</h2>
+
+<div>
+
+<span class="star">⭐</span>
+<span class="star">⭐</span>
+<span class="star">⭐</span>
+<span class="star">⭐</span>
+<span class="star">⭐</span>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Review</h2>
+
+<textarea
+id="review"
+rows="5"
+placeholder="Write review here">
+</textarea>
+
+</div>
+
+<div class="card">
+
+<h2>Contact & Help</h2>
+
+<input
+type="text"
+placeholder="Your Name">
+
+<textarea
+rows="5"
+placeholder="Write your message">
+</textarea>
+
+</div>
+
+<div class="card">
+
+<h2>Instagram</h2>
+
+<a href="#" id="instaLink">
+Visit Instagram
+</a>
 
 </div>
 
@@ -259,77 +366,160 @@ Download Result
 
 <script>
 
-const questionsDiv = document.getElementById("questions");
+let submitted=false;
+let attempted=0;
+let rightCount=0;
+let wrongCount=0;
+let selectedRating=0;
+
+let seconds=0;
+let timerInterval;
+
+function setTheme(color){
+
+document.documentElement
+.style.setProperty(
+'--theme',
+color
+);
+
+}
+
+function startTest(){
+
+document
+.getElementById(
+'startScreen'
+)
+.style.display='none';
+
+document
+.getElementById(
+'omrSection'
+)
+.style.display='block';
+
+document
+.getElementById(
+'timer'
+)
+.style.display='block';
+
+timerInterval=
+setInterval(()=>{
+
+seconds++;
+
+let h=
+String(
+Math.floor(seconds/3600)
+).padStart(2,'0');
+
+let m=
+String(
+Math.floor(
+(seconds%3600)/60
+)
+).padStart(2,'0');
+
+let s=
+String(
+seconds%60
+).padStart(2,'0');
+
+document
+.getElementById(
+'timer'
+)
+.innerText=
+`${h}:${m}:${s}`;
+
+},1000);
+
+}
+
+</script>
+
+<script>
+
+const questionsDiv =
+document.getElementById(
+"questions"
+);
 
 for(let i=1;i<=100;i++){
 
-let num = String(i).padStart(3,"0");
+let num =
+String(i).padStart(
+3,
+"0"
+);
 
-let row = document.createElement("div");
-row.className = "question-row";
+let row =
+document.createElement(
+"div"
+);
+
+row.className =
+"question-row";
 
 row.innerHTML = `
 
-<div class="qno">${num}</div>
-
-<div class="option">
-<input type="radio" name="q${i}" value="A">
+<div class="qno">
+${num}
 </div>
 
 <div class="option">
-<input type="radio" name="q${i}" value="B">
+<input type="radio"
+name="q${i}"
+value="A">
 </div>
 
 <div class="option">
-<input type="radio" name="q${i}" value="C">
+<input type="radio"
+name="q${i}"
+value="B">
 </div>
 
 <div class="option">
-<input type="radio" name="q${i}" value="D">
+<input type="radio"
+name="q${i}"
+value="C">
 </div>
 
 <div class="option">
-<button class="mark-btn right"
-id="right${i}"
-onclick="markRight(${i})">
-✔
-</button>
-</div>
-
-<div class="option">
-<button class="mark-btn wrong"
-id="wrong${i}"
-onclick="markWrong(${i})">
-✖
-</button>
+<input type="radio"
+name="q${i}"
+value="D">
 </div>
 
 `;
 
-questionsDiv.appendChild(row);
+questionsDiv.appendChild(
+row
+);
 
 }
 
-let submitted = false;
-
-let attempted = 0;
-let rightCount = 0;
-let wrongCount = 0;
-
-const checkedQuestions = new Set();
-
-</script>
-    <script>
-
 function submitOMR(){
 
-if(submitted) return;
+if(submitted){
+return;
+}
 
-submitted = true;
+submitted=true;
 
-attempted = 0;
+clearInterval(
+timerInterval
+);
 
-for(let i=1;i<=100;i++){
+attempted=0;
+
+for(
+let i=1;
+i<=100;
+i++
+){
 
 let selected =
 document.querySelector(
@@ -337,7 +527,9 @@ document.querySelector(
 );
 
 if(selected){
+
 attempted++;
+
 }
 
 document
@@ -345,148 +537,881 @@ document
 `input[name="q${i}"]`
 )
 .forEach(el=>{
-el.disabled = true;
+
+el.disabled=true;
+
 });
 
-document.getElementById(
-`right${i}`
-).style.display="inline-block";
-
-document.getElementById(
-`wrong${i}`
-).style.display="inline-block";
-
 }
 
-document.getElementById(
-"status"
-).innerText="SUBMITTED";
-
-document.getElementById(
+document
+.getElementById(
 "summary"
-).style.display="block";
+)
+.style.display=
+"block";
 
-document.getElementById(
+document
+.getElementById(
 "attempted"
-).innerText=attempted;
+)
+.innerText=
+attempted;
 
-document.getElementById(
+document
+.getElementById(
 "unattempted"
-).innerText=100-attempted;
+)
+.innerText=
+100-attempted;
+
+alert(
+"Test Submitted"
+);
+
+window.scrollTo({
+top:
+document.body.scrollHeight,
+behavior:
+"smooth"
+});
 
 }
-
-function markRight(q){
-
-if(checkedQuestions.has("Q"+q))
-return;
-
-checkedQuestions.add("Q"+q);
-
-rightCount++;
-
-document.getElementById(
-"rightCount"
-).innerText=rightCount;
-
-document.getElementById(
-"right"+q
-).disabled=true;
-
-document.getElementById(
-"wrong"+q
-).disabled=true;
-
-}
-
-function markWrong(q){
-
-if(checkedQuestions.has("Q"+q))
-return;
-
-checkedQuestions.add("Q"+q);
-
-wrongCount++;
-
-document.getElementById(
-"wrongCount"
-).innerText=wrongCount;
-
-document.getElementById(
-"right"+q
-).disabled=true;
-
-document.getElementById(
-"wrong"+q
-).disabled=true;
-
-}
-
-</script>
-    <script>
 
 function restartOMR(){
 
-if(!confirm(
-"Restart OMR Sheet?"
-)) return;
+let ok =
+confirm(
+"Restart Test?"
+);
+
+if(!ok){
+return;
+}
 
 location.reload();
 
 }
 
+let stars =
+document.querySelectorAll(
+".star"
+);
+
+stars.forEach(
+(star,index)=>{
+
+star.addEventListener(
+"click",
+()=>{
+
+selectedRating=
+index+1;
+
+stars.forEach(
+(s,i)=>{
+
+if(i<=index){
+
+s.innerHTML=
+"⭐";
+
+}else{
+
+s.innerHTML=
+"☆";
+
+}
+
+});
+
+});
+
+});
+
 function downloadResult(){
 
-let report = `
-OMR RESULT REPORT
+if(
+!submitted
+){
 
-Date : ${new Date().toLocaleString()}
+alert(
+"Submit First"
+);
 
-Status : SUBMITTED
+return;
 
-Attempted : ${attempted}
+}
 
-Right : ${rightCount}
+let report="";
 
-Wrong : ${wrongCount}
+report +=
+"STUDENT55 OMR REPORT\n\n";
 
-Unattempted : ${100-attempted}
+report +=
+"Website : student55.netlify.app\n\n";
 
---------------------------------
-`;
+report +=
+"Time Taken : "
++
+document
+.getElementById(
+"timer"
+)
+.innerText
++
+"\n\n";
 
-for(let i=1;i<=100;i++){
+report +=
+"Attempted : "
++
+attempted
++
+"\n";
+
+report +=
+"Right : "
++
+rightCount
++
+"\n";
+
+report +=
+"Wrong : "
++
+wrongCount
++
+"\n";
+
+report +=
+"Unattempted : "
++
+(100-attempted)
++
+"\n\n";
+
+report +=
+"Rating : "
++
+selectedRating
++
+"/5\n\n";
+
+report +=
+"Review : \n"
++
+document
+.getElementById(
+"review"
+)
+.value
++
+"\n\n";
+
+report +=
+"Watermark : student55.netlify.app\n\n";
+
+for(
+let i=1;
+i<=100;
+i++
+){
 
 let selected =
 document.querySelector(
 `input[name="q${i}"]:checked`
 );
 
+let ans =
+selected
+?
+selected.value
+:
+"NA";
+
 report +=
-`Q${String(i).padStart(3,"0")} : ${
-selected ? selected.value : "Not Attempted"
-}
-\n`;
+"Q"
++
+String(i)
+.padStart(3,"0")
++
+" : "
++
+ans
++
+"\n";
 
 }
 
-let blob = new Blob(
+let blob =
+new Blob(
 [report],
-{type:"text/plain"}
+{
+type:
+"text/plain"
+}
 );
 
 let link =
-document.createElement("a");
+document.createElement(
+"a"
+);
 
 link.href =
-URL.createObjectURL(blob);
+URL.createObjectURL(
+blob
+);
 
 link.download =
-"OMR_Result.txt";
+"Student55_Result.txt";
 
 link.click();
 
 }
+
+</script>
+    <script>
+
+/* RIGHT / WRONG SYSTEM */
+
+for(let i=1;i<=100;i++){
+
+let row =
+document.querySelectorAll(
+".question-row"
+)[i-1];
+
+let div =
+document.createElement(
+"div"
+);
+
+div.style.marginTop="8px";
+
+div.innerHTML = `
+
+<button
+id="right${i}"
+onclick="markRight(${i})"
+style="
+display:none;
+background:#16a34a;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+margin-right:5px;
+">
+✔ Right
+</button>
+
+<button
+id="wrong${i}"
+onclick="markWrong(${i})"
+style="
+display:none;
+background:#dc2626;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+">
+✖ Wrong
+</button>
+
+<span
+id="status${i}"
+style="
+display:none;
+font-weight:bold;
+margin-left:10px;
+">
+</span>
+
+`;
+
+row.appendChild(div);
+
+}
+
+function showCheckButtons(){
+
+for(
+let i=1;
+i<=100;
+i++
+){
+
+let selected =
+document.querySelector(
+`input[name="q${i}"]:checked`
+);
+
+if(selected){
+
+document
+.getElementById(
+`right${i}`
+)
+.style.display=
+"inline-block";
+
+document
+.getElementById(
+`wrong${i}`
+)
+.style.display=
+"inline-block";
+
+}
+
+}
+
+}
+
+const oldSubmit =
+submitOMR;
+
+submitOMR = function(){
+
+oldSubmit();
+
+showCheckButtons();
+
+}
+
+function markRight(q){
+
+let status =
+document.getElementById(
+`status${q}`
+);
+
+status.style.display=
+"inline";
+
+status.style.color=
+"#16a34a";
+
+status.innerHTML=
+"✔ RIGHT";
+
+document
+.getElementById(
+`right${q}`
+)
+.disabled=true;
+
+document
+.getElementById(
+`wrong${q}`
+)
+.disabled=true;
+
+rightCount++;
+
+document
+.getElementById(
+"rightCount"
+)
+.innerText=
+rightCount;
+
+}
+
+function markWrong(q){
+
+let status =
+document.getElementById(
+`status${q}`
+);
+
+status.style.display=
+"inline";
+
+status.style.color=
+"#dc2626";
+
+status.innerHTML=
+"✖ WRONG";
+
+document
+.getElementById(
+`right${q}`
+)
+.disabled=true;
+
+document
+.getElementById(
+`wrong${q}`
+)
+.disabled=true;
+
+wrongCount++;
+
+document
+.getElementById(
+"wrongCount"
+)
+.innerText=
+wrongCount;
+
+}
+
+    </script>
+    <script>
+
+/* RESULT CARD UPGRADE */
+
+function updateFinalResult(){
+
+let totalChecked =
+rightCount + wrongCount;
+
+if(totalChecked===0){
+return;
+}
+
+let percentage =
+(
+(rightCount/totalChecked)
+*100
+).toFixed(2);
+
+let grade = "D";
+let status = "FAIL";
+
+if(percentage>=90){
+
+grade="A+";
+status="PASS";
+
+}
+else if(percentage>=75){
+
+grade="A";
+status="PASS";
+
+}
+else if(percentage>=60){
+
+grade="B";
+status="PASS";
+
+}
+else if(percentage>=40){
+
+grade="C";
+status="PASS";
+
+}
+
+let oldCard =
+document.getElementById(
+"finalResultCard"
+);
+
+if(oldCard){
+oldCard.remove();
+}
+
+let card =
+document.createElement(
+"div"
+);
+
+card.id =
+"finalResultCard";
+
+card.className =
+"card";
+
+card.innerHTML = `
+
+<h2>Final Result</h2>
+
+<p>
+Percentage :
+<b>${percentage}%</b>
+</p>
+
+<p>
+Grade :
+<b>${grade}</b>
+</p>
+
+<p>
+Status :
+<b>${status}</b>
+</p>
+
+<p>
+Right :
+<b>${rightCount}</b>
+</p>
+
+<p>
+Wrong :
+<b>${wrongCount}</b>
+</p>
+
+`;
+
+document
+.getElementById(
+"summary"
+)
+.appendChild(
+card
+);
+
+}
+
+/* AUTO UPDATE RESULT */
+
+const oldRight =
+markRight;
+
+markRight = function(q){
+
+oldRight(q);
+
+updateFinalResult();
+
+}
+
+const oldWrong =
+markWrong;
+
+markWrong = function(q){
+
+oldWrong(q);
+
+updateFinalResult();
+
+}
+
+/* SCROLL TO TOP BUTTON */
+
+let topBtn =
+document.createElement(
+"button"
+);
+
+topBtn.innerHTML =
+"⬆";
+
+topBtn.style.position =
+"fixed";
+
+topBtn.style.bottom =
+"20px";
+
+topBtn.style.right =
+"20px";
+
+topBtn.style.padding =
+"12px";
+
+topBtn.style.border =
+"none";
+
+topBtn.style.borderRadius =
+"50%";
+
+topBtn.style.cursor =
+"pointer";
+
+topBtn.style.display =
+"none";
+
+topBtn.style.zIndex =
+"999";
+
+document.body.appendChild(
+topBtn
+);
+
+window.addEventListener(
+"scroll",
+()=>{
+
+if(
+window.scrollY>300
+){
+
+topBtn.style.display=
+"block";
+
+}else{
+
+topBtn.style.display=
+"none";
+
+}
+
+}
+);
+
+topBtn.onclick=()=>{
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+};
+
+/* DOWNLOAD REPORT IMPROVEMENT */
+
+const oldDownload =
+downloadResult;
+
+downloadResult = function(){
+
+oldDownload();
+
+alert(
+"Result Downloaded Successfully"
+);
+
+};
+
+    </script>
+    <script>
+
+/* FLOATING TIMER */
+
+let timerBox =
+document.getElementById(
+"timer"
+);
+
+timerBox.style.position =
+"sticky";
+
+timerBox.style.top =
+"10px";
+
+timerBox.style.zIndex =
+"999";
+
+timerBox.style.background =
+"white";
+
+timerBox.style.padding =
+"10px";
+
+timerBox.style.borderRadius =
+"10px";
+
+timerBox.style.boxShadow =
+"0 0 10px rgba(0,0,0,.1)";
+
+/* DARK MODE */
+
+let darkBtn =
+document.createElement(
+"button"
+);
+
+darkBtn.innerHTML =
+"🌙 Dark Mode";
+
+darkBtn.className =
+"btn";
+
+darkBtn.style.marginLeft =
+"10px";
+
+document
+.querySelector(
+".controls"
+)
+.appendChild(
+darkBtn
+);
+
+let dark=false;
+
+darkBtn.onclick=()=>{
+
+dark=!dark;
+
+if(dark){
+
+document.body.style.background=
+"#111827";
+
+document.body.style.color=
+"white";
+
+document
+.querySelector(
+".container"
+)
+.style.background=
+"#1f2937";
+
+}else{
+
+document.body.style.background=
+"#f4f6fb";
+
+document.body.style.color=
+"black";
+
+document
+.querySelector(
+".container"
+)
+.style.background=
+"white";
+
+}
+
+};
+
+/* PAGE WATERMARK */
+
+let watermark =
+document.createElement(
+"div"
+);
+
+watermark.innerHTML =
+"student55.netlify.app";
+
+watermark.style.position =
+"fixed";
+
+watermark.style.bottom =
+"10px";
+
+watermark.style.left =
+"10px";
+
+watermark.style.opacity =
+"0.15";
+
+watermark.style.fontSize =
+"18px";
+
+watermark.style.fontWeight =
+"bold";
+
+watermark.style.pointerEvents =
+"none";
+
+document.body.appendChild(
+watermark
+);
+
+/* FOOTER */
+
+let footer =
+document.createElement(
+"div"
+);
+
+footer.style.marginTop =
+"30px";
+
+footer.style.padding =
+"20px";
+
+footer.style.textAlign =
+"center";
+
+footer.innerHTML = `
+
+<hr><br>
+
+<h3>Student55 OMR</h3>
+
+<p>
+Practice • Test • Learn
+</p>
+
+<br>
+
+<a href="#"
+style="
+text-decoration:none;
+font-weight:bold;
+">
+Instagram
+</a>
+
+&nbsp; | &nbsp;
+
+<a href="#"
+style="
+text-decoration:none;
+font-weight:bold;
+">
+Contact
+</a>
+
+<br><br>
+
+<p>
+© Student55
+</p>
+
+`;
+
+document
+.querySelector(
+".container"
+)
+.appendChild(
+footer
+);
+
+/* BETTER STAR DISPLAY */
+
+let ratingText =
+document.createElement(
+"div"
+);
+
+ratingText.id =
+"ratingText";
+
+ratingText.style.marginTop =
+"10px";
+
+ratingText.innerHTML =
+"No Rating Selected";
+
+document
+.querySelector(
+".card"
+)
+.appendChild(
+ratingText
+);
+
+stars.forEach(
+(star,index)=>{
+
+star.addEventListener(
+"click",
+()=>{
+
+ratingText.innerHTML =
+"Selected Rating : "
++
+(index+1)
++
+"/5 ⭐";
+
+});
+
+});
 
     </script>
 
