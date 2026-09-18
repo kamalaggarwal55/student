@@ -1,52 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A beautiful website template">
-    <title>My Beautiful Website</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMR Answer Sheet</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+}
+
+.question{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+.qno{
+    width:50px;
+    font-weight:bold;
+}
+
+.options label{
+    margin-right:15px;
+    cursor:pointer;
+}
+
+button{
+    margin-top:20px;
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+#result{
+    margin-top:15px;
+    font-weight:bold;
+}
+</style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">MySite</div>
-            <ul class="nav-links">
-                <li><a href="#">Home HOME....</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <section class="hero">
-        <h1>Welcome to Our Beautiful Website</h1>
-        <p>We create stunning and responsive websites that work on any device!</p>
-        <button onclick="scrollToContent()">Learn More</button>
-    </section>
+<div class="container">
+    <h2>OMR Answer Sheet (1 - 100)</h2>
 
-    <section id="content" class="content">
-        <h2>Our Services</h2>
-        <div class="service">
-            <h3>Web Design</h3>
-            <p>We design stunning and user-friendly websites that represent your brand.</p>
+    <div id="questions"></div>
+
+    <button onclick="submitOMR()">Submit</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+const questionsDiv = document.getElementById("questions");
+
+// Create 100 Questions
+for(let i = 1; i <= 100; i++){
+
+    let row = document.createElement("div");
+    row.className = "question";
+
+    row.innerHTML = `
+        <div class="qno">Q${i}</div>
+
+        <div class="options">
+            <label><input type="radio" name="q${i}" value="A"> A</label>
+            <label><input type="radio" name="q${i}" value="B"> B</label>
+            <label><input type="radio" name="q${i}" value="C"> C</label>
+            <label><input type="radio" name="q${i}" value="D"> D</label>
         </div>
-        <div class="service">
-            <h3>Web Development</h3>
-            <p>Our development team builds fast, scalable, and secure websites.</p>
-        </div>
-        <div class="service">
-            <h3>SEO Optimization</h3>
-            <p>We help improve your website's search engine rankings and visibility.</p>
-        </div>
-    </section>
+    `;
 
-    <footer>
-        <p>&copy; 2024 MySite. All Rights Reserved.</p>
-        <p>Follow us on <a href="#">Facebook</a>, <a href="https://www.instagram.com/saini_kamal.55?igsh=NGV1dW1oYzY4anox">Instagram</a>, <a href="#">Twitter</a></p>
-    </footer>
+    questionsDiv.appendChild(row);
+}
 
-    <script src="scripts.js"></script>
+// Submit Function
+function submitOMR(){
+
+    let answers = {};
+    let attempted = 0;
+
+    for(let i = 1; i <= 100; i++){
+
+        let selected = document.querySelector(
+            `input[name="q${i}"]:checked`
+        );
+
+        if(selected){
+            answers["Q"+i] = selected.value;
+            attempted++;
+        }
+    }
+
+    document.getElementById("result").innerHTML =
+        `Attempted ${attempted} out of 100 Questions`;
+
+    console.log("Selected Answers:", answers);
+
+    // Yahan API ya database me save kar sakte ho
+}
+</script>
+
 </body>
 </html>
