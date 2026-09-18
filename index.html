@@ -1134,6 +1134,19 @@ element.classList.add(
 
 answers[qNo]=value;
 
+/* Navigator Live Update */
+
+const navButtons =
+document.querySelectorAll(
+".nav-btn"
+);
+
+navButtons[qNo-1].style.background =
+"var(--theme)";
+
+navButtons[qNo-1].style.color =
+"#fff";
+
 updateResult();
 
 }
