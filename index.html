@@ -394,27 +394,26 @@ font-weight:600;
 
 .option{
 
-width:68px;
-height:68px;
+width:58px;
+height:58px;
+
+border:3px solid #b8bec8;
+border-radius:50%;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-margin:auto;
+font-size:28px;
+font-weight:700;
+
+background:#fff;
 
 cursor:pointer;
 
-font-size:42px;
-
-font-weight:700;
-
-border:none;
-
-background:transparent;
-
 transition:.2s;
 
+margin:auto;
 }
 
 .option.selected{
@@ -1054,22 +1053,22 @@ ${String(i).padStart(3,"0")}
 
 <div class="option"
 onclick="selectOption(${i},'A',this)">
-A
+Ⓐ
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'B',this)">
-B
+Ⓑ
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'C',this)">
-C
+Ⓒ
 </div>
 
 <div class="option"
 onclick="selectOption(${i},'D',this)">
-D
+Ⓓ
 </div>
 
 <button
