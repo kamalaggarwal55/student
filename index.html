@@ -1206,8 +1206,15 @@ function markRight(qNo){
 
 const row=document.getElementById("row-"+qNo);
 
+if(row.classList.contains("wrong-row")){
 row.classList.remove("wrong-row");
+wrongCount--;
+}
+
+if(!row.classList.contains("correct-row")){
 row.classList.add("correct-row");
+rightCount++;
+}
 
 updateResult();
 
@@ -1221,8 +1228,15 @@ function markWrong(qNo){
 
 const row=document.getElementById("row-"+qNo);
 
+if(row.classList.contains("correct-row")){
 row.classList.remove("correct-row");
+rightCount--;
+}
+
+if(!row.classList.contains("wrong-row")){
 row.classList.add("wrong-row");
+wrongCount++;
+}
 
 updateResult();
 
