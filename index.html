@@ -1152,18 +1152,18 @@ element.classList.add(
 
 answers[qNo]=value;
 
-/* Navigator Live Update */
-
-const navButtons =
-document.querySelectorAll(
-".nav-btn"
+const navBtn =
+document.querySelector(
+`[data-q="${qNo}"]`
 );
 
-navButtons[qNo-1].style.background =
-"var(--theme)";
+if(navBtn){
 
-navButtons[qNo-1].style.color =
-"#fff";
+navBtn.classList.add(
+"done"
+);
+
+}
 
 updateResult();
 
