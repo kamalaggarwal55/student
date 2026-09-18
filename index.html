@@ -708,6 +708,19 @@ class="navigator">
 
 <div class="omr-sheet">
 
+ <div style="text-align:center;margin-bottom:15px;">
+
+<button
+class="btn"
+id="startTimerBtn"
+onclick="startTestTimer()">
+
+▶ Start Test
+
+</button>
+
+ </div>
+
 <div class="omr-header">
 
 <div>Q.No</div>
@@ -1012,6 +1025,8 @@ let seconds = 0;
 
 let checkedQuestions = {};
 
+ let testStarted = false;
+
 window.onload=()=>{
 
 if(sessionStorage.getItem("omrStarted")==="yes"){
@@ -1211,6 +1226,8 @@ value,
 element
 ){
 
+if(!testStarted) return;
+
 if(submitted) return;
 
 const row =
@@ -1264,6 +1281,8 @@ document
 ()=>{
 
 submitted=true;
+
+ clearInterval(timerInterval);
 
 document
 .getElementById(
@@ -1393,19 +1412,26 @@ acc+"%";
 TIMER
 ====================== */
 
-let timerInterval=setInterval(()=>{
+let timerInterval = setInterval(()=>{
+
+if(!testStarted) return;
 
 seconds++;
 
-const m=Math.floor(seconds/60);
+const m =
+Math.floor(
+seconds/60
+);
 
-const s=seconds%60;
+const s =
+seconds%60;
 
 document.getElementById(
 "timer"
 ).innerText=
 
-String(m).padStart(2,"0")
+String(m)
+.padStart(2,"0")
 
 +
 
@@ -1413,9 +1439,20 @@ String(m).padStart(2,"0")
 
 +
 
-String(s).padStart(2,"0");
+String(s)
+.padStart(2,"0");
 
 },1000);
+
+function startTestTimer(){
+
+testStarted = true;
+
+document.getElementById(
+"startTimerBtn"
+).style.display="none";
+
+}
 
 /* ======================
 DARK MODE
