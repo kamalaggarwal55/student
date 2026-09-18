@@ -3,978 +3,1026 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Advanced OMR V2</title>
+
+<title>Student55 Advanced OMR V3</title>
 
 <style>
+
 :root{
-    --primary:#2563eb;
-    --success:#16a34a;
-    --danger:#dc2626;
-    --bg:#f5f7fb;
-    --card:#ffffff;
-    --text:#111827;
+--primary:#2563eb;
+--success:#16a34a;
+--danger:#dc2626;
+--bg:#f4f6f9;
+--card:#ffffff;
+--text:#111827;
+--border:#d1d5db;
 }
 
 body.dark{
-    --bg:#111827;
-    --card:#1f2937;
-    --text:#f3f4f6;
+--bg:#111827;
+--card:#1f2937;
+--text:#f9fafb;
+--border:#374151;
 }
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
 body{
-    font-family:Arial, sans-serif;
-    background:var(--bg);
-    color:var(--text);
+background:var(--bg);
+color:var(--text);
 }
 
 .header{
-    background:var(--primary);
-    color:white;
-    padding:15px;
-    text-align:center;
-    font-size:22px;
-    font-weight:bold;
+background:var(--primary);
+color:white;
+padding:15px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
 }
 
-.top-controls{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    justify-content:center;
-    padding:15px;
+.topbar{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+padding:15px;
 }
 
-button,select{
-    padding:10px 15px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.main{
-    display:flex;
-    gap:15px;
-    padding:15px;
-}
-
-.navigator{
-    width:120px;
-    background:var(--card);
-    border-radius:10px;
-    padding:10px;
-    height:fit-content;
-}
-
-.nav-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:6px;
-}
-
-.nav-btn{
-    padding:8px;
-    background:#ddd;
-    border-radius:6px;
-    text-align:center;
-}
-
-.questions{
-    flex:1;
-}
-
-.question-card{
-    background:var(--card);
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:15px;
-}
-
-.question-title{
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.options{
-    display:grid;
-    gap:8px;
-}
-
-.option{
-    border:1px solid #ccc;
-    padding:10px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.option.selected{
-    background:#dbeafe;
-    border-color:#2563eb;
-}
-
-.correct-row{
-    border-left:6px solid var(--success);
-}
-
-.wrong-row{
-    border-left:6px solid var(--danger);
-}
-
-.submit-section{
-    text-align:center;
-    margin:20px 0;
-}
-
-.submit-btn{
-    background:var(--primary);
-    color:white;
-    font-size:18px;
-}
-
-.result-panel{
-    background:var(--card);
-    margin:15px;
-    padding:15px;
-    border-radius:10px;
-    display:none;
-}
-
-.result-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:10px;
-}
-
-.result-box{
-    padding:12px;
-    border-radius:8px;
-    background:#e5e7eb;
-    text-align:center;
+.topbar button,
+.topbar select{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
 
 .timer{
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
-    margin-top:10px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+margin:10px;
 }
+
+.main{
+display:flex;
+gap:15px;
+padding:15px;
+}
+
+.navigator{
+width:140px;
+background:var(--card);
+padding:10px;
+border-radius:10px;
+height:fit-content;
+}
+
+.navigator h3{
+text-align:center;
+margin-bottom:10px;
+}
+
+.nav-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:6px;
+}
+
+.nav-btn{
+padding:10px;
+text-align:center;
+border-radius:6px;
+background:#d1d5db;
+cursor:pointer;
+font-weight:bold;
+}
+
+.questions{
+flex:1;
+}
+
+.question-card{
+background:var(--card);
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+border:1px solid var(--border);
+}
+
+.question-title{
+font-size:18px;
+font-weight:bold;
+margin-bottom:12px;
+}
+
+.option{
+padding:10px;
+border:1px solid var(--border);
+border-radius:8px;
+margin-bottom:8px;
+cursor:pointer;
+}
+
+.option.selected{
+background:#dbeafe;
+border-color:var(--primary);
+}
+
+.correct-row{
+border-left:6px solid var(--success);
+}
+
+.wrong-row{
+border-left:6px solid var(--danger);
+}
+
+.submit-area{
+text-align:center;
+margin:20px;
+}
+
+.submit-btn{
+background:var(--primary);
+color:white;
+padding:12px 25px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.result-panel{
+display:none;
+background:var(--card);
+padding:15px;
+margin:15px;
+border-radius:10px;
+}
+
+.result-panel h2{
+margin-bottom:15px;
+}
+
+.result-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:10px;
+}
+
+.result-box{
+background:#e5e7eb;
+padding:15px;
+border-radius:8px;
+text-align:center;
+font-weight:bold;
+}
+
+.feedback-panel{
+background:var(--card);
+padding:15px;
+margin:15px;
+border-radius:10px;
+display:none;
+}
+
+.feedback-panel h2{
+margin-bottom:10px;
+}
+
+#stars{
+font-size:35px;
+}
+
+#stars span{
+cursor:pointer;
+}
+
+textarea,
+input{
+width:100%;
+padding:10px;
+border:1px solid var(--border);
+border-radius:8px;
+margin-top:8px;
+margin-bottom:10px;
+}
+
+.action-btn{
+background:var(--primary);
+color:white;
+padding:10px 15px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.instagram-btn{
+background:#e1306c;
+color:white;
+padding:10px 15px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.check-buttons{
+margin-top:12px;
+display:flex;
+gap:10px;
+}
+
+.right-btn{
+background:var(--success);
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.wrong-btn{
+background:var(--danger);
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+@media(max-width:900px){
+
+.main{
+flex-direction:column;
+}
+
+.navigator{
+width:100%;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="header">
-    Student55 Advanced OMR V2
+Student55 Advanced OMR V3
 </div>
 
 <div class="timer" id="timer">
-    00:00:00
+00:00:00
 </div>
 
-<div class="top-controls">
+<div class="topbar">
 
-    <button onclick="toggleDarkMode()">
-        Dark Mode
-    </button>
+<button onclick="toggleDarkMode()">
+Dark Mode
+</button>
 
-    <select id="themeSelector">
-        <option value="#2563eb">Blue</option>
-        <option value="#16a34a">Green</option>
-        <option value="#dc2626">Red</option>
-        <option value="#9333ea">Purple</option>
-    </select>
+<select id="themeSelector">
+<option value="#2563eb">Blue</option>
+<option value="#16a34a">Green</option>
+<option value="#dc2626">Red</option>
+<option value="#9333ea">Purple</option>
+</select>
 
-    <button onclick="restartTest()">
-        Restart Test
-    </button>
+<button onclick="restartTest()">
+Restart Test
+</button>
 
-    <button onclick="exportPDF()">
-        Export PDF
-    </button>
+<button onclick="exportPDF()">
+Export PDF
+</button>
 
 </div>
 
 <div class="main">
 
-    <div class="navigator">
-        <h3>Q No.</h3>
-        <div class="nav-grid" id="navigator">
-        </div>
-    </div>
+<div class="navigator">
 
-    <div class="questions" id="questionContainer">
-    </div>
+<h3>Questions</h3>
+
+<div class="nav-grid" id="navigator">
+</div>
 
 </div>
 
-<div class="submit-section">
-    <button class="submit-btn" onclick="submitTest()">
-        Submit Test
-    </button>
+<div class="questions" id="questionContainer">
 </div>
 
-<div class="result-panel" id="resultPanel">
+</div>
 
-    <h2>Result Summary</h2>
+<div class="submit-area">
 
-    <div class="result-grid">
+<button
+class="submit-btn"
+onclick="submitTest()">
+Submit Test
+</button>
 
-        <div class="result-box">
-            Total
-            <h3 id="totalQ">0</h3>
-        </div>
+</div>
 
-        <div class="result-box">
-            Attempted
-            <h3 id="attemptedQ">0</h3>
-        </div>
+<div
+class="result-panel"
+id="resultPanel">
 
-        <div class="result-box">
-            Right
-            <h3 id="rightQ">0</h3>
-        </div>
+<h2>Result Summary</h2>
 
-        <div class="result-box">
-            Wrong
-            <h3 id="wrongQ">0</h3>
-        </div>
+<div class="result-grid">
 
-        <div class="result-box">
-            Accuracy
-            <h3 id="accuracyQ">0%</h3>
-        </div>
+<div class="result-box">
+Total
+<h3 id="totalQ">0</h3>
+</div>
 
-    </div>
+<div class="result-box">
+Attempted
+<h3 id="attemptedQ">0</h3>
+</div>
+
+<div class="result-box">
+Right
+<h3 id="rightQ">0</h3>
+</div>
+
+<div class="result-box">
+Wrong
+<h3 id="wrongQ">0</h3>
+</div>
+
+<div class="result-box">
+Accuracy
+<h3 id="accuracyQ">0%</h3>
+</div>
+
+</div>
+
+</div>
+
+<div
+class="feedback-panel"
+id="feedbackPanel">
+
+<h2>Rate This Test</h2>
+
+<div id="stars">
+
+<span onclick="setRating(1)">⭐</span>
+<span onclick="setRating(2)">⭐</span>
+<span onclick="setRating(3)">⭐</span>
+<span onclick="setRating(4)">⭐</span>
+<span onclick="setRating(5)">⭐</span>
+
+</div>
+
+<textarea
+id="reviewText"
+placeholder="Write Review">
+</textarea>
+
+<button
+class="action-btn"
+onclick="submitReview()">
+
+Submit Review
+
+</button>
+
+<hr style="margin:20px 0;">
+
+<h2>Private Message To Admin</h2>
+
+<input
+type="text"
+id="instaId"
+placeholder="Instagram ID">
+
+<textarea
+id="adminMsg"
+placeholder="Message For Admin">
+</textarea>
+
+<button
+class="action-btn"
+onclick="sendAdminMessage()">
+
+Send Message
+
+</button>
+
+<br><br>
+
+<a
+href="https://instagram.com/YOUR_USERNAME"
+target="_blank">
+
+<button
+class="instagram-btn">
+
+Instagram
+
+</button>
+
+</a>
 
 </div>
 
 <script>
-// ==========================
-// QUESTIONS DATA
-// ==========================
+
+/* PART 2 YAHAN AAYEGA */
+    // =====================
+// QUESTIONS
+// =====================
 
 const questions = [
 {
-    question:"What is the capital of India?",
-    options:["Mumbai","Delhi","Chennai","Kolkata"],
-    answer:null
+question:"What is the capital of India?",
+options:["Mumbai","Delhi","Kolkata","Chennai"],
+answer:1
 },
 {
-    question:"2 + 2 = ?",
-    options:["2","3","4","5"],
-    answer:null
+question:"2 + 2 = ?",
+options:["2","3","4","5"],
+answer:2
 },
 {
-    question:"Largest planet?",
-    options:["Earth","Mars","Jupiter","Venus"],
-    answer:null
+question:"National Animal of India?",
+options:["Lion","Tiger","Elephant","Leopard"],
+answer:1
 },
 {
-    question:"National Animal of India?",
-    options:["Lion","Tiger","Elephant","Leopard"],
-    answer:null
+question:"Largest Planet?",
+options:["Earth","Mars","Jupiter","Venus"],
+answer:2
 },
 {
-    question:"HTML stands for?",
-    options:[
-        "Hyper Text Markup Language",
-        "Home Tool Markup Language",
-        "High Text Machine Language",
-        "None"
-    ],
-    answer:null
+question:"HTML Stands For?",
+options:[
+"Hyper Text Markup Language",
+"High Text Machine Language",
+"Home Tool Markup Language",
+"None"
+],
+answer:0
 }
 ];
 
-// ==========================
-// USER ANSWERS
-// ==========================
+// =====================
+// VARIABLES
+// =====================
 
-let userAnswers = new Array(questions.length).fill(null);
-
-// ==========================
-// RENDER QUESTIONS
-// ==========================
-
-function renderQuestions(){
-
-    const container =
-    document.getElementById("questionContainer");
-
-    container.innerHTML = "";
-
-    questions.forEach((q,index)=>{
-
-        const card =
-        document.createElement("div");
-
-        card.className = "question-card";
-
-        card.id = "q"+index;
-
-        card.innerHTML = `
-
-        <div class="question-title">
-        Q${index+1}. ${q.question}
-        </div>
-
-        <div class="options">
-
-        ${q.options.map((option,optIndex)=>`
-
-        <div class="option
-        ${userAnswers[index]===optIndex ?
-        "selected" : ""}"
-
-        onclick="selectOption(
-        ${index},
-        ${optIndex}
-        )">
-
-        ${String.fromCharCode(65+optIndex)}.
-        ${option}
-
-        </div>
-
-        `).join("")}
-
-        </div>
-
-        `;
-
-        container.appendChild(card);
-
-    });
-
-}
-
-// ==========================
-// OPTION SELECT
-// ==========================
-
-function selectOption(questionIndex,optionIndex){
-
-    userAnswers[questionIndex] = optionIndex;
-
-    renderQuestions();
-
-    updateNavigator();
-
-}
-
-// ==========================
-// NAVIGATOR
-// ==========================
-
-function createNavigator(){
-
-    const nav =
-    document.getElementById("navigator");
-
-    nav.innerHTML = "";
-
-    questions.forEach((q,index)=>{
-
-        const btn =
-        document.createElement("div");
-
-        btn.className = "nav-btn";
-
-        btn.id = "nav"+index;
-
-        btn.innerText = index+1;
-
-        btn.onclick = ()=>{
-
-            document
-            .getElementById("q"+index)
-            .scrollIntoView({
-                behavior:"smooth"
-            });
-
-        };
-
-        nav.appendChild(btn);
-
-    });
-
-}
-
-// ==========================
-// UPDATE NAVIGATOR
-// ==========================
-
-function updateNavigator(){
-
-    questions.forEach((q,index)=>{
-
-        const btn =
-        document.getElementById(
-        "nav"+index
-        );
-
-        if(userAnswers[index]!==null){
-
-            btn.style.background =
-            "#16a34a";
-
-            btn.style.color =
-            "white";
-
-        }
-        else{
-
-            btn.style.background =
-            "#d1d5db";
-
-            btn.style.color =
-            "black";
-
-        }
-
-    });
-
-}
-
-// ==========================
-// INITIAL LOAD
-// ==========================
-
-createNavigator();
-
-renderQuestions();
-
-updateNavigator();
-   // ==========================
-// CORRECT ANSWERS
-// ==========================
-
-questions[0].answer = 1; // Delhi
-questions[1].answer = 2; // 4
-questions[2].answer = 2; // Jupiter
-questions[3].answer = 1; // Tiger
-questions[4].answer = 0; // HTML
-
-// ==========================
-// CHECKING MODE
-// ==========================
+let userAnswers =
+new Array(
+questions.length
+).fill(null);
 
 let checkingMode = false;
+let selectedRating = 0;
 
-// ==========================
-// SUBMIT TEST
-// ==========================
-
-function submitTest(){
-
-    checkingMode = true;
-
-    renderQuestions();
-
-    alert("Test Submitted Successfully!");
-
-}
-
-// ==========================
-// OVERRIDE RENDER QUESTIONS
-// ==========================
-
-function renderQuestions(){
-
-    const container =
-    document.getElementById(
-    "questionContainer"
-    );
-
-    container.innerHTML = "";
-
-    questions.forEach((q,index)=>{
-
-        let rowClass = "";
-
-        if(checkingMode &&
-           userAnswers[index] !== null){
-
-            if(
-                userAnswers[index]
-                === q.answer
-            ){
-                rowClass =
-                "correct-row";
-            }
-            else{
-                rowClass =
-                "wrong-row";
-            }
-        }
-
-        const card =
-        document.createElement("div");
-
-        card.className =
-        "question-card " +
-        rowClass;
-
-        card.id = "q"+index;
-
-        card.innerHTML = `
-
-        <div class="question-title">
-
-        Q${index+1}.
-        ${q.question}
-
-        </div>
-
-        <div class="options">
-
-        ${q.options.map(
-        (option,optIndex)=>{
-
-        let extraClass="";
-
-        if(
-          userAnswers[index]
-          === optIndex
-        ){
-          extraClass =
-          "selected";
-        }
-
-        return `
-
-        <div class="option
-        ${extraClass}"
-
-        onclick="
-        ${checkingMode
-        ? ''
-        : `selectOption(
-        ${index},
-        ${optIndex}
-        )`}
-        ">
-
-        ${String.fromCharCode(
-        65+optIndex
-        )}.
-        ${option}
-
-        </div>
-
-        `;
-
-        }).join("")}
-
-        </div>
-
-        ${
-        checkingMode ?
-
-        `
-
-        <div
-        style="
-        margin-top:12px;
-        display:flex;
-        gap:10px;
-        ">
-
-        <button
-        onclick="
-        markRight(${index})
-        "
-        style="
-        background:#16a34a;
-        color:white;
-        ">
-        Right
-        </button>
-
-        <button
-        onclick="
-        markWrong(${index})
-        "
-        style="
-        background:#dc2626;
-        color:white;
-        ">
-        Wrong
-        </button>
-
-        </div>
-
-        `
-
-        :
-
-        ''
-
-        }
-
-        `;
-
-        container.appendChild(card);
-
-    });
-
-}
-
-// ==========================
-// MANUAL RIGHT
-// ==========================
-
-function markRight(index){
-
-    const card =
-    document.getElementById(
-    "q"+index
-    );
-
-    card.classList.remove(
-    "wrong-row"
-    );
-
-    card.classList.add(
-    "correct-row"
-    );
-
-}
-
-// ==========================
-// MANUAL WRONG
-// ==========================
-
-function markWrong(index){
-
-    const card =
-    document.getElementById(
-    "q"+index
-    );
-
-    card.classList.remove(
-    "correct-row"
-    );
-
-    card.classList.add(
-    "wrong-row"
-    );
-
-}
-   // ==========================
-// CALCULATE RESULT
-// ==========================
-
-function calculateResult(){
-
-    let total =
-    questions.length;
-
-    let attempted = 0;
-    let right = 0;
-    let wrong = 0;
-
-    questions.forEach((q,index)=>{
-
-        if(userAnswers[index] !== null){
-
-            attempted++;
-
-            if(
-                userAnswers[index]
-                === q.answer
-            ){
-                right++;
-            }
-            else{
-                wrong++;
-            }
-
-        }
-
-    });
-
-    let accuracy = 0;
-
-    if(attempted > 0){
-
-        accuracy =
-        ((right/attempted)*100)
-        .toFixed(2);
-
-    }
-
-    document
-    .getElementById("totalQ")
-    .innerText = total;
-
-    document
-    .getElementById("attemptedQ")
-    .innerText = attempted;
-
-    document
-    .getElementById("rightQ")
-    .innerText = right;
-
-    document
-    .getElementById("wrongQ")
-    .innerText = wrong;
-
-    document
-    .getElementById("accuracyQ")
-    .innerText =
-    accuracy + "%";
-
-    document
-    .getElementById("resultPanel")
-    .style.display =
-    "block";
-
-}
-
-// ==========================
-// UPDATE SUBMIT FUNCTION
-// ==========================
-
-function submitTest(){
-
-    checkingMode = true;
-
-    renderQuestions();
-
-    calculateResult();
-
-    document
-    .getElementById(
-    "resultPanel"
-    )
-    .scrollIntoView({
-        behavior:"smooth"
-    });
-
-}
-
-// ==========================
-// RESTART TEST
-// ==========================
-
-function restartTest(){
-
-    const confirmReset =
-    confirm(
-    "Restart Test?"
-    );
-
-    if(!confirmReset){
-        return;
-    }
-
-    checkingMode = false;
-
-    userAnswers =
-    new Array(
-    questions.length
-    ).fill(null);
-
-    document
-    .getElementById(
-    "resultPanel"
-    )
-    .style.display =
-    "none";
-
-    renderQuestions();
-
-    updateNavigator();
-
-}
-
-// ==========================
-// LIVE ATTEMPT COUNT
-// ==========================
-
-function getAttemptedCount(){
-
-    let count = 0;
-
-    userAnswers.forEach(ans=>{
-
-        if(ans !== null){
-            count++;
-        }
-
-    });
-
-    return count;
-
-}
-
-// ==========================
-// UPDATE NAVIGATOR COUNT
-// ==========================
-
-function updateNavigator(){
-
-    questions.forEach((q,index)=>{
-
-        const btn =
-        document.getElementById(
-        "nav"+index
-        );
-
-        if(userAnswers[index] !== null){
-
-            btn.style.background =
-            "#16a34a";
-
-            btn.style.color =
-            "#fff";
-
-        }
-        else{
-
-            btn.style.background =
-            "#d1d5db";
-
-            btn.style.color =
-            "#000";
-
-        }
-
-    });
-
-}
-
-// ==========================
-// RESULT AUTO REFRESH
-// ==========================
-
-function refreshResultIfOpen(){
-
-    const panel =
-    document.getElementById(
-    "resultPanel"
-    );
-
-    if(
-      panel.style.display
-      === "block"
-    ){
-      calculateResult();
-    }
-
-}
-   // ==========================
+// =====================
 // TIMER
-// ==========================
+// =====================
 
 let totalSeconds = 0;
-let timerInterval = null;
+let timerInterval;
 
 function startTimer(){
 
-    timerInterval = setInterval(()=>{
+timerInterval =
+setInterval(()=>{
 
-        totalSeconds++;
+totalSeconds++;
 
-        let hrs =
-        Math.floor(
-        totalSeconds/3600
-        );
+let h =
+Math.floor(
+totalSeconds/3600
+);
 
-        let mins =
-        Math.floor(
-        (totalSeconds%3600)/60
-        );
+let m =
+Math.floor(
+(totalSeconds%3600)/60
+);
 
-        let secs =
-        totalSeconds%60;
+let s =
+totalSeconds%60;
 
-        document
-        .getElementById("timer")
-        .innerText =
+document
+.getElementById("timer")
+.innerText =
 
-        String(hrs)
-        .padStart(2,'0')
-        + ":" +
+String(h)
+.padStart(2,'0')
 
-        String(mins)
-        .padStart(2,'0')
-        + ":" +
++ ":" +
 
-        String(secs)
-        .padStart(2,'0');
+String(m)
+.padStart(2,'0')
 
-    },1000);
++ ":" +
+
+String(s)
+.padStart(2,'0');
+
+},1000);
 
 }
 
 startTimer();
 
-// ==========================
-// STOP TIMER ON SUBMIT
-// ==========================
+// =====================
+// RENDER QUESTIONS
+// =====================
 
-const oldSubmitTest =
-submitTest;
+function renderQuestions(){
 
-submitTest = function(){
+const container =
+document.getElementById(
+"questionContainer"
+);
 
-    clearInterval(
-    timerInterval
-    );
+container.innerHTML = "";
 
-    oldSubmitTest();
+questions.forEach((q,index)=>{
 
-};
+let rowClass = "";
 
-// ==========================
-// RESTART TIMER
-// ==========================
+if(
+checkingMode &&
+userAnswers[index] !== null
+){
 
-const oldRestartTest =
-restartTest;
-
-restartTest = function(){
-
-    oldRestartTest();
-
-    clearInterval(
-    timerInterval
-    );
-
-    totalSeconds = 0;
-
-    document
-    .getElementById("timer")
-    .innerText =
-    "00:00:00";
-
-    startTimer();
-
-};
-
-// ==========================
-// DARK MODE
-// ==========================
-
-function toggleDarkMode(){
-
-    document.body
-    .classList.toggle(
-    "dark"
-    );
+if(
+userAnswers[index]
+=== q.answer
+){
+rowClass =
+"correct-row";
+}
+else{
+rowClass =
+"wrong-row";
+}
 
 }
 
-// ==========================
-// THEME SELECTOR
-// ==========================
+const card =
+document.createElement("div");
+
+card.className =
+"question-card " +
+rowClass;
+
+card.id =
+"q" + index;
+
+card.innerHTML = `
+
+<div class="question-title">
+Q${index+1}.
+${q.question}
+</div>
+
+${q.options.map(
+(opt,optIndex)=>`
+
+<div
+class="option
+${userAnswers[index]
+=== optIndex
+?
+'selected'
+:
+''}"
+
+onclick="
+${checkingMode
+?
+''
+:
+`selectOption(
+${index},
+${optIndex}
+)`
+}
+">
+
+${String.fromCharCode(
+65+optIndex
+)}.
+${opt}
+
+</div>
+
+`
+).join("")}
+
+${
+checkingMode ?
+
+`
+
+<div
+class="check-buttons">
+
+<button
+class="right-btn"
+onclick="
+markRight(
+${index}
+)">
+Right
+</button>
+
+<button
+class="wrong-btn"
+onclick="
+markWrong(
+${index}
+)">
+Wrong
+</button>
+
+</div>
+
+`
+
+:
+''
+}
+
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+// =====================
+// OPTION SELECT
+// =====================
+
+function selectOption(
+questionIndex,
+optionIndex
+){
+
+userAnswers[
+questionIndex
+] = optionIndex;
+
+renderQuestions();
+
+updateNavigator();
+
+}
+
+// =====================
+// NAVIGATOR
+// =====================
+
+function createNavigator(){
+
+const nav =
+document.getElementById(
+"navigator"
+);
+
+nav.innerHTML = "";
+
+questions.forEach(
+(q,index)=>{
+
+const btn =
+document.createElement(
+"div"
+);
+
+btn.className =
+"nav-btn";
+
+btn.id =
+"nav"+index;
+
+btn.innerText =
+index+1;
+
+btn.onclick = ()=>{
+
+document
+.getElementById(
+"q"+index
+)
+.scrollIntoView({
+behavior:"smooth"
+});
+
+};
+
+nav.appendChild(btn);
+
+});
+
+}
+
+// =====================
+// NAV UPDATE
+// =====================
+
+function updateNavigator(){
+
+questions.forEach(
+(q,index)=>{
+
+const btn =
+document.getElementById(
+"nav"+index
+);
+
+if(!btn) return;
+
+if(
+userAnswers[index]
+!== null
+){
+
+btn.style.background =
+"#16a34a";
+
+btn.style.color =
+"white";
+
+}
+else{
+
+btn.style.background =
+"#d1d5db";
+
+btn.style.color =
+"black";
+
+}
+
+if(
+checkingMode &&
+userAnswers[index]
+!== null
+){
+
+if(
+userAnswers[index]
+=== q.answer
+){
+
+btn.style.background =
+"#16a34a";
+
+}
+else{
+
+btn.style.background =
+"#dc2626";
+
+}
+
+}
+
+});
+
+}
+
+// =====================
+// SUBMIT
+// =====================
+
+function submitTest(){
+
+checkingMode = true;
+
+clearInterval(
+timerInterval
+);
+
+renderQuestions();
+
+updateNavigator();
+
+calculateResult();
+
+document
+.getElementById(
+"feedbackPanel"
+)
+.style.display =
+"block";
+
+}
+
+// =====================
+// RESULT
+// =====================
+
+function calculateResult(){
+
+let total =
+questions.length;
+
+let attempted = 0;
+let right = 0;
+let wrong = 0;
+
+questions.forEach(
+(q,index)=>{
+
+if(
+userAnswers[index]
+!== null
+){
+
+attempted++;
+
+if(
+userAnswers[index]
+=== q.answer
+){
+right++;
+}
+else{
+wrong++;
+}
+
+}
+
+});
+
+let accuracy = 0;
+
+if(attempted>0){
+
+accuracy =
+(
+right/
+attempted
+*100
+).toFixed(2);
+
+}
+
+document
+.getElementById(
+"totalQ"
+)
+.innerText = total;
+
+document
+.getElementById(
+"attemptedQ"
+)
+.innerText =
+attempted;
+
+document
+.getElementById(
+"rightQ"
+)
+.innerText =
+right;
+
+document
+.getElementById(
+"wrongQ"
+)
+.innerText =
+wrong;
+
+document
+.getElementById(
+"accuracyQ"
+)
+.innerText =
+accuracy + "%";
+
+document
+.getElementById(
+"resultPanel"
+)
+.style.display =
+"block";
+
+}
+
+// =====================
+// RIGHT WRONG
+// =====================
+
+function markRight(index){
+
+const card =
+document.getElementById(
+"q"+index
+);
+
+card.classList.remove(
+"wrong-row"
+);
+
+card.classList.add(
+"correct-row"
+);
+
+}
+
+function markWrong(index){
+
+const card =
+document.getElementById(
+"q"+index
+);
+
+card.classList.remove(
+"correct-row"
+);
+
+card.classList.add(
+"wrong-row"
+);
+
+}
+
+// =====================
+// RESTART
+// =====================
+
+function restartTest(){
+
+if(
+!confirm(
+"Restart Test?"
+)
+){
+return;
+}
+
+userAnswers =
+new Array(
+questions.length
+).fill(null);
+
+checkingMode = false;
+
+selectedRating = 0;
+
+document
+.getElementById(
+"resultPanel"
+)
+.style.display =
+"none";
+
+document
+.getElementById(
+"feedbackPanel"
+)
+.style.display =
+"none";
+
+totalSeconds = 0;
+
+clearInterval(
+timerInterval
+);
+
+startTimer();
+
+renderQuestions();
+
+updateNavigator();
+
+}
+
+// =====================
+// DARK MODE
+// =====================
+
+function toggleDarkMode(){
+
+document.body
+.classList.toggle(
+"dark"
+);
+
+}
+
+// =====================
+// THEME
+// =====================
 
 document
 .getElementById(
@@ -984,125 +1032,123 @@ document
 "change",
 function(){
 
-    document
-    .documentElement
-    .style
-    .setProperty(
-    "--primary",
-    this.value
-    );
+document
+.documentElement
+.style
+.setProperty(
+"--primary",
+this.value
+);
 
-});
+}
+);
 
-// ==========================
-// PDF EXPORT
-// ==========================
+// =====================
+// PDF
+// =====================
 
 function exportPDF(){
 
-    window.print();
+window.print();
 
 }
 
-// ==========================
-// NAVIGATOR FINAL COLORS
-// ==========================
+// =====================
+// RATING
+// =====================
 
-function updateNavigator(){
+function setRating(value){
 
-    questions.forEach((q,index)=>{
+selectedRating =
+value;
 
-        const btn =
-        document.getElementById(
-        "nav"+index
-        );
-
-        if(!btn) return;
-
-        if(userAnswers[index]!==null){
-
-            btn.style.background =
-            "#16a34a";
-
-            btn.style.color =
-            "#fff";
-
-        }
-        else{
-
-            btn.style.background =
-            "#d1d5db";
-
-            btn.style.color =
-            "#000";
-
-        }
-
-        if(
-          checkingMode &&
-          userAnswers[index]
-          !== null
-        ){
-
-            if(
-            userAnswers[index]
-            === q.answer
-            ){
-
-                btn.style.background =
-                "#16a34a";
-
-            }
-            else{
-
-                btn.style.background =
-                "#dc2626";
-
-            }
-
-            btn.style.color =
-            "#fff";
-
-        }
-
-    });
+alert(
+value +
+" Star Selected"
+);
 
 }
 
-// ==========================
-// RESULT REFRESH
-// ==========================
+// =====================
+// REVIEW
+// =====================
 
-const oldCalculate =
-calculateResult;
+function submitReview(){
 
-calculateResult = function(){
+const review =
+document
+.getElementById(
+"reviewText"
+)
+.value;
 
-    oldCalculate();
+if(
+selectedRating===0
+){
 
-    updateNavigator();
+alert(
+"Select Rating"
+);
 
-};
+return;
+}
 
-// ==========================
-// PRINT TITLE
-// ==========================
+alert(
 
-window.onbeforeprint =
-function(){
+"Review Submitted\n\n" +
 
-    document.title =
-    "Student55_OMR_Result";
+"Rating: " +
+selectedRating +
 
-};
+"\nReview: " +
+review
 
-// ==========================
-// FINAL STARTUP
-// ==========================
+);
 
+}
+
+// =====================
+// ADMIN MSG
+// =====================
+
+function sendAdminMessage(){
+
+const insta =
+document
+.getElementById(
+"instaId"
+)
+.value;
+
+const msg =
+document
+.getElementById(
+"adminMsg"
+)
+.value;
+
+alert(
+
+"Message Sent\n\n" +
+
+"Instagram: " +
+insta +
+
+"\nMessage: " +
+msg
+
+);
+
+}
+
+// =====================
+// INIT
+// =====================
+
+createNavigator();
+renderQuestions();
 updateNavigator();
 
-renderQuestions();
 </script>
 
 </body>
