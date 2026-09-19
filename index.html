@@ -342,6 +342,32 @@ color:#fff;
 
 }
 
+ .nav-btn.checked-right{
+position:relative;
+}
+
+.nav-btn.checked-right::after{
+content:"✓";
+position:absolute;
+right:4px;
+bottom:2px;
+font-size:14px;
+opacity:.6;
+}
+
+.nav-btn.checked-wrong{
+position:relative;
+}
+
+.nav-btn.checked-wrong::after{
+content:"✗";
+position:absolute;
+right:4px;
+bottom:2px;
+font-size:14px;
+opacity:.6;
+}
+
 /* ======================
 OMR SHEET
 ====================== */
@@ -779,13 +805,22 @@ Submit Test
 
 <!-- PDF AREA -->
 
-<div
-id="pdfArea"
-style="
-display:none;
-text-align:center;
-margin-top:20px;
-">
+<button
+class="btn"
+onclick="downloadOMRPDF()">
+
+📄 Download OMR PDF
+
+</button>
+
+<button
+class="btn"
+onclick="downloadCheckedPDF()"
+style="margin-left:10px;">
+
+✅ Download Checked PDF
+
+</button>
 
 <input
 id="watermarkName"
@@ -1031,6 +1066,8 @@ let seconds = 0;
 
 let checkedQuestions = {};
 
+ let checkedCount = 0;
+
  let testStarted = false;
 
 window.onload=()=>{
@@ -1274,6 +1311,34 @@ updateResult();
 
 }
 
+ function updateNavigatorStatus(qNo,status){
+
+const navBtn=
+document.querySelector(
+`[data-q="${qNo}"]`
+);
+
+navBtn.classList.remove(
+"checked-right",
+"checked-wrong"
+);
+
+if(status==="right"){
+
+navBtn.classList.add(
+"checked-right"
+);
+
+}else{
+
+navBtn.classList.add(
+"checked-wrong"
+);
+
+}
+
+ }
+
 /* ======================
 SUBMIT
 ====================== */
@@ -1323,15 +1388,18 @@ if(!answers[qNo]) return;
 
 const row=document.getElementById("row-"+qNo);
 
-if(row.classList.contains("wrong-row")){
-row.classList.remove("wrong-row");
-wrongCount--;
+if(!row.classList.contains("correct-row")
+&&
+!row.classList.contains("wrong-row")){
+
+checkedCount++;
+
 }
 
-if(!row.classList.contains("correct-row")){
+row.classList.remove("wrong-row");
 row.classList.add("correct-row");
-rightCount++;
-}
+
+updateNavigatorStatus(qNo,"right");
 
 updateResult();
 
@@ -1347,15 +1415,18 @@ if(!answers[qNo]) return;
 
 const row=document.getElementById("row-"+qNo);
 
-if(row.classList.contains("correct-row")){
-row.classList.remove("correct-row");
-rightCount--;
+if(!row.classList.contains("correct-row")
+&&
+!row.classList.contains("wrong-row")){
+
+checkedCount++;
+
 }
 
-if(!row.classList.contains("wrong-row")){
+row.classList.remove("correct-row");
 row.classList.add("wrong-row");
-wrongCount++;
-}
+
+updateNavigatorStatus(qNo,"wrong");
 
 updateResult();
 
