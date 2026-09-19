@@ -10,7 +10,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
@@ -467,41 +466,44 @@ body {
             </div>
         </div>
 
-        <!-- RESULT PANEL -->
-        <div id="resultPanel" class="result-panel">
-            <h2 style="margin-bottom:15px;">📊 Live Result</h2>
-            <div class="result-grid">
-                <div class="result-box"><h3>Total</h3><h1 id="totalQuestions">0</h1></div>
-                <div class="result-box"><h3>Attempted</h3><h1 id="attemptedQuestions">0</h1></div>
-                <div class="result-box"><h3>Right</h3><h1 id="rightQuestions">0</h1></div>
-                <div class="result-box"><h3>Wrong</h3><h1 id="wrongQuestions">0</h1></div>
-                <div class="result-box"><h3>Accuracy</h3><h1 id="accuracyPercent">0%</h1></div>
+        <!-- EXPORTABLE REPORT AREA FOR PDF -->
+        <div id="pdfExportContainer">
+            <!-- RESULT PANEL -->
+            <div id="resultPanel" class="result-panel">
+                <h2 style="margin-bottom:15px;">📊 Live Result</h2>
+                <div class="result-grid">
+                    <div class="result-box"><h3>Total</h3><h1 id="totalQuestions">0</h1></div>
+                    <div class="result-box"><h3>Attempted</h3><h1 id="attemptedQuestions">0</h1></div>
+                    <div class="result-box"><h3>Right</h3><h1 id="rightQuestions">0</h1></div>
+                    <div class="result-box"><h3>Wrong</h3><h1 id="wrongQuestions">0</h1></div>
+                    <div class="result-box"><h3>Accuracy</h3><h1 id="accuracyPercent">0%</h1></div>
+                </div>
+            </div>
+
+            <!-- OMR SHEET -->
+            <div class="omr-sheet" id="omrExportSheet">
+                <div style="text-align:center; margin-bottom:15px;" id="startBtnWrapper">
+                    <button class="btn" id="startTimerBtn" onclick="startTestTimer()">▶ Start Test</button>
+                </div>
+
+                <div class="omr-header">
+                    <div>Q.No</div>
+                    <div style="text-align:center;">Ⓐ</div>
+                    <div style="text-align:center;">Ⓑ</div>
+                    <div style="text-align:center;">Ⓒ</div>
+                    <div style="text-align:center;">Ⓓ</div>
+                    <div style="text-align:center;">Right</div>
+                    <div style="text-align:center;">Wrong</div>
+                    <div style="text-align:center;">Your Ans</div>
+                    <div style="text-align:center;">Correct Ans</div>
+                </div>
+
+                <div id="omrContainer"></div>
             </div>
         </div>
 
         <!-- NAVIGATOR -->
-        <div id="navigator" class="navigator"></div>
-
-        <!-- OMR SHEET -->
-        <div class="omr-sheet" id="omrExportSheet">
-            <div style="text-align:center; margin-bottom:15px;">
-                <button class="btn" id="startTimerBtn" onclick="startTestTimer()">▶ Start Test</button>
-            </div>
-
-            <div class="omr-header">
-                <div>Q.No</div>
-                <div style="text-align:center;">Ⓐ</div>
-                <div style="text-align:center;">Ⓑ</div>
-                <div style="text-align:center;">Ⓒ</div>
-                <div style="text-align:center;">Ⓓ</div>
-                <div style="text-align:center;">Right</div>
-                <div style="text-align:center;">Wrong</div>
-                <div style="text-align:center;">Your Ans</div>
-                <div style="text-align:center;">Correct Ans</div>
-            </div>
-
-            <div id="omrContainer"></div>
-        </div>
+        <div id="navigator" class="navigator" style="margin-top:20px;"></div>
 
         <!-- SUBMIT BUTTON -->
         <div style="text-align:center; margin-top:20px;">
@@ -629,8 +631,7 @@ async function cropAndReadFast() {
     
     const worker = await Tesseract.createWorker('eng', 1);
     await worker.setParameters({
-        tessedit_char_whitelist: '0123456789ABCD.- \n',
-        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK
+        tessedit_char_whitelist: '0123456789ABCD.- \n'
     });
 
     const { data: { text } } = await worker.recognize(canvas);
@@ -640,9 +641,12 @@ async function cropAndReadFast() {
     const lines = text.split('\n');
 
     lines.forEach(line => {
-        const match = line.match(/(\d+)\s*[\.\-:]*\s*([A-D])/i);
+        // High accuracy pattern match for 1.A, 1. A, 1-A, 1 A etc.
+        const match = line.match(/(\d+)\s*[\.\-:\s]*\s*([A-D])/i);
         if (match) {
-            answerKey[parseInt(match[1])] = match[2].toUpperCase();
+            const qNum = parseInt(match[1]);
+            const ans = match[2].toUpperCase();
+            answerKey[qNum] = ans;
         }
     });
 
@@ -651,11 +655,11 @@ async function cropAndReadFast() {
     const detectedKeys = Object.keys(answerKey);
     if (detectedKeys.length > 0) {
         autoCheckMode = true;
-        totalQuestions = detectedKeys.length;
-        alert(`Success! Read ${totalQuestions} Questions accurately.`);
+        totalQuestions = Math.max(...detectedKeys.map(Number));
+        alert(`Success! Auto-Detected ${detectedKeys.length} Answer Keys (Max Question No: ${totalQuestions}).`);
         startApp();
     } else {
-        alert("Text read nahi hua. Kripya tight crop karke dubara try karein.");
+        alert("Text read nahi hua. Kripya image ko tightly crop karke dubara try karein.");
     }
 }
 
@@ -772,13 +776,14 @@ function submitTest() {
 
         for (let i = 1; i <= totalQuestions; i++) {
             const row = document.getElementById("row-" + i);
-            const userAns = answers[i];
-            const correctAns = answerKey[i];
+            const userAns = answers[i] || "-";
+            const correctAns = answerKey[i] || "-";
 
-            document.getElementById("correctAns-" + i).innerText = correctAns || "-";
+            document.getElementById("yourAns-" + i).innerText = userAns;
+            document.getElementById("correctAns-" + i).innerText = correctAns;
 
-            if (userAns && correctAns) {
-                if (userAns === correctAns) {
+            if (answers[i] && answerKey[i]) {
+                if (answers[i] === answerKey[i]) {
                     row.classList.add("correct-row");
                     rightCount++;
                     updateNavigatorStatus(i, "right");
@@ -787,6 +792,8 @@ function submitTest() {
                     wrongCount++;
                     updateNavigatorStatus(i, "wrong");
                 }
+            } else if (!answers[i] && answerKey[i]) {
+                row.classList.add("wrong-row");
             }
         }
         updateResult();
@@ -867,14 +874,16 @@ function restartTest() {
 
 function downloadOMRPDF() {
     const watermark = document.getElementById("watermarkName").value || "Student55";
-    const element = document.getElementById("omrExportSheet");
+    const element = document.getElementById("pdfExportContainer");
 
+    // Optimized HTML2PDF Settings for A4 pages
     const opt = {
-        margin:       0.5,
+        margin:       [0.3, 0.3, 0.3, 0.3],
         filename:     `OMR_Report_${watermark}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     html2pdf().set(opt).from(element).save();
