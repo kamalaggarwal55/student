@@ -108,47 +108,37 @@ body {
     transform: scale(1.05);
 }
 
-/* HIGH-VISIBILITY UPLOAD SECTION */
+/* BIG GREEN UPLOAD ANSWER KEY BUTTON & CONTAINER */
 .upload-hero-container {
     margin-top: 25px;
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px dashed rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 24px;
     text-align: center;
 }
 
-.upload-hero-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 15px;
+.big-green-upload-btn {
+    width: 100%;
+    background: #16a34a;
     color: #ffffff;
-}
-
-.upload-btn-group {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.big-upload-btn {
-    flex: 1;
-    background: #ffffff;
-    color: #111827;
-    padding: 22px 15px;
-    border-radius: 18px;
+    padding: 22px;
+    border-radius: 20px;
     cursor: pointer;
-    font-weight: 700;
-    font-size: 20px;
+    font-weight: 800;
+    font-size: 22px;
     text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
     border: none;
     transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
 }
 
-.big-upload-btn:hover {
+.big-green-upload-btn:hover {
+    background: #15803d;
     transform: translateY(-2px);
-    background: #f8fafc;
 }
 
 #uploadStatusBadge {
@@ -397,25 +387,20 @@ body {
             </div>
         </div>
 
-        <!-- ENHANCED BOLD UPLOAD SECTION -->
+        <!-- BOLD GREEN UPLOAD ANSWER KEY BUTTON -->
         <div class="upload-hero-container">
-            <div class="upload-hero-title">⚡ UPLOAD ANSWER KEY FOR HIGH-PRECISION AUTO CHECK ⚡</div>
-            
-            <div class="upload-btn-group">
-                <button type="button" class="big-upload-btn" onclick="document.getElementById('cameraInput').click()">📷 Take Photo</button>
-                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
+            <button type="button" class="big-green-upload-btn" onclick="document.getElementById('fileInput').click()">
+                📂 UPLOAD ANSWER KEY
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
 
-                <button type="button" class="big-upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Image File</button>
-                <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
-            </div>
-
-            <div id="uploadStatusBadge">✅ Image Selected! Crop clearly below and Click Read.</div>
+            <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click Process below.</div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ READ CROPPED ANSWER KEY</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ READ & CHECK ANSWER KEY</button>
             </div>
         </div>
 
@@ -590,48 +575,33 @@ function handleImageSelect(e) {
     }
 }
 
-// IMAGE CONTRAST ENHANCEMENT FOR HIGH PRECISION OCR
-function preprocessCanvas(sourceCanvas) {
+// HIGH RESOLUTION IMAGE ENHANCER FOR OCR (NO TEXT TRIM)
+function getHighResImageCanvas(sourceCanvas) {
+    const scale = 2; // Upscale 2x for sharp text
     const canvas = document.createElement('canvas');
+    canvas.width = sourceCanvas.width * scale;
+    canvas.height = sourceCanvas.height * scale;
     const ctx = canvas.getContext('2d');
-    canvas.width = sourceCanvas.width;
-    canvas.height = sourceCanvas.height;
-    
-    ctx.drawImage(sourceCanvas, 0, 0);
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = imgData.data;
-
-    for (let i = 0; i < d.length; i += 4) {
-        // Grayscale conversion
-        let avg = 0.34 * d[i] + 0.5 * d[i+1] + 0.16 * d[i+2];
-        // Binarization & High Contrast Thresholding
-        avg = avg < 140 ? 0 : 255;
-        d[i] = avg;
-        d[i+1] = avg;
-        d[i+2] = avg;
-    }
-    ctx.putImageData(imgData, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/png');
 }
 
-// ULTRA HIGH ACCURACY OCR READING LOGIC
+// ACCURATE OCR SCANNER FOR FULL 20 QUESTIONS
 async function processCropAndRead() {
     if (!cropper) return;
     
-    document.getElementById("loadingText").innerText = "Performing High-Precision OCR Scan...";
+    document.getElementById("loadingText").innerText = "Reading all questions with High Precision...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
-        const processedImageData = preprocessCanvas(rawCanvas);
+        const processedImageData = getHighResImageCanvas(rawCanvas);
 
         const result = await Tesseract.recognize(
             processedImageData,
-            'eng',
-            {
-                tessedit_pageseg_mode: '6',
-                tessedit_char_whitelist: '0123456789ABCD.-: \n'
-            }
+            'eng'
         );
 
         const text = result.data.text;
@@ -639,15 +609,15 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
-            // High precision regex matching for question numbers and options A-D
-            const match = line.match(/(?:^|\D)(\d{1,3})\s*[\.\-:\s]*\s*([A-D])(?:\D|$)/i);
-            if (match) {
+            // Flexible matching for Question No (1 to 200) and Answer A/B/C/D
+            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            matches.forEach(match => {
                 const qNum = parseInt(match[1]);
                 const qAns = match[2].toUpperCase();
                 if (qNum > 0 && qNum <= 200) {
                     extractedAnswerKey[qNum] = qAns;
                 }
-            }
+            });
         });
 
         document.getElementById("loadingOverlay").style.display = "none";
@@ -660,7 +630,7 @@ async function processCropAndRead() {
             let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
             alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("❌ Text clear read nahi hua. Kripya image ko closely crop karein aur bilkul clear image upload karein.");
+            alert("❌ Text clear read nahi hua. Kripya image ko closely crop karein aur clear photo upload karein.");
         }
     } catch(err) {
         console.error(err);
@@ -680,7 +650,6 @@ function startApp() {
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
     
-    // Push State for Mobile Back Button Handling
     history.pushState({ page: 'app' }, 'OMR Test', '#omr');
 
     saveState("app");
