@@ -1963,6 +1963,53 @@ document.getElementById(
 
 }
 
+
+
+/* ===== V4 FINAL PATCH ===== */
+function updateNavigatorStatus(qNo,status){
+ const btn=document.querySelector(`[data-q="${qNo}"]`);
+ if(!btn) return;
+ btn.classList.remove('checked-right','checked-wrong');
+ if(status==='right') btn.classList.add('checked-right');
+ if(status==='wrong') btn.classList.add('checked-wrong');
+}
+
+function markRight(qNo){
+ if(!submitted) return;
+ const row=document.getElementById('row-'+qNo);
+ if(checkedQuestions[qNo]==='right') return;
+ if(checkedQuestions[qNo]==='wrong'){ wrongCount--; }
+ checkedQuestions[qNo]='right';
+ rightCount++;
+ row.classList.remove('wrong-row');
+ row.classList.add('correct-row');
+ updateNavigatorStatus(qNo,'right');
+ updateResult();
+}
+
+function markWrong(qNo){
+ if(!submitted) return;
+ const row=document.getElementById('row-'+qNo);
+ if(checkedQuestions[qNo]==='wrong') return;
+ if(checkedQuestions[qNo]==='right'){ rightCount--; }
+ checkedQuestions[qNo]='wrong';
+ wrongCount++;
+ row.classList.remove('correct-row');
+ row.classList.add('wrong-row');
+ updateNavigatorStatus(qNo,'wrong');
+ updateResult();
+}
+
+function downloadOMRPDF(){ downloadPDF(); }
+function downloadCheckedPDF(){ downloadPDF(); }
+
+document.addEventListener('DOMContentLoaded',()=>{
+ const submit=document.getElementById('submitBtn');
+ if(submit && !submit.dataset.fixed){
+   submit.dataset.fixed='1';
+ }
+});
+
 </script>
 
 </div>
