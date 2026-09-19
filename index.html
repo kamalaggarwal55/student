@@ -1302,6 +1302,7 @@ sessionStorage.setItem(
 "omrStarted",
 "yes"
 );
+sessionStorage.setItem("questionCount", totalQuestions);
 
 document.getElementById(
 "resultPanel"
@@ -1543,210 +1544,49 @@ alert("Checking Mode Enabled");
 
 });
 
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-answers[qNo] = value;
-
-document.getElementById(
-"yourAns-"+qNo
-).innerText = value;
-
-if(
-autoCheckMode &&
-answerKey[qNo]
-){
-
-document.getElementById(
-"correctAns-"+qNo
-).innerText =
-answerKey[qNo];
-
-if(
-value === answerKey[qNo]
-){
-
-if(
-row.dataset.status !== "right"
-){
-
-if(
-row.dataset.status === "wrong"
-){
-wrongCount--;
-}
-
-rightCount++;
-
-}
-
-row.dataset.status = "right";
-
-row.classList.remove(
-"wrong-row"
-);
-
-row.classList.add(
-"correct-row"
-);
-
-updateNavigatorStatus(
-qNo,
-"right"
-);
-
-}else{
-
-if(
-row.dataset.status !== "wrong"
-){
-
-if(
-row.dataset.status === "right"
-){
-rightCount--;
-}
-
-wrongCount++;
-
-}
-
-row.dataset.status = "wrong";
-
-row.classList.remove(
-"correct-row"
-);
-
-row.classList.add(
-"wrong-row"
-);
-
-updateNavigatorStatus(
-qNo,
-"wrong"
-);
-
-}
-
-}
-
-const navBtn =
-document.querySelector(
-`[data-q="${qNo}"]`
-);
-
-if(navBtn){
-navBtn.classList.add("done");
-}
-
-updateResult();
-
-}
-
-/* ======================
-RESULT
-====================== */
-function updateResult(){
-
-document.getElementById(
-"totalQuestions"
-).innerText = totalQuestions;
-
-document.getElementById(
-"attemptedQuestions"
-).innerText =
-Object.keys(answers).length;
-
-document.getElementById(
-"rightQuestions"
-).innerText = rightCount;
-
-document.getElementById(
-"wrongQuestions"
-).innerText = wrongCount;
-
-let acc = 0;
-
-if((rightCount + wrongCount) > 0){
-
-acc = (
-rightCount /
-(rightCount + wrongCount)
-* 100
-).toFixed(2);
-
-}
-
-document.getElementById(
-"accuracyPercent"
-).innerText =
-acc + "%";
-
-}
- 
-
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-answers[qNo] = value;
-
-document.getElementById(
-"yourAns-"+qNo
-).innerText = value;
-
-const navBtn =
-document.querySelector(
-`[data-q="${qNo}"]`
-);
-
-if(navBtn){
-navBtn.classList.add("done");
-}
-
-updateResult();
-
-}
-
 /* ======================
 TIMER
 ====================== */
 
+
+
+
+function markRight(qNo){
+    if(!submitted) return;
+    const row=document.getElementById("row-"+qNo);
+    if(row.dataset.status==="right") return;
+    if(row.dataset.status==="wrong") wrongCount--;
+    row.dataset.status="right";
+    row.classList.remove("wrong-row");
+    row.classList.add("correct-row");
+    rightCount++;
+    updateNavigatorStatus(qNo,"right");
+    updateResult();
+}
+
+function markWrong(qNo){
+    if(!submitted) return;
+    const row=document.getElementById("row-"+qNo);
+    if(row.dataset.status==="wrong") return;
+    if(row.dataset.status==="right") rightCount--;
+    row.dataset.status="wrong";
+    row.classList.remove("correct-row");
+    row.classList.add("wrong-row");
+    wrongCount++;
+    updateNavigatorStatus(qNo,"wrong");
+    updateResult();
+}
+
+function updateNavigatorStatus(qNo,status){
+    const btn=document.querySelector(`[data-q="${qNo}"]`);
+    if(!btn) return;
+    btn.classList.remove("checked-right","checked-wrong");
+    if(status==="right") btn.classList.add("checked-right");
+    if(status==="wrong") btn.classList.add("checked-wrong");
+}
+
+function downloadOMRPDF(){ downloadPDF(); }
+function downloadCheckedPDF(){ downloadPDF(); }
 
 
 /* ======================
