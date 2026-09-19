@@ -7,7 +7,7 @@
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -505,7 +505,6 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-// EXACT PAGE PRESERVATION ON REFRESH
 window.addEventListener('DOMContentLoaded', () => {
     const activePage = sessionStorage.getItem("activePage");
     if (activePage === "app" || window.location.hash === "#omr") {
@@ -547,7 +546,6 @@ function saveState(pageName) {
     sessionStorage.setItem("seconds", seconds);
 }
 
-// UPLOAD FIX & STATUS
 function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
@@ -565,25 +563,26 @@ function handleImageSelect(e) {
     }
 }
 
-// OCR READING LOGIC
+// UPDATED ERROR-FREE OCR LOGIC
 async function processCropAndRead() {
     if (!cropper) return;
     
     document.getElementById("loadingText").innerText = "Extracting Answer Key accurately...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
-    const canvas = cropper.getCroppedCanvas();
-    
     try {
-        const worker = await Tesseract.createWorker('eng', 1);
-        await worker.setParameters({
-            tessedit_char_whitelist: '0123456789ABCD.- \n',
-            tessedit_pageseg_mode: '6'
-        });
+        const canvas = cropper.getCroppedCanvas();
+        const imageDataUrl = canvas.toDataURL('image/png');
 
-        const { data: { text } } = await worker.recognize(canvas);
-        await worker.terminate();
+        const result = await Tesseract.recognize(
+            imageDataUrl,
+            'eng',
+            {
+                logger: m => console.log(m)
+            }
+        );
 
+        const text = result.data.text;
         extractedAnswerKey = {};
         const lines = text.split('\n');
 
@@ -611,8 +610,9 @@ async function processCropAndRead() {
             alert("❌ Text clear read nahi hua. Kripya image ko tightly crop karein aur clear photo upload karein.");
         }
     } catch(err) {
+        console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("OCR Engine Error! Kripya dobara try karein.");
+        alert("OCR Engine Error! Direct Image processing issue. Clear photo use karein.");
     }
 }
 
