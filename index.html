@@ -108,6 +108,49 @@ body {
     transform: scale(1.05);
 }
 
+/* BIGGER UPLOAD BUTTONS & UPLOAD STATUS */
+.upload-btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.big-upload-btn {
+    flex: 1;
+    background: #ffffff;
+    color: #111827;
+    padding: 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.big-upload-btn:hover {
+    transform: translateY(-3px);
+    background: #f8fafc;
+}
+
+#uploadStatusBadge {
+    display: none;
+    background: #22c55e;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
 /* CROP AREA */
 #cropWrapper {
     display: none;
@@ -274,22 +317,6 @@ body {
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.upload-btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-.upload-btn-group label {
-    flex: 1;
-    background: white;
-    color: #111827;
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    text-align: center;
-}
 </style>
 </head>
 
@@ -329,22 +356,24 @@ body {
             </div>
         </div>
 
-        <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:15px; text-align:left;">
+        <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:20px; text-align:left;">
             <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload or Take Photo of Answer Key</h3>
             
             <div class="upload-btn-group">
-                <label for="cameraInput">📷 Open Camera</label>
+                <label for="cameraInput" class="big-upload-btn">📷 Take Photo</label>
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
 
-                <label for="fileInput">📁 Upload File</label>
+                <label for="fileInput" class="big-upload-btn">📁 Choose File</label>
                 <input type="file" id="fileInput" accept="image/*" style="display:none;">
             </div>
+
+            <div id="uploadStatusBadge">✅ Image Uploaded Successfully! Now crop below.</div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:16px;" onclick="processCropAndRead()">⚡ Crop & Read Answer Key</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ Read Cropped Answer Key</button>
             </div>
         </div>
 
@@ -442,49 +471,53 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-// PAGE LOAD PAR STATE RESTORE KARNA (REFRESH LOGIC)
-window.onload = function() {
-    const savedState = localStorage.getItem("omrPageState");
-    if (savedState === "app") {
-        totalQuestions = parseInt(localStorage.getItem("totalQuestions")) || 10;
-        autoCheckMode = localStorage.getItem("autoCheckMode") === "true";
-        userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
-        extractedAnswerKey = JSON.parse(localStorage.getItem("extractedAnswerKey") || "{}");
-        testStarted = localStorage.getItem("testStarted") === "true";
-        submitted = localStorage.getItem("submitted") === "true";
-        seconds = parseInt(localStorage.getItem("seconds")) || 0;
+// EXACT PAGE PRESERVATION ON REFRESH
+window.addEventListener('DOMContentLoaded', () => {
+    const activePage = sessionStorage.getItem("activePage");
+    if (activePage === "app" || window.location.hash === "#omr") {
+        totalQuestions = parseInt(sessionStorage.getItem("totalQuestions")) || 10;
+        autoCheckMode = sessionStorage.getItem("autoCheckMode") === "true";
+        userAnswers = JSON.parse(sessionStorage.getItem("userAnswers") || "{}");
+        extractedAnswerKey = JSON.parse(sessionStorage.getItem("extractedAnswerKey") || "{}");
+        testStarted = sessionStorage.getItem("testStarted") === "true";
+        submitted = sessionStorage.getItem("submitted") === "true";
+        seconds = parseInt(sessionStorage.getItem("seconds")) || 0;
 
         document.getElementById("welcomePage").style.display = "none";
         document.getElementById("app").style.display = "block";
-        
+        window.location.hash = "omr";
+
         generateOMR();
         restoreUserSelections();
-        if(testStarted && !submitted) {
+
+        if (testStarted && !submitted) {
             document.getElementById("startTimerBtn").style.display = "none";
             resumeTimer();
         }
-        if(submitted) {
+        if (submitted) {
             submitTest(true);
         }
         updateResult();
     }
-};
+});
 
 function saveState(pageName) {
-    localStorage.setItem("omrPageState", pageName);
-    localStorage.setItem("totalQuestions", totalQuestions);
-    localStorage.setItem("autoCheckMode", autoCheckMode);
-    localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
-    localStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
-    localStorage.setItem("testStarted", testStarted);
-    localStorage.setItem("submitted", submitted);
-    localStorage.setItem("seconds", seconds);
+    sessionStorage.setItem("activePage", pageName);
+    sessionStorage.setItem("totalQuestions", totalQuestions);
+    sessionStorage.setItem("autoCheckMode", autoCheckMode);
+    sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+    sessionStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
+    sessionStorage.setItem("testStarted", testStarted);
+    sessionStorage.setItem("submitted", submitted);
+    sessionStorage.setItem("seconds", seconds);
 }
 
-// IMAGE HANDLING (Camera or File)
+// INSTANT UPLOAD STATUS DISPLAY
 function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
+        document.getElementById('uploadStatusBadge').style.display = 'block';
+        
         const reader = new FileReader();
         reader.onload = function(event) {
             const cropImg = document.getElementById('cropImage');
@@ -500,18 +533,19 @@ function handleImageSelect(e) {
 document.getElementById('cameraInput').addEventListener('change', handleImageSelect);
 document.getElementById('fileInput').addEventListener('change', handleImageSelect);
 
+// OPTIMIZED OCR READING LOGIC
 async function processCropAndRead() {
     if (!cropper) return;
     
-    document.getElementById("loadingText").innerText = "Reading Crop Image Deeply...";
+    document.getElementById("loadingText").innerText = "Extracting Answer Key accurately...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     const canvas = cropper.getCroppedCanvas();
     
-    // OCR Processing
     const worker = await Tesseract.createWorker('eng', 1);
     await worker.setParameters({
-        tessedit_char_whitelist: '0123456789ABCD.- \n'
+        tessedit_char_whitelist: '0123456789ABCD.- \n',
+        tessedit_pageseg_mode: '6'
     });
 
     const { data: { text } } = await worker.recognize(canvas);
@@ -521,12 +555,13 @@ async function processCropAndRead() {
     const lines = text.split('\n');
 
     lines.forEach(line => {
-        // Regex to parse Question number & option (e.g. "1. A", "12-B", "5 C")
-        const match = line.match(/(\d+)\s*[\.\-:\s]*\s*([A-D])/i);
+        const match = line.match(/(?:^|\D)(\d{1,3})\s*[\.\-:\s]*\s*([A-D])(?:\D|$)/i);
         if (match) {
             const qNum = parseInt(match[1]);
             const qAns = match[2].toUpperCase();
-            extractedAnswerKey[qNum] = qAns;
+            if (qNum > 0 && qNum <= 200) {
+                extractedAnswerKey[qNum] = qAns;
+            }
         }
     });
 
@@ -538,9 +573,9 @@ async function processCropAndRead() {
         totalQuestions = Math.max(...detectedKeys.map(Number));
         
         let previewStr = detectedKeys.map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
-        alert(`✅ Reading Successful!\nTotal Questions Detected: ${totalQuestions}\nKey: ${previewStr}\n\nAb 'Start Test' button par click karke OMR sheet par jayein.`);
+        alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
     } else {
-        alert("❌ Text clear nahi mila. Kripya image ko bilkul pass se tightly crop karein aur saaf photo lein.");
+        alert("❌ Text clear read nahi hua. Kripya image ko tightly crop karein aur clear photo upload karein.");
     }
 }
 
@@ -554,6 +589,7 @@ function startApp() {
 
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
+    window.location.hash = "omr";
 
     saveState("app");
     generateOMR();
@@ -629,13 +665,13 @@ function resumeTimer() {
         const min = String(Math.floor(seconds / 60)).padStart(2, "0");
         const sec = String(seconds % 60).padStart(2, "0");
         document.getElementById("timer").innerText = `${min}:${sec}`;
-        localStorage.setItem("seconds", seconds);
+        sessionStorage.setItem("seconds", seconds);
     }, 1000);
 }
 
 function selectOption(qNo, value, element) {
     if (!testStarted) {
-        alert("Pehle '▶ Start Test' button par click karke timer start karein!");
+        alert("Pehle '▶ Start Test' button par click karke test start karein!");
         return;
     }
     if (submitted) return;
@@ -752,7 +788,8 @@ function updateResult() {
 function toggleDarkMode() { document.body.classList.toggle("dark"); }
 
 function goHome() { 
-    localStorage.clear();
+    sessionStorage.clear();
+    window.location.hash = "";
     location.reload(); 
 }
 
