@@ -1597,6 +1597,27 @@ opt.classList.remove("selected");
 
 element.classList.add("selected");
 
+function selectOption(
+qNo,
+value,
+element
+){
+
+if(!testStarted) return;
+if(submitted) return;
+
+const row =
+document.getElementById(
+"row-"+qNo
+);
+
+row.querySelectorAll(".option")
+.forEach(opt=>{
+opt.classList.remove("selected");
+});
+
+element.classList.add("selected");
+
 answers[qNo]=value;
 
 document.getElementById(
@@ -1673,36 +1694,6 @@ navBtn.classList.add("done");
 updateResult();
 
 }
-
-
-
- function updateNavigatorStatus(qNo,status){
-
-const navBtn=
-document.querySelector(
-`[data-q="${qNo}"]`
-);
-
-navBtn.classList.remove(
-"checked-right",
-"checked-wrong"
-);
-
-if(status==="right"){
-
-navBtn.classList.add(
-"checked-right"
-);
-
-}else{
-
-navBtn.classList.add(
-"checked-wrong"
-);
-
-}
-
- }
 
 /* ======================
 SUBMIT
