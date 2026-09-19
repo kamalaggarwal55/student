@@ -1698,6 +1698,7 @@ SUBMIT
 ====================== */
 
 document
+document
 .getElementById(
 "submitBtn"
 )
@@ -1707,19 +1708,29 @@ document
 
 submitted=true;
 
- clearInterval(timerInterval);
+clearInterval(
+timerInterval
+);
 
 document
 .getElementById(
 "pdfArea"
 ).style.display="block";
 
- document
+document
 .getElementById(
 "submitBtn"
 ).style.display="none";
 
-for(let i=1;i<=totalQuestions;i++){
+if(
+!autoCheckMode
+){
+
+for(
+let i=1;
+i<=totalQuestions;
+i++
+){
 
 document.getElementById(
 "right-"+i
@@ -1734,6 +1745,14 @@ document.getElementById(
 alert(
 "Checking Mode Enabled"
 );
+
+}else{
+
+alert(
+"Auto Checking Completed"
+);
+
+}
 
 });
 
