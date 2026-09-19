@@ -804,14 +804,17 @@ Submit Test
 
 
 <!-- PDF AREA -->
+<!-- PDF AREA -->
 
 <div
 id="pdfArea"
 style="
 display:none;
 text-align:center;
-margin-top:20px;
+margin-top:25px;
 ">
+
+<div style="margin-bottom:15px;">
 
 <button
 class="btn"
@@ -821,6 +824,10 @@ onclick="downloadOMRPDF()">
 
 </button>
 
+</div>
+
+<div style="margin-bottom:15px;">
+
 <button
 class="btn"
 onclick="downloadCheckedPDF()">
@@ -828,6 +835,8 @@ onclick="downloadCheckedPDF()">
 ✅ Download Checked PDF
 
 </button>
+
+</div>
 
 </div>
 
@@ -1346,6 +1355,11 @@ document
 .getElementById(
 "pdfArea"
 ).style.display="block";
+
+ document
+.getElementById(
+"submitBtn"
+).style.display="none";
 
 for(let i=1;i<=totalQuestions;i++){
 
