@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR V8 - Fast Engine</title>
+<title>Student55 Ultra Fast AI OMR V8 - Neural Dynamic Engine</title>
 
+<!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -12,80 +13,353 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-:root { --theme: #2563eb; --bg: #f5f7fb; --card: #ffffff; --text: #111827; --border: #d1d5db; }
-body { background: var(--bg); color: var(--text); transition: 0.3s; }
-.dark { --bg: #111827; --card: #1f2937; --text: #ffffff; --border: #374151; }
-.container { width: 95%; max-width: 1600px; margin: auto; padding: 20px; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
+:root {
+    --theme: #2563eb;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --border: #d1d5db;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s;
+}
+
+.dark {
+    --bg: #111827;
+    --card: #1f2937;
+    --text: #ffffff;
+    --border: #374151;
+}
+
+.container {
+    width: 95%;
+    max-width: 1600px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* WELCOME PAGE */
 #welcomePage {
     min-height: 100vh;
     background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
-    display: flex; justify-content: center; align-items: center; padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
+
 .welcome-box {
-    max-width: 1000px; width: 100%; background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(15px); padding: 40px; border-radius: 30px; text-align: center; color: white;
+    max-width: 1000px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    color: white;
 }
-.welcome-box h1 { font-size: clamp(32px, 8vw, 55px); margin-bottom: 15px; }
-.selector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 25px; }
-.selector-grid select { width: 100%; padding: 12px; border: none; border-radius: 12px; font-size: 15px; color: #111827; }
-.start-btn { margin-top: 30px; padding: 15px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 50px; cursor: pointer; background: white; color: #2563eb; }
 
-.upload-hero-container { margin-top: 25px; padding: 20px; background: rgba(255, 255, 255, 0.15); border-radius: 24px; text-align: center; }
-.upload-btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+.welcome-box h1 {
+    font-size: clamp(32px, 8vw, 55px);
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.selector-grid select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #111827;
+}
+
+.start-btn {
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    background: white;
+    color: #2563eb;
+    transition: transform 0.2s;
+}
+
+.start-btn:hover {
+    transform: scale(1.05);
+}
+
+/* DUAL UPLOAD / CAMERA BUTTONS */
+.upload-hero-container {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    text-align: center;
+}
+
+.upload-btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .action-upload-btn {
-    flex: 1; min-width: 220px; background: #16a34a; color: #ffffff; padding: 18px;
-    border-radius: 18px; cursor: pointer; font-weight: 700; font-size: 18px; border: none;
+    flex: 1;
+    min-width: 220px;
+    background: #16a34a;
+    color: #ffffff;
+    padding: 18px;
+    border-radius: 18px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+    border: none;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
-.action-upload-btn.gallery-btn { background: #0284c7; }
-#uploadStatusBadge { display: none; background: #22c55e; color: white; padding: 14px; border-radius: 12px; margin-top: 15px; font-weight: 700; }
-#cropWrapper { display: none; margin-top: 15px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; }
-.img-container { max-width: 100%; max-height: 450px; margin: auto; }
-#cropImage { max-width: 100%; }
 
+.action-upload-btn.gallery-btn {
+    background: #0284c7;
+    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.3);
+}
+
+.action-upload-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+#uploadStatusBadge {
+    display: none;
+    background: #22c55e;
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 16px;
+    text-align: center;
+}
+
+#cropWrapper {
+    display: none;
+    margin-top: 15px;
+    background: rgba(0,0,0,0.6);
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.img-container {
+    max-width: 100%;
+    max-height: 450px;
+    margin: auto;
+}
+
+#cropImage {
+    max-width: 100%;
+}
+
+/* APP MAIN */
 #app { display: none; }
-.header { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
-.header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+.header {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .logo { font-size: 28px; font-weight: 700; color: var(--theme); }
 .controls { display: flex; gap: 10px; flex-wrap: wrap; }
 .btn { background: var(--theme); color: white; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
 .timer { background: #111827; color: white; padding: 10px 15px; border-radius: 10px; font-weight: 700; }
 
-.result-panel { display: none; background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-.result-box { background: #eef2ff; color: #111827; padding: 15px; border-radius: 15px; text-align: center; }
+.result-panel {
+    display: none;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+}
 
-.navigator { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.nav-btn { width: 48px; height: 48px; border: none; border-radius: 50%; background: #e5e7eb; color: #111827; font-size: 18px; font-weight: 700; cursor: pointer; }
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.result-box {
+    background: #eef2ff;
+    color: #111827;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.navigator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.nav-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 .nav-btn.done { background: var(--theme); color: #fff; }
 .nav-btn.checked-right { background: #16a34a !important; color: white !important; }
 .nav-btn.checked-wrong { background: #dc2626 !important; color: white !important; }
 
-.omr-sheet { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); overflow-x: auto; }
-.omr-header, .omr-row { display: grid; grid-template-columns: 80px repeat(4, 70px) 110px 110px 110px 110px; align-items: center; padding: 12px; min-width: 850px; }
+/* OMR SHEET */
+.omr-sheet {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.omr-header, .omr-row {
+    display: grid;
+    grid-template-columns: 80px repeat(4, 70px) 110px 110px 110px 110px;
+    align-items: center;
+    padding: 12px;
+    min-width: 850px;
+}
+
 .omr-header { font-weight: 700; border-bottom: 2px solid var(--border); margin-bottom: 10px; }
 .omr-row { border-bottom: 1px solid var(--border); }
 .qno { font-weight: 600; }
 
-.option { width: 45px; height: 45px; border: 3px solid #b8bec8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; cursor: pointer; margin: auto; }
-.option.selected { background: var(--theme); color: white; border-color: var(--theme); }
+.option {
+    width: 45px;
+    height: 45px;
+    border: 3px solid #b8bec8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: auto;
+    transition: 0.2s;
+}
+
+.option.selected {
+    background: var(--theme);
+    color: white;
+    border-color: var(--theme);
+}
+
 .correct-row { background: rgba(22, 163, 74, 0.15) !important; }
 .wrong-row { background: rgba(220, 38, 38, 0.15) !important; }
 
-.check-btn { display: none; padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: 600; }
+.check-btn {
+    display: none;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+}
 .right-btn { background: #16a34a; }
 .wrong-btn { background: #dc2626; }
 
+/* COMMENTS & REVIEWS */
+.comment-box {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin-top: 20px;
+}
+
+.comment-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.comment-list {
+    margin-top: 15px;
+}
+
+.comment-item {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
 #loadingOverlay {
-    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.85); z-index: 9999; color: white;
-    flex-direction: column; align-items: center; justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
+
 .spinner {
-    width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #2563eb;
-    border-radius: 50%; animation: spin 0.6s linear infinite; margin-bottom: 15px;
+    width: 50px; height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-bottom: 15px;
 }
+
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
@@ -94,13 +368,14 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">1-Second Fast OCR Scan...</h3>
+    <h3 id="loadingText">1-Second Fast High-Precision Scan...</h3>
 </div>
 
+<!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra Fast AI OMR</h1>
-        <p>Real-time High-Speed OCR Recognition</p>
+        <p>Real-time High-Speed Dynamic OMR Scanner</p>
 
         <div class="selector-grid">
             <div>
@@ -126,20 +401,24 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
         <div class="upload-hero-container">
             <div class="upload-btn-group">
-                <button type="button" class="action-upload-btn" onclick="document.getElementById('cameraInput').click()">📷 TAKE CAMERA PHOTO</button>
-                <button type="button" class="action-upload-btn gallery-btn" onclick="document.getElementById('galleryInput').click()">🖼️ UPLOAD FROM GALLERY</button>
+                <button type="button" class="action-upload-btn" onclick="document.getElementById('cameraInput').click()">
+                    📷 TAKE CAMERA PHOTO
+                </button>
+                <button type="button" class="action-upload-btn gallery-btn" onclick="document.getElementById('galleryInput').click()">
+                    🖼️ UPLOAD FROM GALLERY
+                </button>
             </div>
 
             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
             <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
 
-            <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area below.</div>
+            <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click SCAN below.</div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndReadFast()">⚡ SCAN NOW (1-2 SECONDS)</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndReadFast()">⚡ SCAN NOW (ACCURATE & FAST)</button>
             </div>
         </div>
 
@@ -147,11 +426,13 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
     </div>
 </section>
 
+<!-- MAIN APP -->
 <div id="app">
     <div class="container">
+        
         <div class="header">
             <div class="header-top">
-                <div class="logo">Student55 Fast AI OMR</div>
+                <div class="logo">Student55 Ultra Fast AI OMR</div>
                 <div class="controls">
                     <button class="btn" onclick="goHome()">🏠 Home</button>
                     <button class="btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
@@ -207,6 +488,28 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
         <div style="text-align:center; margin-top:15px;">
             <button class="btn" onclick="goHome()">🔄 Restart Test</button>
         </div>
+
+        <div class="header" style="margin-top:20px;">
+            <h2>📸 Instagram Profile</h2>
+            <p style="margin-top:5px; font-weight:600;">KAMAL AGGARWAL</p>
+            <a href="https://instagram.com" target="_blank"><button class="btn" style="margin-top:10px;">Visit Profile</button></a>
+        </div>
+
+        <div class="header">
+            <h2>⭐ Website Rating</h2>
+            <div style="font-size:32px; margin-top:10px; cursor:pointer;" onclick="rateSite(5)">⭐⭐⭐⭐⭐</div>
+            <p style="margin-top:10px;">Total Ratings: <span id="totalRatings">1</span></p>
+        </div>
+
+        <div class="comment-box">
+            <h2>💬 Feedback & Comments</h2>
+            <input type="text" id="userName" class="comment-input" placeholder="Your Name" style="margin-top:10px;">
+            <textarea id="commentText" class="comment-input" placeholder="Write a comment..." rows="3"></textarea>
+            <button class="btn" onclick="addComment()">Post Comment</button>
+
+            <div id="commentList" class="comment-list"></div>
+        </div>
+
     </div>
 </div>
 
@@ -250,26 +553,28 @@ function handleImageSelect(e) {
     }
 }
 
-// Ultra Fast Single-Pass Processing Buffer
+// Ultra Fast & Adaptive High-Contrast Binarization Canvas Filter
 function generateFastOptimizedCanvas(sourceCanvas) {
     const canvas = document.createElement('canvas');
-    // Optimal fixed width for maximum speed + high OCR contrast
-    const targetWidth = 800; 
+    const ctx = canvas.getContext('2d', { alpha: false });
+
+    // Adaptive Scaling to ensure bottom-most rows (e.g. Q.20) are never truncated
+    const targetWidth = sourceCanvas.width < 1000 ? sourceCanvas.width * 1.5 : sourceCanvas.width;
     const scaleRatio = targetWidth / sourceCanvas.width;
     canvas.width = targetWidth;
     canvas.height = sourceCanvas.height * scaleRatio;
 
-    const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
 
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imgData.data;
 
-    // High Speed Binarization Filter
+    // High Contrast Filter for crisp text edges
     for (let i = 0; i < data.length; i += 4) {
         let v = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-        v = v < 128 ? 0 : 255;
+        v = v < 135 ? 0 : 255;
         data[i] = data[i + 1] = data[i + 2] = v;
     }
 
@@ -277,7 +582,7 @@ function generateFastOptimizedCanvas(sourceCanvas) {
     return canvas;
 }
 
-// High Speed OCR Reader (1-2 Seconds Execution)
+// Dynamic OCR Engine (Reads EXACTLY the uploaded questions without forcing max limits)
 async function processCropAndReadFast() {
     if (!cropper) return;
     
@@ -293,54 +598,49 @@ async function processCropAndReadFast() {
 
         extractedAnswerKey = {};
 
-        // Fast Regex Mapping Pipeline
-        const cleanText = text.replace(/O|o/g, '0').replace(/I|l|\|/g, '1').replace(/S|s/g, '5').replace(/B/g, '8');
+        // Comprehensive Noise Cleaning Pipeline
+        let cleanText = text
+            .replace(/[\t\r]/g, " ")
+            .replace(/O|o/g, "0")
+            .replace(/I|l|\|/g, "1")
+            .replace(/Z|z/g, "2")
+            .replace(/S|s/g, "5")
+            .replace(/B/g, "8");
+
         const lines = cleanText.split('\n');
 
+        // Regex Parser matching: '20. A', '20-A', '20) A', '20 A'
         lines.forEach(line => {
-            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            const matches = [...line.matchAll(/(?:^|\s)(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
             matches.forEach(match => {
-                const qNum = parseInt(match[1]);
+                const qNum = parseInt(match[1], 10);
                 const qAns = match[2].toUpperCase();
                 if (qNum > 0 && qNum <= 200) {
-                    if (!extractedAnswerKey[qNum]) {
-                        extractedAnswerKey[qNum] = qAns;
-                    }
+                    extractedAnswerKey[qNum] = qAns;
                 }
             });
         });
 
-        // Sequence Healing: Missing Keys Correction Logic
-        const keys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
-        if (keys.length > 0) {
-            const maxKey = Math.max(...keys);
-            for (let i = 1; i <= maxKey; i++) {
-                if (!extractedAnswerKey[i]) {
-                    // Quick check pattern heuristic
-                    const lineText = lines.find(l => l.includes(`${i}`));
-                    if (lineText) {
-                        const m = lineText.match(/[A-D]/i);
-                        if (m) extractedAnswerKey[i] = m[0].toUpperCase();
-                    }
-                }
-            }
-        }
+        const detectedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
+        const totalDetected = detectedKeys.length;
 
         document.getElementById("loadingOverlay").style.display = "none";
-        const totalDetected = Object.keys(extractedAnswerKey).length;
         const endTime = performance.now();
+        const duration = ((endTime - startTime) / 1000).toFixed(2);
 
         if (totalDetected > 0) {
             autoCheckMode = true;
-            totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
-            alert(`⚡ Scan Completed in ${((endTime - startTime)/1000).toFixed(2)} seconds!\n\nDetected Answers: ${totalDetected} / ${totalQuestions}\n\nClick 'Start Test' to continue.`);
+            // Set total questions dynamically to the highest question number detected in image
+            totalQuestions = Math.max(...detectedKeys);
+
+            alert(`⚡ Scan Completed in ${duration} seconds!\n\nDetected Answers: ${totalDetected} / ${totalQuestions}\n\nClick 'Start Test' to continue.`);
         } else {
-            alert("⚠️ Clear cropped area select karein.");
+            alert("⚠️ Image clearly crop karein jahan Q.No aur Answers visible hon.");
         }
     } catch (err) {
-        console.error(err);
+        console.error("Scan Error:", err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Scan Error! Please try again.");
+        alert("Scan me error aaya. Kripya dobara try karein.");
     }
 }
 
@@ -504,6 +804,38 @@ function downloadOMRPDF() {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     }).from(element).save();
 }
+
+function rateSite(s) { alert(`Rated ${s} stars!`); }
+
+function addComment() {
+    const name = document.getElementById("userName").value.trim();
+    const text = document.getElementById("commentText").value.trim();
+    if(!name || !text) {
+        alert("Please enter both name and comment.");
+        return;
+    }
+    
+    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
+    comments.push({ name, text, time: new Date().toLocaleDateString() });
+    localStorage.setItem("omrComments", JSON.stringify(comments));
+
+    document.getElementById("userName").value = "";
+    document.getElementById("commentText").value = "";
+    loadComments();
+}
+
+function loadComments() {
+    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
+    const container = document.getElementById("commentList");
+    container.innerHTML = "";
+    comments.forEach(c => {
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.innerHTML = `<strong>${c.name}</strong> <small style="color:gray;">(${c.time})</small><p style="margin-top:5px;">${c.text}</p>`;
+        container.appendChild(item);
+    });
+}
+loadComments();
 </script>
 </body>
 </html>
