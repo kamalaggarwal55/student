@@ -3,2019 +3,899 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Student55 Advanced OMR V4</title>
 
+<!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
-:root{
---theme:#2563eb;
---bg:#f5f7fb;
---card:#ffffff;
---text:#111827;
---border:#d1d5db;
+:root {
+    --theme: #2563eb;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --border: #d1d5db;
 }
 
-body{
-background:var(--bg);
-color:var(--text);
-transition:.3s;
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s;
 }
 
-.dark{
---bg:#111827;
---card:#1f2937;
---text:#ffffff;
---border:#374151;
+.dark {
+    --bg: #111827;
+    --card: #1f2937;
+    --text: #ffffff;
+    --border: #374151;
 }
 
-.container{
-width:95%;
-max-width:1600px;
-margin:auto;
-padding:20px;
+.container {
+    width: 95%;
+    max-width: 1600px;
+    margin: auto;
+    padding: 20px;
 }
 
-/* ======================
-WELCOME PAGE
-====================== */
-
-#welcomePage{
-
-min-height:100vh;
-
-background:
-linear-gradient(
-135deg,
-#2563eb,
-#7c3aed,
-#ec4899
-);
-
-display:flex;
-justify-content:center;
-align-items:center;
-padding:20px;
+/* WELCOME PAGE */
+#welcomePage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
 }
 
-.welcome-box{
-
-max-width:1000px;
-width:100%;
-
-background:
-rgba(255,255,255,.12);
-
-backdrop-filter:blur(15px);
-
-padding:50px;
-
-border-radius:30px;
-
-text-align:center;
-
-color:white;
+.welcome-box {
+    max-width: 1000px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    padding: 50px;
+    border-radius: 30px;
+    text-align: center;
+    color: white;
 }
 
-.welcome-box h1{
-font-size:clamp(32px,8vw,55px);
-margin-bottom:15px;
-line-height:1.2;
-word-break:break-word;
+.welcome-box h1 {
+    font-size: clamp(32px, 8vw, 55px);
+    margin-bottom: 15px;
+    line-height: 1.2;
+    word-break: break-word;
 }
 
-.welcome-box p{
-
-font-size:18px;
-line-height:1.8;
-margin-bottom:25px;
+.welcome-box p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 25px;
 }
 
-.selector-grid{
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(250px,1fr));
-
-gap:20px;
-
-margin-top:25px;
+.selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
 }
 
-.selector-grid select{
-
-width:100%;
-
-padding:12px;
-
-border:none;
-
-border-radius:12px;
-
-font-size:15px;
+.selector-grid select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
 }
 
-.start-btn{
-
-margin-top:30px;
-
-padding:15px 40px;
-
-font-size:18px;
-
-font-weight:700;
-
-border:none;
-
-border-radius:50px;
-
-cursor:pointer;
-
-background:white;
-
-color:#2563eb;
+.start-btn {
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    background: white;
+    color: #2563eb;
+    transition: transform 0.2s;
 }
 
-.feature-grid{
-
-margin-top:35px;
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(180px,1fr));
-
-gap:15px;
+.start-btn:hover {
+    transform: scale(1.05);
 }
 
-.feature{
-
-background:
-rgba(255,255,255,.15);
-
-padding:18px;
-
-border-radius:15px;
+.feature-grid {
+    margin-top: 35px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
 }
 
-/* ======================
-APP
-====================== */
-
-#app{
-display:none;
+.feature {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 18px;
+    border-radius: 15px;
 }
 
-/* ======================
-HEADER
-====================== */
-
-.header{
-
-background:var(--card);
-
-padding:20px;
-
-border-radius:20px;
-
-margin-bottom:20px;
-
-border:1px solid var(--border);
+/* APP */
+#app {
+    display: none;
 }
 
-.header-top{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-flex-wrap:wrap;
-
-gap:10px;
+/* HEADER */
+.header {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
 }
 
-.logo{
-
-font-size:28px;
-
-font-weight:700;
-
-color:var(--theme);
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.controls{
-
-display:flex;
-
-gap:10px;
-
-flex-wrap:wrap;
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--theme);
 }
 
-.btn{
-
-background:var(--theme);
-
-color:white;
-
-padding:10px 15px;
-
-border:none;
-
-border-radius:10px;
-
-cursor:pointer;
-
-font-weight:600;
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.timer{
-
-background:#111827;
-
-color:white;
-
-padding:10px 15px;
-
-border-radius:10px;
-
-font-weight:700;
+.btn {
+    background: var(--theme);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-/* ======================
-RESULT PANEL
-====================== */
-
-.result-panel{
-
-display:none;
-
-background:var(--card);
-
-padding:20px;
-
-border-radius:20px;
-
-border:1px solid var(--border);
-
-margin-bottom:20px;
+.btn:hover {
+    opacity: 0.9;
 }
 
-.result-grid{
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(150px,1fr));
-
-gap:15px;
+.timer {
+    background: #111827;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 700;
 }
 
-.result-box{
-
-background:#eef2ff;
-
-padding:15px;
-
-border-radius:15px;
-
-text-align:center;
+/* RESULT PANEL */
+.result-panel {
+    display: none;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
 }
 
-/* ======================
-NAVIGATOR
-====================== */
-
-.navigator{
-
-display:flex;
-
-flex-wrap:wrap;
-
-gap:8px;
-
-margin-bottom:20px;
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
 }
 
-.nav-btn{
-
-width:48px;
-height:48px;
-
-border:none;
-
-border-radius:50%;
-
-background:#e5e7eb;
-
-color:#111827;
-
-font-size:18px;
-
-font-weight:700;
-
-cursor:pointer;
-
-margin:4px;
-
-transition:.2s;
-
+.result-box {
+    background: #eef2ff;
+    color: #111827;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
 }
 
-.nav-btn.done{
-
-background:#2563eb;
-
-color:#fff;
-
+/* NAVIGATOR */
+.navigator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
- .nav-btn.checked-right{
-position:relative;
+.nav-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 4px;
+    transition: .2s;
+    position: relative;
 }
 
-.nav-btn.checked-right::after{
-content:"✓";
-position:absolute;
-right:4px;
-bottom:2px;
-font-size:14px;
-opacity:.6;
+.nav-btn.done {
+    background: var(--theme);
+    color: #fff;
 }
 
-.nav-btn.checked-wrong{
-position:relative;
+.nav-btn.checked-right {
+    background: #16a34a !important;
+    color: white !important;
 }
 
-.nav-btn.checked-wrong::after{
-content:"✗";
-position:absolute;
-right:4px;
-bottom:2px;
-font-size:14px;
-opacity:.6;
+.nav-btn.checked-right::after {
+    content: "✓";
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 14px;
 }
 
-/* ======================
-OMR SHEET
-====================== */
-
-.omr-sheet{
-
-background:var(--card);
-
-padding:20px;
-
-border-radius:20px;
-
-border:1px solid var(--border);
+.nav-btn.checked-wrong {
+    background: #dc2626 !important;
+    color: white !important;
 }
 
-.omr-header{
-
-display:grid;
-
-grid-template-columns:
-80px repeat(4,70px) 110px 110px 110px 110px;
-
-align-items:center;
-
-padding:12px;
-
-font-weight:700;
-
-border-bottom:2px solid var(--border);
-
-margin-bottom:10px;
+.nav-btn.checked-wrong::after {
+    content: "✗";
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 14px;
 }
 
-.omr-row{
-
-display:grid;
-
-grid-template-columns:
-80px repeat(4,70px) 110px 110px 110px 110px;
-
-align-items:center;
-
-padding:10px;
-
-border-bottom:1px solid #eee;
+/* OMR SHEET */
+.omr-sheet {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
 }
 
-.qno{
-font-weight:600;
+.omr-header, .omr-row {
+    display: grid;
+    grid-template-columns: 80px repeat(4, 70px) 110px 110px 110px 110px;
+    align-items: center;
+    padding: 12px;
+    min-width: 850px;
 }
 
-.option{
-width:58px;
-height:58px;
-
-border:3px solid #b8bec8;
-border-radius:50%;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:28px;
-font-weight:700;
+.omr-header {
+    font-weight: 700;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 10px;
 }
 
-.option.selected{
-background:var(--theme);
-color:#fff;
-border:3px solid var(--theme);
-}
-.option.selected{
-
-background:var(--theme);
-
-color:white;
-
-border:3px solid var(--theme);
-
-border-radius:50%;
-
+.omr-row {
+    border-bottom: 1px solid var(--border);
 }
 
-.correct-option,
-.wrong-option{
-background:none !important;
-transform:none !important;
+.qno {
+    font-weight: 600;
 }
 
-.option.selected{
-
-background:var(--theme);
-
-color:white;
-
-border-color:var(--theme);
+.option {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #b8bec8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    margin: auto;
+    transition: 0.2s;
 }
 
-.correct-option{
-
-background:#16a34a !important;
-
-color:white !important;
-
-border-color:#16a34a !important;
+.option.selected {
+    background: var(--theme);
+    color: white;
+    border-color: var(--theme);
 }
 
-.wrong-option{
-
-background:#dc2626 !important;
-
-color:white !important;
-
-border-color:#dc2626 !important;
+.correct-row {
+    background: rgba(22, 163, 74, 0.15) !important;
 }
 
-.correct-row{
-background:#dcfce7;
+.wrong-row {
+    background: rgba(220, 38, 38, 0.15) !important;
 }
 
-.wrong-row{
-background:#fee2e2;
+.check-btn {
+    display: none;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
 }
 
-.check-btn{
+.right-btn { background: #16a34a; }
+.wrong-btn { background: #dc2626; }
 
-display:none;
-
-padding:8px 12px;
-
-border:none;
-
-border-radius:8px;
-
-cursor:pointer;
-
-color:white;
+/* LOADING OVERLAY */
+#loadingOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.right-btn{
-background:#16a34a;
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
 }
 
-.wrong-btn{
-background:#dc2626;
-}
- /* YAHAN MEDIA CODE */
-
-@media(max-width:768px){
-
-.welcome-box{
-padding:25px;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.welcome-box h1{
-font-size:32px;
+/* MEDIA QUERIES */
+@media(max-width:768px) {
+    .welcome-box { padding: 25px; }
+    .welcome-box h1 { font-size: 32px; }
+    .nav-btn { width: 36px; height: 36px; font-size: 14px; }
+    .check-btn { font-size: 11px; padding: 5px; }
 }
-
-.omr-header,
-.omr-row{
-grid-template-columns:
-60px repeat(4,50px) 80px 80px 90px 90px;
-font-size:12px;
-}
-
-.option{
-width:40px;
-height:40px;
-font-size:18px;
-}
-
-.nav-btn{
-width:36px;
-height:36px;
-font-size:14px;
-}
-
-.check-btn{
-font-size:10px;
-padding:5px;
-}
-
-}
- @media (max-width:768px){
-
-.omr-sheet{
-overflow-x:auto;
-}
-
-.omr-header,
-.omr-row{
-min-width:700px;
-}
-
- }
-
 </style>
 </head>
 
 <body>
 
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <h3 id="loadingText">Processing Answer Key...</h3>
+</div>
+
+<!-- WELCOME PAGE -->
 <section id="welcomePage">
+    <div class="welcome-box">
+        <h1>🎯 Student55 Advanced OMR V4</h1>
+        <p>Welcome to the Advanced OMR Practice Platform with PDF Export, Live Result, Navigator, Rating System, and Dark Mode.</p>
 
-<div class="welcome-box">
+        <div class="selector-grid">
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Questions</label>
+                <select id="questionCount">
+                    <option value="10">10 Questions</option>
+                    <option value="20">20 Questions</option>
+                    <option value="30">30 Questions</option>
+                    <option value="40">40 Questions</option>
+                    <option value="50">50 Questions</option>
+                    <option value="60">60 Questions</option>
+                    <option value="70">70 Questions</option>
+                    <option value="80">80 Questions</option>
+                    <option value="90">90 Questions</option>
+                    <option value="100">100 Questions</option>
+                    <option value="200">200 Questions</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Theme Color</label>
+                <select id="themeColor">
+                    <option value="#2563eb">Blue</option>
+                    <option value="#16a34a">Green</option>
+                    <option value="#7c3aed">Purple</option>
+                    <option value="#dc2626">Red</option>
+                    <option value="#b46c3f">Brown</option>
+                </select>
+            </div>
+        </div>
 
-<h1>🎯 Student55 Advanced OMR V4</h1>
+        <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:15px;">
+            <h3 style="margin-bottom:15px; color:white;">📸 Upload Answer Key (Optional)</h3>
+            <input type="file" id="answerKeyImage" accept="image/*" capture="environment" style="width:100%; padding:10px; border-radius:10px; background:white; color:#111827;">
+            <p style="margin-top:10px; font-size:14px;">Upload answer key image before starting test. If not uploaded, Manual Checking Mode will be activated upon submission.</p>
+        </div>
 
-<p>
-Welcome to the Advanced OMR Practice Platform
-with PDF Export, Live Result, Navigator,
-Rating System and Dark Mode.
-</p>
+        <button class="start-btn" onclick="startApp()">Start Test</button>
 
-<div class="selector-grid">
-
-<div>
-
-<select id="questionCount">
-
-<option value="10">10 Questions</option>
-<option value="20">20 Questions</option>
-<option value="30">30 Questions</option>
-<option value="40">40 Questions</option>
-<option value="50">50 Questions</option>
-<option value="60">60 Questions</option>
-<option value="70">70 Questions</option>
-<option value="80">80 Questions</option>
-<option value="90">90 Questions</option>
-<option value="100">100 Questions</option>
-<option value="200">200 Questions</option>
-
-</select>
-
-</div>
-
-<div>
-
-<select id="themeColor">
-
-<option value="#2563eb">Blue</option>
-<option value="#16a34a">Green</option>
-<option value="#7c3aed">Purple</option>
-<option value="#dc2626">Red</option>
-<option value="#b46c3f">Brown</option>
-
-</select>
-
-</div>
-
-</div>
-
-  <div style="
-margin-top:25px;
-padding:20px;
-background:rgba(255,255,255,.15);
-border-radius:15px;
-">
-
-<h3 style="
-margin-bottom:15px;
-color:white;
-">
-
-📸 Upload Answer Key (Optional)
-
-</h3>
-
-<input
-type="file"
-id="answerKeyImage"
-accept="image/*"
-capture="environment"
-style="
-width:100%;
-padding:10px;
-border-radius:10px;
-border:none;
-">
-
-<p style="
-margin-top:10px;
-font-size:14px;
-">
-
-Upload answer key before test.
-If not uploaded,
-Manual Checking Mode will work.
-
-</p>
-
-</div>
-
-<button
-class="start-btn"
-onclick="startApp()">
-
-Start Test
-
-</button>
-
-<div class="feature-grid">
-
-<div class="feature">📄 PDF Export</div>
-<div class="feature">📊 Live Result</div>
-<div class="feature">🌙 Dark Mode</div>
-<div class="feature">⭐ Rating</div>
-
-</div>
-
-</div>
-
+        <div class="feature-grid">
+            <div class="feature">📄 PDF Export</div>
+            <div class="feature">📊 Live Result</div>
+            <div class="feature">🌙 Dark Mode</div>
+            <div class="feature">⭐ Rating</div>
+        </div>
+    </div>
 </section>
 
-<!-- APP -->
-
+<!-- APP MAIN CONTAINER -->
 <div id="app">
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">Student55 Advanced OMR V4</div>
+                <div class="controls">
+                    <button class="btn" onclick="goHome()">🏠 Home</button>
+                    <button class="btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <div class="timer" id="timer">00:00</div>
+                </div>
+            </div>
+        </div>
 
-<div class="container">
+        <!-- RESULT PANEL -->
+        <div id="resultPanel" class="result-panel">
+            <h2 style="margin-bottom:15px;">📊 Live Result</h2>
+            <div class="result-grid">
+                <div class="result-box"><h3>Total</h3><h1 id="totalQuestions">0</h1></div>
+                <div class="result-box"><h3>Attempted</h3><h1 id="attemptedQuestions">0</h1></div>
+                <div class="result-box"><h3>Right</h3><h1 id="rightQuestions">0</h1></div>
+                <div class="result-box"><h3>Wrong</h3><h1 id="wrongQuestions">0</h1></div>
+                <div class="result-box"><h3>Accuracy</h3><h1 id="accuracyPercent">0%</h1></div>
+            </div>
+        </div>
 
-<div class="header">
+        <!-- NAVIGATOR -->
+        <div id="navigator" class="navigator"></div>
 
-<div class="header-top">
+        <!-- OMR SHEET -->
+        <div class="omr-sheet" id="omrExportSheet">
+            <div style="text-align:center; margin-bottom:15px;">
+                <button class="btn" id="startTimerBtn" onclick="startTestTimer()">▶ Start Test</button>
+            </div>
 
-<div class="logo">
-Student55 Advanced OMR V4
+            <div class="omr-header">
+                <div>Q.No</div>
+                <div style="text-align:center;">Ⓐ</div>
+                <div style="text-align:center;">Ⓑ</div>
+                <div style="text-align:center;">Ⓒ</div>
+                <div style="text-align:center;">Ⓓ</div>
+                <div style="text-align:center;">Right</div>
+                <div style="text-align:center;">Wrong</div>
+                <div style="text-align:center;">Your Ans</div>
+                <div style="text-align:center;">Correct Ans</div>
+            </div>
+
+            <div id="omrContainer"></div>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <div style="text-align:center; margin-top:20px;">
+            <button id="submitBtn" class="btn" onclick="submitTest()" style="padding:15px 40px; font-size:18px;">Submit Test</button>
+        </div>
+
+        <!-- PDF DOWNLOAD SECTION -->
+        <div id="pdfArea" style="display:none; text-align:center; margin-top:25px;">
+            <div style="margin-bottom:15px;">
+                <input type="text" id="watermarkName" placeholder="Enter Watermark Name" style="padding:10px; border-radius:8px; border:1px solid #ccc; margin-right:10px;">
+                <button class="btn" onclick="downloadOMRPDF()">📄 Download OMR Report PDF</button>
+            </div>
+        </div>
+
+        <!-- RESTART -->
+        <div style="text-align:center; margin-top:15px;">
+            <button class="btn" onclick="restartTest()">🔄 Restart Test</button>
+        </div>
+
+        <!-- INSTAGRAM -->
+        <div class="header" style="margin-top:20px;">
+            <h2>📸 Instagram Profile</h2>
+            <p style="margin-top:10px; font-weight:600;">KAMAL AGGARWAL</p>
+            <a href="https://instagram.com" target="_blank">
+                <button class="btn" style="margin-top:10px;">Visit Instagram</button>
+            </a>
+        </div>
+
+        <!-- RATING -->
+        <div class="header">
+            <h2>⭐ Website Rating</h2>
+            <div style="font-size:38px; margin-top:15px; cursor:pointer;" id="starRatingContainer">
+                <span onclick="rateSite(1)">⭐</span>
+                <span onclick="rateSite(2)">⭐</span>
+                <span onclick="rateSite(3)">⭐</span>
+                <span onclick="rateSite(4)">⭐</span>
+                <span onclick="rateSite(5)">⭐</span>
+            </div>
+            <h3 style="margin-top:15px;">Average Rating: <span id="avgRating">0</span></h3>
+            <h3>Total Ratings: <span id="totalRatings">0</span></h3>
+        </div>
+
+        <!-- COMMENTS -->
+        <div class="header">
+            <h2>💬 Public Comments</h2>
+            <input id="commentName" placeholder="Your Name" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;">
+            <textarea id="commentText" placeholder="Write Comment" style="width:100%; height:100px; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;"></textarea>
+            <button class="btn" onclick="addComment()" style="margin-top:10px;">Post Comment</button>
+            <div id="commentsArea" style="margin-top:20px;"></div>
+        </div>
+
+        <!-- HELP CENTER -->
+        <div class="header">
+            <h2>🛠 Help Center</h2>
+            <p style="margin-top:5px; font-size:14px; opacity:0.8;">Submit an issue or system inquiry below.</p>
+            <textarea id="helpMessage" placeholder="Type Message" style="width:100%; height:100px; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;"></textarea>
+            <button class="btn" onclick="sendHelpMessage()" style="margin-top:10px;">Send Help Request</button>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="text-align:center; padding:30px; font-size:14px; opacity:0.7;">
+            © Student55 Advanced OMR V4
+        </div>
+    </div>
 </div>
-
-<div class="controls">
-
-<button
-class="btn"
-onclick="goHome()">
-
-🏠 Home
-
-</button>
-
-<button
-class="btn"
-onclick="toggleDarkMode()">
-
-Dark Mode
-
-</button>
-
-<div
-class="timer"
-id="timer">
-
-00:00
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-<!-- RESULT PANEL -->
-
-<div
-id="resultPanel"
-class="result-panel">
-
-<h2 style="margin-bottom:15px;">
-📊 Live Result
-</h2>
-
-<div class="result-grid">
-
-<div class="result-box">
-<h3>Total</h3>
-<h1 id="totalQuestions">0</h1>
-</div>
-
-<div class="result-box">
-<h3>Attempted</h3>
-<h1 id="attemptedQuestions">0</h1>
-</div>
-
-<div class="result-box">
-<h3>Right</h3>
-<h1 id="rightQuestions">0</h1>
-</div>
-
-<div class="result-box">
-<h3>Wrong</h3>
-<h1 id="wrongQuestions">0</h1>
-</div>
-
-<div class="result-box">
-<h3>Accuracy</h3>
-<h1 id="accuracyPercent">0%</h1>
-</div>
-
-</div>
-
-</div>
-
-
-<!-- NAVIGATOR -->
-
-<div
-id="navigator"
-class="navigator">
-
-</div>
-
-
-<!-- OMR SHEET -->
-
-<div class="omr-sheet">
-
- <div style="text-align:center;margin-bottom:15px;">
-
-<button
-class="btn"
-id="startTimerBtn"
-onclick="startTestTimer()">
-
-▶ Start Test
-
-</button>
-
- </div>
-
-<div class="omr-header">
-
-<div>Q.No</div>
-
-<div style="text-align:center;">Ⓐ</div>
-<div style="text-align:center;">Ⓑ</div>
-<div style="text-align:center;">Ⓒ</div>
-<div style="text-align:center;">Ⓓ</div>
-
-<div style="text-align:center;">
-Right
-</div>
-
-<div style="text-align:center;">
-Wrong
-</div>
-
- <div style="text-align:center;">
-Your Ans
-</div>
-
-<div style="text-align:center;">
-Correct Ans
-</div>
-
-</div>
-
-<div
-id="omrContainer">
-
-</div>
-
-</div>
-
-
-<!-- SUBMIT -->
-
-<div
-style="
-text-align:center;
-margin-top:20px;
-">
-
-<button
-id="submitBtn"
-class="btn"
-style="
-padding:15px 40px;
-font-size:18px;
-">
-
-Submit Test
-
-</button>
-
-</div>
-
-
-<!-- PDF AREA -->
-<!-- PDF AREA -->
-
-<div
-id="pdfArea"
-style="
-display:none;
-text-align:center;
-margin-top:25px;
-">
-
-<div style="margin-bottom:15px;">
-
-<button
-class="btn"
-onclick="downloadOMRPDF()">
-
-📄 Download OMR PDF
-
-</button>
-
-</div>
-
-<div style="margin-bottom:15px;">
-
-<button
-class="btn"
-onclick="downloadCheckedPDF()">
-
-✅ Download Checked PDF
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- RESTART -->
-
-<div
-style="
-text-align:center;
-margin-top:15px;
-">
-
-<button
-class="btn"
-onclick="restartTest()">
-
-🔄 Restart Test
-
-</button>
-
-</div>
-
-
-<!-- INSTAGRAM -->
-
-<div class="header">
-
-<h2>
-📸 Instagram
-</h2>
-
-<p style="margin-top:10px;">
-KAMAL AGGARWAL 
-</p>
-
-<a href="#" target="_blank">
-
-<button
-class="btn"
-style="margin-top:10px;">
-
-Instagram
-
-</button>
-
-</a>
-
-</div>
-
-
-<!-- RATING -->
-
-<div class="header">
-
-<h2>
-⭐ Website Rating
-</h2>
-
-<div
-style="
-font-size:38px;
-margin-top:15px;
-">
-
-<span onclick="rateSite(1)">⭐</span>
-<span onclick="rateSite(2)">⭐</span>
-<span onclick="rateSite(3)">⭐</span>
-<span onclick="rateSite(4)">⭐</span>
-<span onclick="rateSite(5)">⭐</span>
-
-</div>
-
-<h3 style="margin-top:15px;">
-
-Average Rating :
-<span id="avgRating">
-
-0
-
-</span>
-
-</h3>
-
-<h3>
-
-Total Ratings :
-<span id="totalRatings">
-
-0
-
-</span>
-
-</h3>
-
-</div>
-
-
-<!-- COMMENTS -->
-
-<div class="header">
-
-<h2>
-💬 Public Comments
-</h2>
-
-<input
-id="commentName"
-placeholder="Your Name"
-style="
-width:100%;
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
-">
-
-<br><br>
-
-<textarea
-id="commentText"
-placeholder="Write Comment"
-style="
-width:100%;
-height:120px;
-padding:10px;
-border-radius:10px;
-">
-
-</textarea>
-
-<br><br>
-
-<button
-class="btn"
-onclick="addComment()">
-
-Post Comment
-
-</button>
-
-<div
-id="commentsArea"
-style="margin-top:20px;">
-
-</div>
-
-</div>
-
-
-<!-- HELP -->
-
-<div class="header">
-
-<h2>
-🛠 Help Center
-</h2>
-
-<p>
-Only Admin Can View Messages
-</p>
-
-<textarea
-id="helpMessage"
-placeholder="Type Message"
-style="
-width:100%;
-height:120px;
-padding:10px;
-border-radius:10px;
-">
-
-</textarea>
-
-<br><br>
-
-<button
-class="btn"
-onclick="sendHelpMessage()">
-
-Send Help Request
-
-</button>
-
-</div>
-
-
-<!-- FOOTER -->
-
-<div
-style="
-text-align:center;
-padding:30px;
-font-size:14px;
-">
-
-© Student55 Advanced OMR V4
-
-</div>
-
 
 <script>
-
-/* =====================
-GLOBAL VARIABLES
-===================== */
-
+/* GLOBAL VARIABLES */
 let totalQuestions = 10;
-
 let answers = {};
-
 let submitted = false;
-
 let rightCount = 0;
-
 let wrongCount = 0;
+let seconds = 0;
+let checkedQuestions = {};
+let answerKey = {};
+let autoCheckMode = false;
+let testStarted = false;
+let timerInterval = null;
 
 let totalStars = 0;
-
 let ratingUsers = 0;
 
-let seconds = 0;
-
-let checkedQuestions = {};
-
- let checkedCount = 0;
-
-let answerKey = {};
-
-let autoCheckMode = false;
-
-let autoRightCount = 0;
-
-let autoWrongCount = 0;
-
-let testStarted = false;
-
- let timerInterval;
-
-window.onload=()=>{
-
-if(sessionStorage.getItem("omrStarted")==="yes"){
-
-totalQuestions=parseInt(
-sessionStorage.getItem("questionCount")
-)||10;
-
-document.getElementById(
-"welcomePage"
-).style.display="none";
-
-document.getElementById(
-"app"
-).style.display="block";
-
-generateOMR();
-
-updateResult();
-
-document.getElementById(
-"resultPanel"
-).style.display="block";
-
-seconds=0;
-answers={};
-checkedQuestions={};
-rightCount=0;
-wrongCount=0;
-
-}
-
+window.onload = () => {
+    if (sessionStorage.getItem("omrStarted") === "yes") {
+        totalQuestions = parseInt(sessionStorage.getItem("questionCount")) || 10;
+        document.getElementById("welcomePage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        generateOMR();
+        updateResult();
+        document.getElementById("resultPanel").style.display = "block";
+    }
 };
 
- async function loadAnswerKey(){
-
-const file =
-document.getElementById(
-"answerKeyImage"
-).files[0];
-
-if(!file){
-
-autoCheckMode=false;
-
-return true;
-
+function showLoading(text) {
+    document.getElementById("loadingText").innerText = text;
+    document.getElementById("loadingOverlay").style.display = "flex";
 }
 
-try{
-
-alert(
-"Reading Answer Key..."
-);
-
-const result =
-await Tesseract.recognize(
-file,
-"eng"
-);
-
-const text =
-result.data.text;
-
-answerKey={};
-
-const lines =
-text.split("\n");
-
-lines.forEach(line=>{
-
-const match =
-line.match(
-/(\d+)\s*[-:]\s*([ABCD])/i
-);
-
-if(match){
-
-answerKey[
-parseInt(match[1])
-] =
-match[2].toUpperCase();
-
+function hideLoading() {
+    document.getElementById("loadingOverlay").style.display = "none";
 }
 
-});
+async function loadAnswerKey() {
+    const fileInput = document.getElementById("answerKeyImage");
+    const file = fileInput.files[0];
 
-if(
-Object.keys(answerKey)
-.length>0
-){
+    if (!file) {
+        autoCheckMode = false;
+        return true;
+    }
 
-autoCheckMode=true;
+    showLoading("Reading Answer Key Image...");
 
-alert(
-"Answer Key Loaded Successfully"
-);
+    try {
+        const result = await Tesseract.recognize(file, "eng");
+        const text = result.data.text;
+        answerKey = {};
 
-}else{
+        const lines = text.split("\n");
+        lines.forEach(line => {
+            const match = line.match(/(\d+)\s*[-:]\s*([ABCD])/i);
+            if (match) {
+                answerKey[parseInt(match[1])] = match[2].toUpperCase();
+            }
+        });
 
-alert(
-"No Answers Found In Image"
-);
+        hideLoading();
 
+        if (Object.keys(answerKey).length > 0) {
+            autoCheckMode = true;
+            alert(`Answer Key Loaded Successfully! Found ${Object.keys(answerKey).length} answers.`);
+        } else {
+            alert("No structured answers found in image (e.g. '1-A'). Proceeding with manual mode.");
+            autoCheckMode = false;
+        }
+        return true;
+    } catch (error) {
+        console.error(error);
+        hideLoading();
+        alert("Failed to parse Answer Key image.");
+        return false;
+    }
 }
 
-return true;
+async function startApp() {
+    const loaded = await loadAnswerKey();
+    if (!loaded) return;
 
-}catch(error){
+    if (autoCheckMode && Object.keys(answerKey).length > 0) {
+        totalQuestions = Object.keys(answerKey).length;
+    } else {
+        totalQuestions = parseInt(document.getElementById("questionCount").value);
+    }
 
-console.log(error);
+    const theme = document.getElementById("themeColor").value;
+    document.documentElement.style.setProperty("--theme", theme);
 
-alert(
-"Answer Key Read Failed"
-);
+    document.getElementById("welcomePage").style.display = "none";
+    document.getElementById("app").style.display = "block";
 
-return false;
+    generateOMR();
+    updateResult();
 
+    sessionStorage.setItem("omrStarted", "yes");
+    sessionStorage.setItem("questionCount", totalQuestions);
+
+    document.getElementById("resultPanel").style.display = "block";
 }
 
- }
+function generateOMR() {
+    const omr = document.getElementById("omrContainer");
+    const nav = document.getElementById("navigator");
 
-/* ======================
-START APP
-====================== */
+    omr.innerHTML = "";
+    nav.innerHTML = "";
 
-async function startApp(){
+    for (let i = 1; i <= totalQuestions; i++) {
+        const row = document.createElement("div");
+        row.className = "omr-row";
+        row.id = "row-" + i;
 
-const loaded =
-await loadAnswerKey();
+        row.innerHTML = `
+            <div class="qno">${String(i).padStart(3, "0")}</div>
+            <div class="option" onclick="selectOption(${i},'A',this)">Ⓐ</div>
+            <div class="option" onclick="selectOption(${i},'B',this)">Ⓑ</div>
+            <div class="option" onclick="selectOption(${i},'C',this)">Ⓒ</div>
+            <div class="option" onclick="selectOption(${i},'D',this)">Ⓓ</div>
+            <div style="text-align:center;">
+                <button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button>
+            </div>
+            <div style="text-align:center;">
+                <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">❌ Wrong</button>
+            </div>
+            <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
+            <div id="correctAns-${i}" style="text-align:center; font-weight:700;">-</div>
+        `;
 
-if(!loaded) return;
+        omr.appendChild(row);
 
-if(
-autoCheckMode &&
-Object.keys(answerKey).length>0
-){
+        /* Navigator Buttons */
+        const btn = document.createElement("button");
+        btn.className = "nav-btn";
+        btn.innerText = i;
+        btn.setAttribute("data-q", i);
+        btn.onclick = () => {
+            document.getElementById("row-" + i).scrollIntoView({ behavior: "smooth" });
+        };
 
-totalQuestions=
-Object.keys(answerKey).length;
-
-}else{
-
-totalQuestions=
-parseInt(
-document.getElementById(
-"questionCount"
-).value
-);
-
+        nav.appendChild(btn);
+    }
 }
 
-const theme =
-document.getElementById(
-"themeColor"
-).value;
+function startTestTimer() {
+    if (testStarted) return;
+    testStarted = true;
+    document.getElementById("startTimerBtn").style.display = "none";
 
-document.documentElement
-.style.setProperty(
-"--theme",
-theme
-);
-
-document.getElementById(
-"welcomePage"
-).style.display="none";
-
-document.getElementById(
-"app"
-).style.display="block";
-
-generateOMR();
-
-updateResult();
-
-sessionStorage.setItem("omrStarted","yes");
-sessionStorage.setItem("questionCount", totalQuestions);
-
-document.getElementById(
-"resultPanel"
-).style.display="block";
-
+    timerInterval = setInterval(() => {
+        seconds++;
+        const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const sec = String(seconds % 60).padStart(2, "0");
+        document.getElementById("timer").innerText = `${min}:${sec}`;
+    }, 1000);
 }
 
-/* ======================
-GENERATE OMR
-====================== */
+function selectOption(qNo, value, element) {
+    if (!testStarted) {
+        alert("Please click 'Start Test' button first to enable answering.");
+        return;
+    }
+    if (submitted) return;
 
-function generateOMR(){
+    const row = document.getElementById("row-" + qNo);
+    row.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
 
-const omr =
-document.getElementById(
-"omrContainer"
-);
+    element.classList.add("selected");
+    answers[qNo] = value;
+    document.getElementById("yourAns-" + qNo).innerText = value;
 
-const nav =
-document.getElementById(
-"navigator"
-);
+    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
+    if (navBtn) navBtn.classList.add("done");
 
-omr.innerHTML="";
-nav.innerHTML="";
-
-for(let i=1;i<=totalQuestions;i++){
-
-const row =
-document.createElement("div");
-
-row.className="omr-row";
-row.id="row-"+i;
-
-row.innerHTML=`
-
-<div class="qno">
-
-${String(i).padStart(3,"0")}
-
-</div>
-
-
-<div class="option"
-onclick="selectOption(${i},'A',this)">
-Ⓐ
-</div>
-
-<div class="option"
-onclick="selectOption(${i},'B',this)">
-Ⓑ
-</div>
-
-<div class="option"
-onclick="selectOption(${i},'C',this)">
-Ⓒ
-</div>
-
-<div class="option"
-onclick="selectOption(${i},'D',this)">
-Ⓓ
-</div>
-
-<button
-class="check-btn right-btn"
-id="right-${i}"
-onclick="markRight(${i})">
-
-✅ Right
-
-</button>
-
-<button
-class="check-btn wrong-btn"
-id="wrong-${i}"
-onclick="markWrong(${i})">
-
-❌ Wrong
-
-</button>
-
-<div
-id="yourAns-${i}"
-style="
-text-align:center;
-font-weight:700;
-">
--
-</div>
-
-<div
-id="correctAns-${i}"
-style="
-text-align:center;
-font-weight:700;
-">
--
-</div>
-
-`;
-
-omr.appendChild(row);
-
-/* Navigator */
-
-const btn =
-document.createElement("button");
-
-btn.className="nav-btn";
-
-btn.innerText=i;
-
-btn.setAttribute(
-"data-q",
-i
-);
-
-btn.onclick=()=>{
-
-document.getElementById(
-"row-"+i
-).scrollIntoView({
-behavior:"smooth"
-});
-
-};
-
-nav.appendChild(btn);
-
+    updateResult();
 }
 
+function submitTest() {
+    if (!testStarted) {
+        alert("Test has not been started yet.");
+        return;
+    }
+
+    submitted = true;
+    clearInterval(timerInterval);
+
+    document.getElementById("pdfArea").style.display = "block";
+    document.getElementById("submitBtn").style.display = "none";
+
+    if (autoCheckMode) {
+        rightCount = 0;
+        wrongCount = 0;
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            const row = document.getElementById("row-" + i);
+            const userAns = answers[i];
+            const correctAns = answerKey[i];
+
+            document.getElementById("correctAns-" + i).innerText = correctAns || "-";
+
+            if (userAns && correctAns) {
+                if (userAns === correctAns) {
+                    row.classList.add("correct-row");
+                    rightCount++;
+                    updateNavigatorStatus(i, "right");
+                } else {
+                    row.classList.add("wrong-row");
+                    wrongCount++;
+                    updateNavigatorStatus(i, "wrong");
+                }
+            }
+        }
+        updateResult();
+        alert("Auto Checking Completed!");
+    } else {
+        for (let i = 1; i <= totalQuestions; i++) {
+            document.getElementById("right-" + i).style.display = "inline-block";
+            document.getElementById("wrong-" + i).style.display = "inline-block";
+        }
+        alert("Manual Checking Mode Enabled! Click Right/Wrong for attempted questions.");
+    }
 }
 
- function startTestTimer(){
+function markManual(qNo, status) {
+    /* STRICT REQUIREMENT: Sirf unhi questions ko mark karne denge jinhe user ne attempt kiya ho */
+    if (!answers[qNo]) {
+        alert("Aapne is question ka answer select nahi kiya hai. Pehle answer lagayein tabhi mark kar sakte hain.");
+        return;
+    }
 
-if(testStarted) return;
+    const row = document.getElementById("row-" + qNo);
 
-testStarted = true;
+    if (checkedQuestions[qNo] === status) return;
 
-document.getElementById(
-"startTimerBtn"
-).style.display = "none";
+    if (checkedQuestions[qNo] === "right") rightCount--;
+    if (checkedQuestions[qNo] === "wrong") wrongCount--;
 
-timerInterval = setInterval(()=>{
+    checkedQuestions[qNo] = status;
 
-seconds++;
+    if (status === "right") {
+        rightCount++;
+        row.classList.remove("wrong-row");
+        row.classList.add("correct-row");
+        updateNavigatorStatus(qNo, "right");
+    } else {
+        wrongCount++;
+        row.classList.remove("correct-row");
+        row.classList.add("wrong-row");
+        updateNavigatorStatus(qNo, "wrong");
+    }
 
-const min =
-String(Math.floor(seconds/60))
-.padStart(2,"0");
-
-const sec =
-String(seconds%60)
-.padStart(2,"0");
-
-document.getElementById(
-"timer"
-).innerText =
-`${min}:${sec}`;
-
-},1000);
-
- }
-
-/* ======================
-OPTION SELECT
-====================== */
-
- document
-.getElementById("submitBtn")
-.addEventListener("click",()=>{
-
-submitted = true;
-
-clearInterval(timerInterval);
-
-document.getElementById("pdfArea").style.display="block";
-
-document.getElementById("submitBtn").style.display="none";
-
-if(autoCheckMode){
-
-rightCount = 0;
-wrongCount = 0;
-
-for(let i=1;i<=totalQuestions;i++){
-
-const row =
-document.getElementById("row-"+i);
-
-const userAns = answers[i];
-
-const correctAns = answerKey[i];
-
-document.getElementById(
-"correctAns-"+i
-).innerText = correctAns || "-";
-
-if(userAns && correctAns){
-
-if(userAns===correctAns){
-
-row.classList.add("correct-row");
-row.dataset.status="right";
-rightCount++;
-
-updateNavigatorStatus(i,"right");
-
-}else{
-
-row.classList.add("wrong-row");
-row.dataset.status="wrong";
-wrongCount++;
-
-updateNavigatorStatus(i,"wrong");
-
+    updateResult();
 }
 
+function updateNavigatorStatus(qNo, status) {
+    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
+    if (navBtn) {
+        navBtn.classList.remove("checked-right", "checked-wrong");
+        if (status === "right") navBtn.classList.add("checked-right");
+        if (status === "wrong") navBtn.classList.add("checked-wrong");
+    }
 }
 
+function updateResult() {
+    document.getElementById("totalQuestions").innerText = totalQuestions;
+    document.getElementById("attemptedQuestions").innerText = Object.keys(answers).length;
+    document.getElementById("rightQuestions").innerText = rightCount;
+    document.getElementById("wrongQuestions").innerText = wrongCount;
+
+    let acc = 0;
+    if ((rightCount + wrongCount) > 0) {
+        acc = ((rightCount / (rightCount + wrongCount)) * 100).toFixed(2);
+    }
+    document.getElementById("accuracyPercent").innerText = acc + "%";
 }
 
-updateResult();
-
-alert("Auto Checking Completed");
-
-}else{
-
-for(let i=1;i<=totalQuestions;i++){
-
-document.getElementById("right-"+i).style.display="block";
-document.getElementById("wrong-"+i).style.display="block";
-
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
 }
 
-alert("Checking Mode Enabled");
-
+function goHome() {
+    sessionStorage.removeItem("omrStarted");
+    location.reload();
 }
 
-});
-
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-answers[qNo] = value;
-
-document.getElementById(
-"yourAns-"+qNo
-).innerText = value;
-
-if(
-autoCheckMode &&
-answerKey[qNo]
-){
-
-document.getElementById(
-"correctAns-"+qNo
-).innerText =
-answerKey[qNo];
-
-if(
-value === answerKey[qNo]
-){
-
-if(
-row.dataset.status !== "right"
-){
-
-if(
-row.dataset.status === "wrong"
-){
-wrongCount--;
+function restartTest() {
+    sessionStorage.removeItem("omrStarted");
+    location.reload();
 }
 
-rightCount++;
+function downloadOMRPDF() {
+    const watermark = document.getElementById("watermarkName").value || "Student55";
+    const element = document.getElementById("omrExportSheet");
 
+    const opt = {
+        margin:       0.5,
+        filename:     `OMR_Report_${watermark}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 
-row.dataset.status = "right";
-
-row.classList.remove(
-"wrong-row"
-);
-
-row.classList.add(
-"correct-row"
-);
-
-updateNavigatorStatus(
-qNo,
-"right"
-);
-
-}else{
-
-if(
-row.dataset.status !== "wrong"
-){
-
-if(
-row.dataset.status === "right"
-){
-rightCount--;
+function rateSite(stars) {
+    totalStars += stars;
+    ratingUsers++;
+    document.getElementById("avgRating").innerText = (totalStars / ratingUsers).toFixed(1);
+    document.getElementById("totalRatings").innerText = ratingUsers;
+    alert(`Thank you for giving ${stars} stars!`);
 }
 
-wrongCount++;
+function addComment() {
+    const name = document.getElementById("commentName").value.trim();
+    const text = document.getElementById("commentText").value.trim();
 
+    if (!name || !text) {
+        alert("Please enter both name and comment.");
+        return;
+    }
+
+    const box = document.createElement("div");
+    box.style.background = "rgba(0,0,0,0.05)";
+    box.style.padding = "10px";
+    box.style.borderRadius = "8px";
+    box.style.marginTop = "10px";
+    box.innerHTML = `<strong>${name}</strong><p style="margin-top:5px;">${text}</p>`;
+
+    document.getElementById("commentsArea").appendChild(box);
+    document.getElementById("commentName").value = "";
+    document.getElementById("commentText").value = "";
 }
 
-row.dataset.status = "wrong";
-
-row.classList.remove(
-"correct-row"
-);
-
-row.classList.add(
-"wrong-row"
-);
-
-updateNavigatorStatus(
-qNo,
-"wrong"
-);
-
+function sendHelpMessage() {
+    const msg = document.getElementById("helpMessage").value.trim();
+    if (!msg) {
+        alert("Please write a message first.");
+        return;
+    }
+    alert("Help request submitted to Admin successfully!");
+    document.getElementById("helpMessage").value = "";
 }
-
-}
-
-const navBtn =
-document.querySelector(
-`[data-q="${qNo}"]`
-);
-
-if(navBtn){
-navBtn.classList.add("done");
-}
-
-updateResult();
-
-}
-
-/* ======================
-RESULT
-====================== */
-function updateResult(){
-
-document.getElementById(
-"totalQuestions"
-).innerText = totalQuestions;
-
-document.getElementById(
-"attemptedQuestions"
-).innerText =
-Object.keys(answers).length;
-
-document.getElementById(
-"rightQuestions"
-).innerText = rightCount;
-
-document.getElementById(
-"wrongQuestions"
-).innerText = wrongCount;
-
-let acc = 0;
-
-if((rightCount + wrongCount) > 0){
-
-acc = (
-rightCount /
-(rightCount + wrongCount)
-* 100
-).toFixed(2);
-
-}
-
-document.getElementById(
-"accuracyPercent"
-).innerText =
-acc + "%";
-
-}
- 
-
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-answers[qNo] = value;
-
-document.getElementById(
-"yourAns-"+qNo
-).innerText = value;
-
-const navBtn =
-document.querySelector(
-`[data-q="${qNo}"]`
-);
-
-if(navBtn){
-navBtn.classList.add("done");
-}
-
-updateResult();
-
-}
-
-/* ======================
-TIMER
-====================== */
-
-
-
-/* ======================
-DARK MODE
-====================== */
-
-function toggleDarkMode(){
-
-document.body
-.classList.toggle(
-"dark"
-);
-
-}
-
- function goHome(){
-
-sessionStorage.removeItem(
-"omrStarted"
-);
-
-location.reload();
-
- }
-
-/* ======================
-RESTART
-====================== */
-
-function restartTest(){
-
-sessionStorage.removeItem("omrStarted");
-
-location.reload();
-
-}
-
-/* ======================
-PDF EXPORT
-====================== */
-
-function downloadPDF(){
-
-const watermark =
-document.getElementById(
-"watermarkName"
-).value || "Student55";
-
-let report =
-
-`Student55 Advanced OMR V4
-
-Watermark:
-${watermark}
-
-Total:
-${totalQuestions}
-
-Attempted:
-${Object.keys(answers).length}
-
-Right:
-${rightCount}
-
-Wrong:
-${wrongCount}
-
-Accuracy:
-${document.getElementById("accuracyPercent").innerText}
-
-`;
-
-for(let i=1;i<=totalQuestions;i++){
-
-report +=
-
-`${String(i).padStart(3,"0")}
- : ${answers[i] || "-"}
-\n`;
-
-}
-
-const blob =
-new Blob(
-[report],
-{
-type:"text/plain"
-}
-);
-
-const a =
-document.createElement(
-"a"
-);
-
-a.href=
-URL.createObjectURL(
-blob
-);
-
-a.download=
-"Student55_Result.txt";
-
-a.click();
-
-}
-
-/* ======================
-RATING
-====================== */
-
-function rateSite(stars){
-
-totalStars += stars;
-ratingUsers++;
-
-document.getElementById(
-"avgRating"
-).innerText=
-
-(
-totalStars/
-ratingUsers
-).toFixed(2);
-
-document.getElementById(
-"totalRatings"
-).innerText=
-ratingUsers;
-
-}
-
-/* ======================
-COMMENTS
-====================== */
-
-function addComment(){
-
-const name =
-document.getElementById(
-"commentName"
-).value;
-
-const comment =
-document.getElementById(
-"commentText"
-).value;
-
-if(
-!name ||
-!comment
-) return;
-
-const div =
-document.createElement(
-"div"
-);
-
-div.style.padding="12px";
-div.style.marginBottom="10px";
-div.style.border="1px solid #ddd";
-div.style.borderRadius="10px";
-
-div.innerHTML=`
-
-<b>${name}</b>
-
-<br><br>
-
-${comment}
-
-<br><br>
-
-<button onclick="this.parentElement.remove()">
-
-Delete
-
-</button>
-
-`;
-
-document.getElementById(
-"commentsArea"
-).prepend(div);
-
-document.getElementById(
-"commentName"
-).value="";
-
-document.getElementById(
-"commentText"
-).value="";
-
-}
-
-/* ======================
-HELP
-====================== */
-
-function sendHelpMessage(){
-
-const msg =
-document.getElementById(
-"helpMessage"
-).value;
-
-if(!msg) return;
-
-alert(
-"Help Request Sent"
-);
-
-document.getElementById(
-"helpMessage"
-).value="";
-
-}
-
-
-
-/* ===== V4 FINAL PATCH ===== */
-function updateNavigatorStatus(qNo,status){
- const btn=document.querySelector(`[data-q="${qNo}"]`);
- if(!btn) return;
- btn.classList.remove('checked-right','checked-wrong');
- if(status==='right') btn.classList.add('checked-right');
- if(status==='wrong') btn.classList.add('checked-wrong');
-}
-
-function markRight(qNo){
- if(!submitted) return;
- const row=document.getElementById('row-'+qNo);
- if(checkedQuestions[qNo]==='right') return;
- if(checkedQuestions[qNo]==='wrong'){ wrongCount--; }
- checkedQuestions[qNo]='right';
- rightCount++;
- row.classList.remove('wrong-row');
- row.classList.add('correct-row');
- updateNavigatorStatus(qNo,'right');
- updateResult();
-}
-
-function markWrong(qNo){
- if(!submitted) return;
- const row=document.getElementById('row-'+qNo);
- if(checkedQuestions[qNo]==='wrong') return;
- if(checkedQuestions[qNo]==='right'){ rightCount--; }
- checkedQuestions[qNo]='wrong';
- wrongCount++;
- row.classList.remove('correct-row');
- row.classList.add('wrong-row');
- updateNavigatorStatus(qNo,'wrong');
- updateResult();
-}
-
-function downloadOMRPDF(){ downloadPDF(); }
-function downloadCheckedPDF(){ downloadPDF(); }
-
-document.addEventListener('DOMContentLoaded',()=>{
- const submit=document.getElementById('submitBtn');
- if(submit && !submit.dataset.fixed){
-   submit.dataset.fixed='1';
- }
-});
-
 </script>
-
-</div>
-</div>
-
-  <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
-
 </body>
 </html>
