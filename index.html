@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra Fast AI OMR V8 - Neural Dynamic Engine</title>
+<title>Student55 Ultra AI OMR V6</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -356,7 +356,7 @@ body {
     border: 5px solid #f3f3f3;
     border-top: 5px solid #2563eb;
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    animation: spin 0.8s linear infinite;
     margin-bottom: 15px;
 }
 
@@ -368,14 +368,14 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">1-Second Fast High-Precision Scan...</h3>
+    <h3 id="loadingText">Processing Image Preprocessing & Neural Scan...</h3>
 </div>
 
 <!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
-        <h1>🎯 Student55 Ultra Fast AI OMR</h1>
-        <p>Real-time High-Speed Dynamic OMR Scanner</p>
+        <h1>🎯 Student55 Advanced OMR V6</h1>
+        <p>Ultra-Precision Dual Reader (Camera + Gallery Support)</p>
 
         <div class="selector-grid">
             <div>
@@ -383,7 +383,7 @@ body {
                 <select id="questionCount">
                     <option value="10">10 Questions</option>
                     <option value="14">14 Questions</option>
-                    <option value="20" selected>20 Questions</option>
+                    <option value="20">20 Questions</option>
                     <option value="30">30 Questions</option>
                     <option value="50">50 Questions</option>
                     <option value="100">100 Questions</option>
@@ -409,16 +409,17 @@ body {
                 </button>
             </div>
 
+            <!-- Direct inputs for Camera & Gallery -->
             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
             <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
 
-            <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click SCAN below.</div>
+            <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click Process below.</div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndReadFast()">⚡ SCAN NOW (ACCURATE & FAST)</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ READ & CHECK ANSWER KEY</button>
             </div>
         </div>
 
@@ -432,7 +433,7 @@ body {
         
         <div class="header">
             <div class="header-top">
-                <div class="logo">Student55 Ultra Fast AI OMR</div>
+                <div class="logo">Student55 Advanced OMR V6</div>
                 <div class="controls">
                     <button class="btn" onclick="goHome()">🏠 Home</button>
                     <button class="btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
@@ -514,7 +515,7 @@ body {
 </div>
 
 <script>
-let totalQuestions = 20;
+let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
 let autoCheckMode = false;
@@ -523,24 +524,60 @@ let submitted = false;
 let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
-let tesseractWorker = null;
 
-// Worker Pre-initialization for instant execution
-async function initWorker() {
-    if (!tesseractWorker) {
-        tesseractWorker = await Tesseract.createWorker('eng');
-        await tesseractWorker.setParameters({
-            tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-            tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
-        });
+window.addEventListener('popstate', function (event) {
+    if (document.getElementById("app").style.display === "block") {
+        document.getElementById("app").style.display = "none";
+        document.getElementById("welcomePage").style.display = "flex";
+        sessionStorage.setItem("activePage", "welcome");
     }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    const activePage = sessionStorage.getItem("activePage");
+    if (activePage === "app" || window.location.hash === "#omr") {
+        totalQuestions = parseInt(sessionStorage.getItem("totalQuestions")) || 10;
+        autoCheckMode = sessionStorage.getItem("autoCheckMode") === "true";
+        userAnswers = JSON.parse(sessionStorage.getItem("userAnswers") || "{}");
+        extractedAnswerKey = JSON.parse(sessionStorage.getItem("extractedAnswerKey") || "{}");
+        testStarted = sessionStorage.getItem("testStarted") === "true";
+        submitted = sessionStorage.getItem("submitted") === "true";
+        seconds = parseInt(sessionStorage.getItem("seconds")) || 0;
+
+        document.getElementById("welcomePage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+        generateOMR();
+        restoreUserSelections();
+
+        if (testStarted && !submitted) {
+            document.getElementById("startTimerBtn").style.display = "none";
+            resumeTimer();
+        }
+        if (submitted) {
+            submitTest(true);
+        }
+        updateResult();
+    }
+    loadComments();
+});
+
+function saveState(pageName) {
+    sessionStorage.setItem("activePage", pageName);
+    sessionStorage.setItem("totalQuestions", totalQuestions);
+    sessionStorage.setItem("autoCheckMode", autoCheckMode);
+    sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+    sessionStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
+    sessionStorage.setItem("testStarted", testStarted);
+    sessionStorage.setItem("submitted", submitted);
+    sessionStorage.setItem("seconds", seconds);
 }
-initWorker();
 
 function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
         document.getElementById('uploadStatusBadge').style.display = 'block';
+        
         const reader = new FileReader();
         reader.onload = function(event) {
             const cropImg = document.getElementById('cropImage');
@@ -553,17 +590,14 @@ function handleImageSelect(e) {
     }
 }
 
-// Ultra Fast & Adaptive High-Contrast Binarization Canvas Filter
-function generateFastOptimizedCanvas(sourceCanvas) {
+// ENHANCED IMAGE PREPROCESSING FOR BLURRY CAMERA & GALLERY PHOTOS
+function preprocessBlurImage(sourceCanvas) {
+    const scale = 3; 
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { alpha: false });
-
-    // Adaptive Scaling to ensure bottom-most rows (e.g. Q.20) are never truncated
-    const targetWidth = sourceCanvas.width < 1000 ? sourceCanvas.width * 1.5 : sourceCanvas.width;
-    const scaleRatio = targetWidth / sourceCanvas.width;
-    canvas.width = targetWidth;
-    canvas.height = sourceCanvas.height * scaleRatio;
-
+    canvas.width = sourceCanvas.width * scale;
+    canvas.height = sourceCanvas.height * scale;
+    const ctx = canvas.getContext('2d');
+    
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
@@ -571,49 +605,80 @@ function generateFastOptimizedCanvas(sourceCanvas) {
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imgData.data;
 
-    // High Contrast Filter for crisp text edges
+    let histogram = new Array(256).fill(0);
     for (let i = 0; i < data.length; i += 4) {
-        let v = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-        v = v < 135 ? 0 : 255;
-        data[i] = data[i + 1] = data[i + 2] = v;
+        let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+        data[i] = data[i + 1] = data[i + 2] = avg;
+        histogram[Math.floor(avg)]++;
+    }
+
+    let total = canvas.width * canvas.height;
+    let sum = 0;
+    for (let t = 0; t < 256; t++) sum += t * histogram[t];
+
+    let sumB = 0, wB = 0, wF = 0, varMax = 0, threshold = 128;
+    for (let t = 0; t < 256; t++) {
+        wB += histogram[t];
+        if (wB === 0) continue;
+        wF = total - wB;
+        if (wF === 0) break;
+
+        sumB += t * histogram[t];
+        let mB = sumB / wB;
+        let mF = (sum - sumB) / wF;
+
+        let varBetween = wB * wF * (mB - mF) * (mB - mF);
+        if (varBetween > varMax) {
+            varMax = varBetween;
+            threshold = t;
+        }
+    }
+
+    for (let i = 0; i < data.length; i += 4) {
+        let val = data[i] < threshold ? 0 : 255;
+        data[i] = data[i + 1] = data[i + 2] = val;
     }
 
     ctx.putImageData(imgData, 0, 0);
-    return canvas;
+    return canvas.toDataURL('image/png');
 }
 
-// Dynamic OCR Engine (Reads EXACTLY the uploaded questions without forcing max limits)
-async function processCropAndReadFast() {
+// ULTRA-ACCURATE OCR SCANNER WITH ADVANCED PATTERN CORRECTION
+async function processCropAndRead() {
     if (!cropper) return;
     
+    document.getElementById("loadingText").innerText = "Reading Image & Parsing Questions & Options...";
     document.getElementById("loadingOverlay").style.display = "flex";
-    const startTime = performance.now();
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
-        const fastCanvas = generateFastOptimizedCanvas(rawCanvas);
+        const processedImageData = preprocessBlurImage(rawCanvas);
 
-        await initWorker();
-        const { data: { text } } = await tesseractWorker.recognize(fastCanvas);
+        const result = await Tesseract.recognize(
+            processedImageData,
+            'eng',
+            {
+                tessedit_pageseg_mode: '6',
+                tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
+            }
+        );
 
+        let text = result.data.text;
         extractedAnswerKey = {};
 
-        // Comprehensive Noise Cleaning Pipeline
-        let cleanText = text
-            .replace(/[\t\r]/g, " ")
-            .replace(/O|o/g, "0")
-            .replace(/I|l|\|/g, "1")
-            .replace(/Z|z/g, "2")
-            .replace(/S|s/g, "5")
-            .replace(/B/g, "8");
+        // Auto replacement for common OCR typos in blur text
+        text = text.replace(/O/g, '0')
+                   .replace(/I|l|\|/g, '1')
+                   .replace(/S/g, '5')
+                   .replace(/Z/g, '2');
 
-        const lines = cleanText.split('\n');
+        const lines = text.split('\n');
 
-        // Regex Parser matching: '20. A', '20-A', '20) A', '20 A'
         lines.forEach(line => {
-            const matches = [...line.matchAll(/(?:^|\s)(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            // Flexible Regex to catch all Q.No & Option combinations
+            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
             matches.forEach(match => {
-                const qNum = parseInt(match[1], 10);
+                const qNum = parseInt(match[1]);
                 const qAns = match[2].toUpperCase();
                 if (qNum > 0 && qNum <= 200) {
                     extractedAnswerKey[qNum] = qAns;
@@ -621,26 +686,22 @@ async function processCropAndReadFast() {
             });
         });
 
-        const detectedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
-        const totalDetected = detectedKeys.length;
-
         document.getElementById("loadingOverlay").style.display = "none";
-        const endTime = performance.now();
-        const duration = ((endTime - startTime) / 1000).toFixed(2);
 
-        if (totalDetected > 0) {
+        const detectedKeys = Object.keys(extractedAnswerKey);
+        if (detectedKeys.length > 0) {
             autoCheckMode = true;
-            // Set total questions dynamically to the highest question number detected in image
-            totalQuestions = Math.max(...detectedKeys);
-
-            alert(`⚡ Scan Completed in ${duration} seconds!\n\nDetected Answers: ${totalDetected} / ${totalQuestions}\n\nClick 'Start Test' to continue.`);
+            totalQuestions = Math.max(...detectedKeys.map(Number));
+            
+            let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
+            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("⚠️ Image clearly crop karein jahan Q.No aur Answers visible hon.");
+            alert("❌ Text detect nahi hua. Image ko pass se crop karein aur text clearly highlight rakhein.");
         }
-    } catch (err) {
-        console.error("Scan Error:", err);
+    } catch(err) {
+        console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Scan me error aaya. Kripya dobara try karein.");
+        alert("OCR Engine Error! Kripya dobara try karein.");
     }
 }
 
@@ -648,10 +709,16 @@ function startApp() {
     if (!autoCheckMode) {
         totalQuestions = parseInt(document.getElementById("questionCount").value);
     }
+
     const theme = document.getElementById("themeColor").value;
     document.documentElement.style.setProperty("--theme", theme);
+
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
+    
+    history.pushState({ page: 'app' }, 'OMR Test', '#omr');
+
+    saveState("app");
     generateOMR();
     updateResult();
     document.getElementById("resultPanel").style.display = "block";
@@ -660,23 +727,31 @@ function startApp() {
 function generateOMR() {
     const omr = document.getElementById("omrContainer");
     const nav = document.getElementById("navigator");
-    omr.innerHTML = ""; nav.innerHTML = "";
+
+    omr.innerHTML = "";
+    nav.innerHTML = "";
 
     for (let i = 1; i <= totalQuestions; i++) {
         const row = document.createElement("div");
         row.className = "omr-row";
         row.id = "row-" + i;
+
         row.innerHTML = `
             <div class="qno">${String(i).padStart(2, "0")}</div>
             <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">Ⓐ</div>
             <div class="option" data-opt="B" onclick="selectOption(${i},'B',this)">Ⓑ</div>
             <div class="option" data-opt="C" onclick="selectOption(${i},'C',this)">Ⓒ</div>
             <div class="option" data-opt="D" onclick="selectOption(${i},'D',this)">Ⓓ</div>
-            <div style="text-align:center;"><button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button></div>
-            <div style="text-align:center;"><button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">❌ Wrong</button></div>
+            <div style="text-align:center;">
+                <button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button>
+            </div>
+            <div style="text-align:center;">
+                <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">❌ Wrong</button>
+            </div>
             <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
             <div id="correctAns-${i}" style="text-align:center; font-weight:700;">-</div>
         `;
+
         omr.appendChild(row);
 
         const btn = document.createElement("button");
@@ -688,44 +763,80 @@ function generateOMR() {
     }
 }
 
+function restoreUserSelections() {
+    for (let q in userAnswers) {
+        const val = userAnswers[q];
+        const row = document.getElementById("row-" + q);
+        if (row) {
+            const optDiv = row.querySelector(`.option[data-opt="${val}"]`);
+            if (optDiv) optDiv.classList.add("selected");
+            document.getElementById("yourAns-" + q).innerText = val;
+            const navBtn = document.querySelector(`[data-q="${q}"]`);
+            if (navBtn) navBtn.classList.add("done");
+        }
+    }
+}
+
 function startTestTimer() {
     if (testStarted) return;
     testStarted = true;
     document.getElementById("startTimerBtn").style.display = "none";
+    resumeTimer();
+    saveState("app");
+}
+
+function resumeTimer() {
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         seconds++;
         const min = String(Math.floor(seconds / 60)).padStart(2, "0");
         const sec = String(seconds % 60).padStart(2, "0");
         document.getElementById("timer").innerText = `${min}:${sec}`;
+        sessionStorage.setItem("seconds", seconds);
     }, 1000);
 }
 
 function selectOption(qNo, value, element) {
-    if (!testStarted) { alert("Pehle '▶ Start Test' par click karein!"); return; }
+    if (!testStarted) {
+        alert("Pehle '▶ Start Test' button par click karke test start karein!");
+        return;
+    }
     if (submitted) return;
+
     const row = document.getElementById("row-" + qNo);
     row.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+
     element.classList.add("selected");
     userAnswers[qNo] = value;
     document.getElementById("yourAns-" + qNo).innerText = value;
+
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
     if (navBtn) navBtn.classList.add("done");
+
+    saveState("app");
     updateResult();
 }
 
-function submitTest() {
-    if (!testStarted) { alert("Test start nahi hua h!"); return; }
+function submitTest(isRestored = false) {
+    if (!testStarted && !isRestored) {
+        alert("Test start nahi hua h!");
+        return;
+    }
+
     submitted = true;
     clearInterval(timerInterval);
+
     document.getElementById("pdfArea").style.display = "block";
     document.getElementById("submitBtn").style.display = "none";
 
     if (autoCheckMode) {
         rightCount = 0; wrongCount = 0;
+
         for (let i = 1; i <= totalQuestions; i++) {
             const row = document.getElementById("row-" + i);
             const myAns = userAnswers[i] || "-";
             const picAns = extractedAnswerKey[i] || "-";
+
             document.getElementById("yourAns-" + i).innerText = myAns;
             document.getElementById("correctAns-" + i).innerText = picAns;
 
@@ -744,20 +855,29 @@ function submitTest() {
             }
         }
         updateResult();
+        if(!isRestored) alert("Auto Checked Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
             document.getElementById("right-" + i).style.display = "inline-block";
             document.getElementById("wrong-" + i).style.display = "inline-block";
         }
+        if(!isRestored) alert("Manual Check Mode Active!");
     }
+    saveState("app");
 }
 
 function markManual(qNo, status) {
-    if (!userAnswers[qNo]) return;
+    if (!userAnswers[qNo]) {
+        alert("Pehle answer select karein.");
+        return;
+    }
+
     const row = document.getElementById("row-" + qNo);
     if (checkedQuestions[qNo] === status) return;
+
     if (checkedQuestions[qNo] === "right") rightCount--;
     if (checkedQuestions[qNo] === "wrong") wrongCount--;
+
     checkedQuestions[qNo] = status;
 
     if (status === "right") {
@@ -769,6 +889,7 @@ function markManual(qNo, status) {
         row.className = "omr-row wrong-row";
         updateNav(qNo, "wrong");
     }
+
     updateResult();
 }
 
@@ -786,23 +907,32 @@ function updateResult() {
     document.getElementById("attemptedQuestions").innerText = Object.keys(userAnswers).length;
     document.getElementById("rightQuestions").innerText = rightCount;
     document.getElementById("wrongQuestions").innerText = wrongCount;
+
     let acc = (rightCount + wrongCount) > 0 ? ((rightCount / (rightCount + wrongCount)) * 100).toFixed(1) : 0;
     document.getElementById("accuracyPercent").innerText = acc + "%";
 }
 
 function toggleDarkMode() { document.body.classList.toggle("dark"); }
-function goHome() { location.reload(); }
+
+function goHome() { 
+    sessionStorage.clear();
+    window.location.hash = "";
+    location.reload(); 
+}
 
 function downloadOMRPDF() {
     const name = document.getElementById("watermarkName").value || "Student55";
     const element = document.getElementById("pdfExportArea");
-    html2pdf().set({
-        margin: [0.3, 0.3, 0.3, 0.3],
-        filename: `OMR_Report_${name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    }).from(element).save();
+
+    const opt = {
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     `OMR_Report_${name}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 
 function rateSite(s) { alert(`Rated ${s} stars!`); }
@@ -835,7 +965,6 @@ function loadComments() {
         container.appendChild(item);
     });
 }
-loadComments();
 </script>
 </body>
 </html>
