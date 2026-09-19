@@ -1664,6 +1664,44 @@ updateResult();
 /* ======================
 RESULT
 ====================== */
+function updateResult(){
+
+document.getElementById(
+"totalQuestions"
+).innerText = totalQuestions;
+
+document.getElementById(
+"attemptedQuestions"
+).innerText =
+Object.keys(answers).length;
+
+document.getElementById(
+"rightQuestions"
+).innerText = rightCount;
+
+document.getElementById(
+"wrongQuestions"
+).innerText = wrongCount;
+
+let acc = 0;
+
+if((rightCount + wrongCount) > 0){
+
+acc = (
+rightCount /
+(rightCount + wrongCount)
+* 100
+).toFixed(2);
+
+}
+
+document.getElementById(
+"accuracyPercent"
+).innerText =
+acc + "%";
+
+}
+ 
 
 function selectOption(
 qNo,
