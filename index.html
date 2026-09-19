@@ -1479,7 +1479,6 @@ element
 ){
 
 if(!testStarted) return;
-
 if(submitted) return;
 
 const row =
@@ -1487,25 +1486,18 @@ document.getElementById(
 "row-"+qNo
 );
 
-row.querySelectorAll(
-".option"
-).forEach(opt=>{
-
-opt.classList.remove(
-"selected"
-);
-
+row.querySelectorAll(".option")
+.forEach(opt=>{
+opt.classList.remove("selected");
 });
 
-element.classList.add(
-"selected"
-);
+element.classList.add("selected");
 
-answers[qNo]=value;
+answers[qNo] = value;
 
- document.getElementById(
+document.getElementById(
 "yourAns-"+qNo
-).innerText=value;
+).innerText = value;
 
 if(
 autoCheckMode &&
@@ -1514,24 +1506,19 @@ answerKey[qNo]
 
 document.getElementById(
 "correctAns-"+qNo
-).innerText=
+).innerText =
 answerKey[qNo];
 
-const row=
-document.getElementById(
-"row-"+qNo
-);
-
 if(
-value===answerKey[qNo]
+value === answerKey[qNo]
 ){
 
 if(
-row.dataset.status!=="right"
+row.dataset.status !== "right"
 ){
 
 if(
-row.dataset.status==="wrong"
+row.dataset.status === "wrong"
 ){
 wrongCount--;
 }
@@ -1540,7 +1527,7 @@ rightCount++;
 
 }
 
-row.dataset.status="right";
+row.dataset.status = "right";
 
 row.classList.remove(
 "wrong-row"
@@ -1558,11 +1545,11 @@ qNo,
 }else{
 
 if(
-row.dataset.status!=="wrong"
+row.dataset.status !== "wrong"
 ){
 
 if(
-row.dataset.status==="right"
+row.dataset.status === "right"
 ){
 rightCount--;
 }
@@ -1571,7 +1558,7 @@ wrongCount++;
 
 }
 
-row.dataset.status="wrong";
+row.dataset.status = "wrong";
 
 row.classList.remove(
 "correct-row"
@@ -1580,147 +1567,6 @@ row.classList.remove(
 row.classList.add(
 "wrong-row"
 );
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(
-".option"
-).forEach(opt=>{
-
-opt.classList.remove(
-"selected"
-);
-
-});
-
-element.classList.add(
-"selected"
-);
-
-answers[qNo]=value;
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-function selectOption(
-qNo,
-value,
-element
-){
-
-if(!testStarted) return;
-if(submitted) return;
-
-const row =
-document.getElementById(
-"row-"+qNo
-);
-
-row.querySelectorAll(".option")
-.forEach(opt=>{
-opt.classList.remove("selected");
-});
-
-element.classList.add("selected");
-
-answers[qNo]=value;
-
-document.getElementById(
-"yourAns-"+qNo
-).innerText=value;
-
-if(
-autoCheckMode &&
-answerKey[qNo]
-){
-
-document.getElementById(
-"correctAns-"+qNo
-).innerText=
-answerKey[qNo];
-
-if(
-value===answerKey[qNo]
-){
-
-if(row.dataset.status!=="right"){
-
-if(row.dataset.status==="wrong"){
-wrongCount--;
-}
-
-rightCount++;
-}
-
-row.dataset.status="right";
-
-row.classList.remove("wrong-row");
-row.classList.add("correct-row");
-
-updateNavigatorStatus(
-qNo,
-"right"
-);
-
-}else{
-
-if(row.dataset.status!=="wrong"){
-
-if(row.dataset.status==="right"){
-rightCount--;
-}
-
-wrongCount++;
-}
-
-row.dataset.status="wrong";
-
-row.classList.remove("correct-row");
-row.classList.add("wrong-row");
 
 updateNavigatorStatus(
 qNo,
@@ -1744,147 +1590,6 @@ updateResult();
 
 }
 
-/* ======================
-SUBMIT
-====================== */
-
-document
-.getElementById(
-"submitBtn"
-)
-.addEventListener(
-"click",
-()=>{
-
-submitted=true;
-
-clearInterval(
-timerInterval
-);
-
-document
-.getElementById(
-"pdfArea"
-).style.display="block";
-
-document
-.getElementById(
-"submitBtn"
-).style.display="none";
-
-if(
-!autoCheckMode
-){
-
-for(
-let i=1;
-i<=totalQuestions;
-i++
-){
-
-document.getElementById(
-"right-"+i
-).style.display="block";
-
-document.getElementById(
-"wrong-"+i
-).style.display="block";
-
-}
-
-alert(
-"Checking Mode Enabled"
-);
-
-}else{
-
-alert(
-"Auto Checking Completed"
-);
-
-}
-
-});
-
-/* ======================
-RIGHT
-====================== */
-
-function markRight(qNo){
-
-if(!answers[qNo]) return;
-
-const row=document.getElementById("row-"+qNo);
-
-if(
-!row.classList.contains("correct-row")
-&&
-!row.classList.contains("wrong-row")
-){
-checkedCount++;
-}
-
-if(row.dataset.status==="wrong"){
-wrongCount--;
-}
-
-if(row.dataset.status!=="right"){
-rightCount++;
-}
-
-row.dataset.status="right";
-
-row.classList.remove("wrong-row");
-row.classList.add("correct-row");
-
-updateNavigatorStatus(
-qNo,
-"right"
-);
-
-updateResult();
-
-}
-
-/* ======================
-WRONG
-====================== */
-
-function markWrong(qNo){
-
-if(!answers[qNo]) return;
-
-const row=document.getElementById("row-"+qNo);
-
-if(
-!row.classList.contains("correct-row")
-&&
-!row.classList.contains("wrong-row")
-){
-checkedCount++;
-}
-
-if(row.dataset.status==="right"){
-rightCount--;
-}
-
-if(row.dataset.status!=="wrong"){
-wrongCount++;
-}
-
-row.dataset.status="wrong";
-
-row.classList.remove("correct-row");
-row.classList.add("wrong-row");
-
-updateNavigatorStatus(
-qNo,
-"wrong"
-);
-
-updateResult();
-
-}
 /* ======================
 RESULT
 ====================== */
