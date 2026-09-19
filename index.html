@@ -1470,6 +1470,79 @@ document.getElementById(
 OPTION SELECT
 ====================== */
 
+ document
+.getElementById("submitBtn")
+.addEventListener("click",()=>{
+
+submitted = true;
+
+clearInterval(timerInterval);
+
+document.getElementById("pdfArea").style.display="block";
+
+document.getElementById("submitBtn").style.display="none";
+
+if(autoCheckMode){
+
+rightCount = 0;
+wrongCount = 0;
+
+for(let i=1;i<=totalQuestions;i++){
+
+const row =
+document.getElementById("row-"+i);
+
+const userAns = answers[i];
+
+const correctAns = answerKey[i];
+
+document.getElementById(
+"correctAns-"+i
+).innerText = correctAns || "-";
+
+if(userAns && correctAns){
+
+if(userAns===correctAns){
+
+row.classList.add("correct-row");
+row.dataset.status="right";
+rightCount++;
+
+updateNavigatorStatus(i,"right");
+
+}else{
+
+row.classList.add("wrong-row");
+row.dataset.status="wrong";
+wrongCount++;
+
+updateNavigatorStatus(i,"wrong");
+
+}
+
+}
+
+}
+
+updateResult();
+
+alert("Auto Checking Completed");
+
+}else{
+
+for(let i=1;i<=totalQuestions;i++){
+
+document.getElementById("right-"+i).style.display="block";
+document.getElementById("wrong-"+i).style.display="block";
+
+}
+
+alert("Checking Mode Enabled");
+
+}
+
+});
+
 function selectOption(
 qNo,
 value,
@@ -1592,52 +1665,43 @@ updateResult();
 RESULT
 ====================== */
 
-function updateResult(){
-
-document.getElementById(
-"totalQuestions"
-).innerText=
-totalQuestions;
-
-document.getElementById(
-"attemptedQuestions"
-).innerText=
-Object.keys(
-answers
-).length;
-
-document.getElementById(
-"rightQuestions"
-).innerText=
-rightCount;
-
-document.getElementById(
-"wrongQuestions"
-).innerText=
-wrongCount;
-
-let acc = 0;
-
-if(
-(rightCount+wrongCount)>0
+function selectOption(
+qNo,
+value,
+element
 ){
 
-acc=
-(
-rightCount/
-(
-rightCount+
-wrongCount
-)
-*100
-).toFixed(2);
+if(!testStarted) return;
+if(submitted) return;
 
-}
+const row =
+document.getElementById(
+"row-"+qNo
+);
+
+row.querySelectorAll(".option")
+.forEach(opt=>{
+opt.classList.remove("selected");
+});
+
+element.classList.add("selected");
+
+answers[qNo] = value;
 
 document.getElementById(
-"accuracyPercent"
-).innerText=
-acc+"%";
+"yourAns-"+qNo
+).innerText = value;
+
+const navBtn =
+document.querySelector(
+`[data-q="${qNo}"]`
+);
+
+if(navBtn){
+navBtn.classList.add("done");
+}
+
+updateResult();
 
 }
 
