@@ -1645,6 +1645,21 @@ document.getElementById(
 );
 
 row.querySelectorAll(".option")
+function selectOption(
+qNo,
+value,
+element
+){
+
+if(!testStarted) return;
+if(submitted) return;
+
+const row =
+document.getElementById(
+"row-"+qNo
+);
+
+row.querySelectorAll(".option")
 .forEach(opt=>{
 opt.classList.remove("selected");
 });
