@@ -274,6 +274,22 @@ body {
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.upload-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.upload-btn-group label {
+    flex: 1;
+    background: white;
+    color: #111827;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+}
 </style>
 </head>
 
@@ -293,7 +309,7 @@ body {
 
         <div class="selector-grid">
             <div>
-                <label style="display:block; margin-bottom:5px; font-weight:600;">Questions</label>
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Manual Questions Select</label>
                 <select id="questionCount">
                     <option value="10">10 Questions</option>
                     <option value="14">14 Questions</option>
@@ -314,14 +330,21 @@ body {
         </div>
 
         <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:15px; text-align:left;">
-            <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload & Crop Answer Key Image</h3>
-            <input type="file" id="answerKeyImage" accept="image/*" style="width:100%; padding:10px; border-radius:10px; background:white; color:#111827;">
+            <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload or Take Photo of Answer Key</h3>
+            
+            <div class="upload-btn-group">
+                <label for="cameraInput">📷 Open Camera</label>
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+
+                <label for="fileInput">📁 Upload File</label>
+                <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            </div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:16px;" onclick="processCropAndRead()">⚡ Crop & Extract Answer Key</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:16px;" onclick="processCropAndRead()">⚡ Crop & Read Answer Key</button>
             </div>
         </div>
 
@@ -419,7 +442,47 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-document.getElementById('answerKeyImage').addEventListener('change', function(e) {
+// PAGE LOAD PAR STATE RESTORE KARNA (REFRESH LOGIC)
+window.onload = function() {
+    const savedState = localStorage.getItem("omrPageState");
+    if (savedState === "app") {
+        totalQuestions = parseInt(localStorage.getItem("totalQuestions")) || 10;
+        autoCheckMode = localStorage.getItem("autoCheckMode") === "true";
+        userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
+        extractedAnswerKey = JSON.parse(localStorage.getItem("extractedAnswerKey") || "{}");
+        testStarted = localStorage.getItem("testStarted") === "true";
+        submitted = localStorage.getItem("submitted") === "true";
+        seconds = parseInt(localStorage.getItem("seconds")) || 0;
+
+        document.getElementById("welcomePage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        
+        generateOMR();
+        restoreUserSelections();
+        if(testStarted && !submitted) {
+            document.getElementById("startTimerBtn").style.display = "none";
+            resumeTimer();
+        }
+        if(submitted) {
+            submitTest(true);
+        }
+        updateResult();
+    }
+};
+
+function saveState(pageName) {
+    localStorage.setItem("omrPageState", pageName);
+    localStorage.setItem("totalQuestions", totalQuestions);
+    localStorage.setItem("autoCheckMode", autoCheckMode);
+    localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+    localStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
+    localStorage.setItem("testStarted", testStarted);
+    localStorage.setItem("submitted", submitted);
+    localStorage.setItem("seconds", seconds);
+}
+
+// IMAGE HANDLING (Camera or File)
+function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -432,16 +495,20 @@ document.getElementById('answerKeyImage').addEventListener('change', function(e)
         };
         reader.readAsDataURL(file);
     }
-});
+}
+
+document.getElementById('cameraInput').addEventListener('change', handleImageSelect);
+document.getElementById('fileInput').addEventListener('change', handleImageSelect);
 
 async function processCropAndRead() {
     if (!cropper) return;
     
-    document.getElementById("loadingText").innerText = "Reading Crop Area Super Fast...";
+    document.getElementById("loadingText").innerText = "Reading Crop Image Deeply...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     const canvas = cropper.getCroppedCanvas();
     
+    // OCR Processing
     const worker = await Tesseract.createWorker('eng', 1);
     await worker.setParameters({
         tessedit_char_whitelist: '0123456789ABCD.- \n'
@@ -454,9 +521,12 @@ async function processCropAndRead() {
     const lines = text.split('\n');
 
     lines.forEach(line => {
+        // Regex to parse Question number & option (e.g. "1. A", "12-B", "5 C")
         const match = line.match(/(\d+)\s*[\.\-:\s]*\s*([A-D])/i);
         if (match) {
-            extractedAnswerKey[parseInt(match[1])] = match[2].toUpperCase();
+            const qNum = parseInt(match[1]);
+            const qAns = match[2].toUpperCase();
+            extractedAnswerKey[qNum] = qAns;
         }
     });
 
@@ -466,9 +536,11 @@ async function processCropAndRead() {
     if (detectedKeys.length > 0) {
         autoCheckMode = true;
         totalQuestions = Math.max(...detectedKeys.map(Number));
-        alert(`Success! Read ${detectedKeys.length} Questions (Max Q.No: ${totalQuestions}). Click 'Start Test' now.`);
+        
+        let previewStr = detectedKeys.map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
+        alert(`✅ Reading Successful!\nTotal Questions Detected: ${totalQuestions}\nKey: ${previewStr}\n\nAb 'Start Test' button par click karke OMR sheet par jayein.`);
     } else {
-        alert("Text clear nahi mila. Kripya tight crop karke dubara try karein.");
+        alert("❌ Text clear nahi mila. Kripya image ko bilkul pass se tightly crop karein aur saaf photo lein.");
     }
 }
 
@@ -483,6 +555,7 @@ function startApp() {
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
 
+    saveState("app");
     generateOMR();
     updateResult();
     document.getElementById("resultPanel").style.display = "block";
@@ -502,10 +575,10 @@ function generateOMR() {
 
         row.innerHTML = `
             <div class="qno">${String(i).padStart(2, "0")}</div>
-            <div class="option" onclick="selectOption(${i},'A',this)">Ⓐ</div>
-            <div class="option" onclick="selectOption(${i},'B',this)">Ⓑ</div>
-            <div class="option" onclick="selectOption(${i},'C',this)">Ⓒ</div>
-            <div class="option" onclick="selectOption(${i},'D',this)">Ⓓ</div>
+            <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">Ⓐ</div>
+            <div class="option" data-opt="B" onclick="selectOption(${i},'B',this)">Ⓑ</div>
+            <div class="option" data-opt="C" onclick="selectOption(${i},'C',this)">Ⓒ</div>
+            <div class="option" data-opt="D" onclick="selectOption(${i},'D',this)">Ⓓ</div>
             <div style="text-align:center;">
                 <button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button>
             </div>
@@ -527,22 +600,42 @@ function generateOMR() {
     }
 }
 
+function restoreUserSelections() {
+    for (let q in userAnswers) {
+        const val = userAnswers[q];
+        const row = document.getElementById("row-" + q);
+        if (row) {
+            const optDiv = row.querySelector(`.option[data-opt="${val}"]`);
+            if (optDiv) optDiv.classList.add("selected");
+            document.getElementById("yourAns-" + q).innerText = val;
+            const navBtn = document.querySelector(`[data-q="${q}"]`);
+            if (navBtn) navBtn.classList.add("done");
+        }
+    }
+}
+
 function startTestTimer() {
     if (testStarted) return;
     testStarted = true;
     document.getElementById("startTimerBtn").style.display = "none";
+    resumeTimer();
+    saveState("app");
+}
 
+function resumeTimer() {
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         seconds++;
         const min = String(Math.floor(seconds / 60)).padStart(2, "0");
         const sec = String(seconds % 60).padStart(2, "0");
         document.getElementById("timer").innerText = `${min}:${sec}`;
+        localStorage.setItem("seconds", seconds);
     }, 1000);
 }
 
 function selectOption(qNo, value, element) {
     if (!testStarted) {
-        alert("Pehle 'Start Test' button par click karein!");
+        alert("Pehle '▶ Start Test' button par click karke timer start karein!");
         return;
     }
     if (submitted) return;
@@ -557,11 +650,12 @@ function selectOption(qNo, value, element) {
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
     if (navBtn) navBtn.classList.add("done");
 
+    saveState("app");
     updateResult();
 }
 
-function submitTest() {
-    if (!testStarted) {
+function submitTest(isRestored = false) {
+    if (!testStarted && !isRestored) {
         alert("Test start nahi hua h!");
         return;
     }
@@ -598,14 +692,15 @@ function submitTest() {
             }
         }
         updateResult();
-        alert("Auto Checked Successfully!");
+        if(!isRestored) alert("Auto Checked Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
             document.getElementById("right-" + i).style.display = "inline-block";
             document.getElementById("wrong-" + i).style.display = "inline-block";
         }
-        alert("Manual Check Mode Active!");
+        if(!isRestored) alert("Manual Check Mode Active!");
     }
+    saveState("app");
 }
 
 function markManual(qNo, status) {
@@ -655,7 +750,11 @@ function updateResult() {
 }
 
 function toggleDarkMode() { document.body.classList.toggle("dark"); }
-function goHome() { location.reload(); }
+
+function goHome() { 
+    localStorage.clear();
+    location.reload(); 
+}
 
 function downloadOMRPDF() {
     const name = document.getElementById("watermarkName").value || "Student55";
