@@ -387,12 +387,13 @@ body {
             </div>
         </div>
 
-        <!-- BOLD GREEN UPLOAD ANSWER KEY BUTTON -->
+        <!-- BOLD GREEN UPLOAD / CAMERA BUTTON -->
         <div class="upload-hero-container">
             <button type="button" class="big-green-upload-btn" onclick="document.getElementById('fileInput').click()">
-                📂 UPLOAD ANSWER KEY
+                📷 UPLOAD / TAKE PHOTO OF ANSWER KEY
             </button>
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
+            <!-- Camera + File input options supported -->
+            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
 
             <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click Process below.</div>
             
@@ -509,7 +510,6 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-// MOBILE PHONE BACK BUTTON FIX
 window.addEventListener('popstate', function (event) {
     if (document.getElementById("app").style.display === "block") {
         document.getElementById("app").style.display = "none";
@@ -575,9 +575,9 @@ function handleImageSelect(e) {
     }
 }
 
-// HIGH RESOLUTION IMAGE ENHANCER FOR OCR (NO TEXT TRIM)
+// ULTRA-ACCURATE CANVAS RESIZER FOR FULL QUESTION SCANNING
 function getHighResImageCanvas(sourceCanvas) {
-    const scale = 2; // Upscale 2x for sharp text
+    const scale = 2.5; // Upscale 2.5x for sharp small fonts
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -588,7 +588,7 @@ function getHighResImageCanvas(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
-// ACCURATE OCR SCANNER FOR FULL 20 QUESTIONS
+// OCR ENGINE WITH ENHANCED PSM FOR 1-20+ ALL QUESTIONS
 async function processCropAndRead() {
     if (!cropper) return;
     
@@ -601,7 +601,11 @@ async function processCropAndRead() {
 
         const result = await Tesseract.recognize(
             processedImageData,
-            'eng'
+            'eng',
+            {
+                tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+                tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
+            }
         );
 
         const text = result.data.text;
@@ -609,7 +613,7 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
-            // Flexible matching for Question No (1 to 200) and Answer A/B/C/D
+            // Flexible matching for Question Numbers (1 to 200) and Answer Options A/B/C/D
             const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
             matches.forEach(match => {
                 const qNum = parseInt(match[1]);
