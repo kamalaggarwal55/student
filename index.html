@@ -184,57 +184,6 @@ body {
     max-width: 100%;
 }
 
-/* LIVE CAMERA OVERLAY SCREEN */
-#customCameraModal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: #000;
-    z-index: 10000;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#cameraVideo, #cameraCropImg {
-    width: 100%;
-    height: 80vh;
-    object-fit: contain;
-}
-
-.camera-controls {
-    width: 100%;
-    height: 20vh;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: #000;
-    padding: 0 20px;
-}
-
-.cam-circle-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    font-size: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.cam-shutter-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 4px solid #fff;
-    background: #ef4444;
-    cursor: pointer;
-}
-
 /* APP MAIN */
 #app { display: none; }
 
@@ -395,7 +344,7 @@ body {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.85);
-    z-index: 99999;
+    z-index: 9999;
     color: white;
     flex-direction: column;
     align-items: center;
@@ -422,19 +371,6 @@ body {
     <h3 id="loadingText">Processing Image Preprocessing & Neural Scan...</h3>
 </div>
 
-<!-- LIVE CAMERA & DIRECT CROP SCREEN -->
-<div id="customCameraModal">
-    <video id="cameraVideo" autoplay playsinline></video>
-    <div id="cameraCropContainer" style="display:none; width:100%; height:80vh;">
-        <img id="cameraCropImg" src="">
-    </div>
-    <div class="camera-controls">
-        <button id="camCancelBtn" class="cam-circle-btn" onclick="closeCustomCamera()">✕</button>
-        <button id="camShutterBtn" class="cam-shutter-btn" onclick="takeCameraSnap()"></button>
-        <button id="camCropDoneBtn" class="cam-circle-btn" style="display:none; background:#16a34a;" onclick="confirmCameraCrop()">✓</button>
-    </div>
-</div>
-
 <!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
@@ -447,7 +383,7 @@ body {
                 <select id="questionCount">
                     <option value="10">10 Questions</option>
                     <option value="14">14 Questions</option>
-                    <option value="20" selected>20 Questions</option>
+                    <option value="20">20 Questions</option>
                     <option value="30">30 Questions</option>
                     <option value="50">50 Questions</option>
                     <option value="100">100 Questions</option>
@@ -465,7 +401,7 @@ body {
 
         <div class="upload-hero-container">
             <div class="upload-btn-group">
-                <button type="button" class="action-upload-btn" onclick="openCustomCamera()">
+                <button type="button" class="action-upload-btn" onclick="document.getElementById('cameraInput').click()">
                     📷 TAKE CAMERA PHOTO
                 </button>
                 <button type="button" class="action-upload-btn gallery-btn" onclick="document.getElementById('galleryInput').click()">
@@ -473,7 +409,8 @@ body {
                 </button>
             </div>
 
-            <!-- Gallery Input -->
+            <!-- Direct inputs for Camera & Gallery -->
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
             <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
 
             <div id="uploadStatusBadge">✅ Image Selected! Crop Answer Key area and click Process below.</div>
@@ -578,7 +515,7 @@ body {
 </div>
 
 <script>
-let totalQuestions = 20;
+let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
 let autoCheckMode = false;
@@ -587,82 +524,60 @@ let submitted = false;
 let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
-let cameraCropper = null;
-let cameraStream = null;
 
-// OPEN LIVE CUSTOM CAMERA WITH INSTANT CROP SCREEN
-async function openCustomCamera() {
-    try {
-        const modal = document.getElementById("customCameraModal");
-        const video = document.getElementById("cameraVideo");
-        modal.style.display = "flex";
-        
-        document.getElementById("cameraVideo").style.display = "block";
-        document.getElementById("cameraCropContainer").style.display = "none";
-        document.getElementById("camShutterBtn").style.display = "block";
-        document.getElementById("camCropDoneBtn").style.display = "none";
-
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { exact: "environment" } },
-            audio: false
-        }).catch(() => {
-            return navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        });
-
-        video.srcObject = cameraStream;
-    } catch (err) {
-        alert("Camera permission error. Please allow camera access.");
-        closeCustomCamera();
+window.addEventListener('popstate', function (event) {
+    if (document.getElementById("app").style.display === "block") {
+        document.getElementById("app").style.display = "none";
+        document.getElementById("welcomePage").style.display = "flex";
+        sessionStorage.setItem("activePage", "welcome");
     }
-}
+});
 
-function closeCustomCamera() {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
+window.addEventListener('DOMContentLoaded', () => {
+    const activePage = sessionStorage.getItem("activePage");
+    if (activePage === "app" || window.location.hash === "#omr") {
+        totalQuestions = parseInt(sessionStorage.getItem("totalQuestions")) || 10;
+        autoCheckMode = sessionStorage.getItem("autoCheckMode") === "true";
+        userAnswers = JSON.parse(sessionStorage.getItem("userAnswers") || "{}");
+        extractedAnswerKey = JSON.parse(sessionStorage.getItem("extractedAnswerKey") || "{}");
+        testStarted = sessionStorage.getItem("testStarted") === "true";
+        submitted = sessionStorage.getItem("submitted") === "true";
+        seconds = parseInt(sessionStorage.getItem("seconds")) || 0;
+
+        document.getElementById("welcomePage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+        generateOMR();
+        restoreUserSelections();
+
+        if (testStarted && !submitted) {
+            document.getElementById("startTimerBtn").style.display = "none";
+            resumeTimer();
+        }
+        if (submitted) {
+            submitTest(true);
+        }
+        updateResult();
     }
-    if (cameraCropper) {
-        cameraCropper.destroy();
-        cameraCropper = null;
-    }
-    document.getElementById("customCameraModal").style.display = "none";
-}
+    loadComments();
+});
 
-function takeCameraSnap() {
-    const video = document.getElementById("cameraVideo");
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    const imgDataUrl = canvas.toDataURL("image/png");
-
-    video.style.display = "none";
-    document.getElementById("camShutterBtn").style.display = "none";
-
-    const cropContainer = document.getElementById("cameraCropContainer");
-    const cropImg = document.getElementById("cameraCropImg");
-    cropImg.src = imgDataUrl;
-    cropContainer.style.display = "block";
-    document.getElementById("camCropDoneBtn").style.display = "flex";
-
-    if (cameraCropper) cameraCropper.destroy();
-    cameraCropper = new Cropper(cropImg, { aspectRatio: NaN, viewMode: 1 });
-}
-
-async function confirmCameraCrop() {
-    if (!cameraCropper) return;
-    const rawCanvas = cameraCropper.getCroppedCanvas();
-    closeCustomCamera();
-
-    // Directly Process Cropped Image via Tesseract OCR
-    processImageDataAndRead(rawCanvas);
+function saveState(pageName) {
+    sessionStorage.setItem("activePage", pageName);
+    sessionStorage.setItem("totalQuestions", totalQuestions);
+    sessionStorage.setItem("autoCheckMode", autoCheckMode);
+    sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+    sessionStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
+    sessionStorage.setItem("testStarted", testStarted);
+    sessionStorage.setItem("submitted", submitted);
+    sessionStorage.setItem("seconds", seconds);
 }
 
 function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
         document.getElementById('uploadStatusBadge').style.display = 'block';
+        
         const reader = new FileReader();
         reader.onload = function(event) {
             const cropImg = document.getElementById('cropImage');
@@ -675,9 +590,9 @@ function handleImageSelect(e) {
     }
 }
 
-// OPTIMIZED FAST BINARIZATION
+// ENHANCED IMAGE PREPROCESSING FOR BLURRY CAMERA & GALLERY PHOTOS
 function preprocessBlurImage(sourceCanvas) {
-    const scale = 2; 
+    const scale = 3; 
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -690,9 +605,37 @@ function preprocessBlurImage(sourceCanvas) {
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imgData.data;
 
+    let histogram = new Array(256).fill(0);
     for (let i = 0; i < data.length; i += 4) {
         let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-        let val = avg < 140 ? 0 : 255;
+        data[i] = data[i + 1] = data[i + 2] = avg;
+        histogram[Math.floor(avg)]++;
+    }
+
+    let total = canvas.width * canvas.height;
+    let sum = 0;
+    for (let t = 0; t < 256; t++) sum += t * histogram[t];
+
+    let sumB = 0, wB = 0, wF = 0, varMax = 0, threshold = 128;
+    for (let t = 0; t < 256; t++) {
+        wB += histogram[t];
+        if (wB === 0) continue;
+        wF = total - wB;
+        if (wF === 0) break;
+
+        sumB += t * histogram[t];
+        let mB = sumB / wB;
+        let mF = (sum - sumB) / wF;
+
+        let varBetween = wB * wF * (mB - mF) * (mB - mF);
+        if (varBetween > varMax) {
+            varMax = varBetween;
+            threshold = t;
+        }
+    }
+
+    for (let i = 0; i < data.length; i += 4) {
+        let val = data[i] < threshold ? 0 : 255;
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -700,18 +643,15 @@ function preprocessBlurImage(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
+// ULTRA-ACCURATE OCR SCANNER WITH ADVANCED PATTERN CORRECTION
 async function processCropAndRead() {
     if (!cropper) return;
-    const rawCanvas = cropper.getCroppedCanvas();
-    processImageDataAndRead(rawCanvas);
-}
-
-async function processImageDataAndRead(rawCanvas) {
+    
     document.getElementById("loadingText").innerText = "Reading Image & Parsing Questions & Options...";
     document.getElementById("loadingOverlay").style.display = "flex";
-    const startTime = performance.now();
 
     try {
+        const rawCanvas = cropper.getCroppedCanvas();
         const processedImageData = preprocessBlurImage(rawCanvas);
 
         const result = await Tesseract.recognize(
@@ -726,56 +666,58 @@ async function processImageDataAndRead(rawCanvas) {
         let text = result.data.text;
         extractedAnswerKey = {};
 
-        let cleanText = text
-            .replace(/[\t\r]/g, " ")
-            .replace(/O|o/g, "0")
-            .replace(/I|l|\|/g, "1")
-            .replace(/Z|z/g, "2")
-            .replace(/S|s/g, "5")
-            .replace(/B/g, "8");
+        // Auto replacement for common OCR typos in blur text
+        text = text.replace(/O/g, '0')
+                   .replace(/I|l|\|/g, '1')
+                   .replace(/S/g, '5')
+                   .replace(/Z/g, '2');
 
-        const pattern = /(?:^|\s|\n)(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi;
-        let match;
+        const lines = text.split('\n');
 
-        while ((match = pattern.exec(cleanText)) !== null) {
-            const qNum = parseInt(match[1], 10);
-            const qAns = match[2].toUpperCase();
-            if (qNum > 0 && qNum <= 200) {
-                extractedAnswerKey[qNum] = qAns;
-            }
-        }
-
-        const selectedCount = parseInt(document.getElementById("questionCount").value) || 20;
-        totalQuestions = selectedCount;
-
-        let validDetectedCount = 0;
-        for (let i = 1; i <= totalQuestions; i++) {
-            if (extractedAnswerKey[i]) {
-                validDetectedCount++;
-            }
-        }
-
-        autoCheckMode = true;
+        lines.forEach(line => {
+            // Flexible Regex to catch all Q.No & Option combinations
+            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            matches.forEach(match => {
+                const qNum = parseInt(match[1]);
+                const qAns = match[2].toUpperCase();
+                if (qNum > 0 && qNum <= 200) {
+                    extractedAnswerKey[qNum] = qAns;
+                }
+            });
+        });
 
         document.getElementById("loadingOverlay").style.display = "none";
-        const endTime = performance.now();
-        const duration = ((endTime - startTime) / 1000).toFixed(2);
 
-        alert(`⚡ Scan Completed in ${duration} seconds!\n\nDetected Answers: ${validDetectedCount} / ${totalQuestions}\n\nClick 'Start Test' to continue.`);
-
-    } catch (err) {
-        console.error("Scan Error:", err);
+        const detectedKeys = Object.keys(extractedAnswerKey);
+        if (detectedKeys.length > 0) {
+            autoCheckMode = true;
+            totalQuestions = Math.max(...detectedKeys.map(Number));
+            
+            let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
+            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
+        } else {
+            alert("❌ Text detect nahi hua. Image ko pass se crop karein aur text clearly highlight rakhein.");
+        }
+    } catch(err) {
+        console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Scan me error aaya. Kripya image ko dobara try karein.");
+        alert("OCR Engine Error! Kripya dobara try karein.");
     }
 }
 
 function startApp() {
-    totalQuestions = parseInt(document.getElementById("questionCount").value) || 20;
+    if (!autoCheckMode) {
+        totalQuestions = parseInt(document.getElementById("questionCount").value);
+    }
+
     const theme = document.getElementById("themeColor").value;
     document.documentElement.style.setProperty("--theme", theme);
+
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
+    
+    history.pushState({ page: 'app' }, 'OMR Test', '#omr');
+
     saveState("app");
     generateOMR();
     updateResult();
@@ -785,23 +727,31 @@ function startApp() {
 function generateOMR() {
     const omr = document.getElementById("omrContainer");
     const nav = document.getElementById("navigator");
-    omr.innerHTML = ""; nav.innerHTML = "";
+
+    omr.innerHTML = "";
+    nav.innerHTML = "";
 
     for (let i = 1; i <= totalQuestions; i++) {
         const row = document.createElement("div");
         row.className = "omr-row";
         row.id = "row-" + i;
+
         row.innerHTML = `
             <div class="qno">${String(i).padStart(2, "0")}</div>
             <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">Ⓐ</div>
             <div class="option" data-opt="B" onclick="selectOption(${i},'B',this)">Ⓑ</div>
             <div class="option" data-opt="C" onclick="selectOption(${i},'C',this)">Ⓒ</div>
             <div class="option" data-opt="D" onclick="selectOption(${i},'D',this)">Ⓓ</div>
-            <div style="text-align:center;"><button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button></div>
-            <div style="text-align:center;"><button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">❌ Wrong</button></div>
+            <div style="text-align:center;">
+                <button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✅ Right</button>
+            </div>
+            <div style="text-align:center;">
+                <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">❌ Wrong</button>
+            </div>
             <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
             <div id="correctAns-${i}" style="text-align:center; font-weight:700;">-</div>
         `;
+
         omr.appendChild(row);
 
         const btn = document.createElement("button");
@@ -813,14 +763,30 @@ function generateOMR() {
     }
 }
 
+function restoreUserSelections() {
+    for (let q in userAnswers) {
+        const val = userAnswers[q];
+        const row = document.getElementById("row-" + q);
+        if (row) {
+            const optDiv = row.querySelector(`.option[data-opt="${val}"]`);
+            if (optDiv) optDiv.classList.add("selected");
+            document.getElementById("yourAns-" + q).innerText = val;
+            const navBtn = document.querySelector(`[data-q="${q}"]`);
+            if (navBtn) navBtn.classList.add("done");
+        }
+    }
+}
+
 function startTestTimer() {
     if (testStarted) return;
     testStarted = true;
     document.getElementById("startTimerBtn").style.display = "none";
     resumeTimer();
+    saveState("app");
 }
 
 function resumeTimer() {
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         seconds++;
         const min = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -831,47 +797,46 @@ function resumeTimer() {
 }
 
 function selectOption(qNo, value, element) {
-    if (!testStarted) { alert("Pehle '▶ Start Test' par click karein!"); return; }
+    if (!testStarted) {
+        alert("Pehle '▶ Start Test' button par click karke test start karein!");
+        return;
+    }
     if (submitted) return;
+
     const row = document.getElementById("row-" + qNo);
     row.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+
     element.classList.add("selected");
     userAnswers[qNo] = value;
     document.getElementById("yourAns-" + qNo).innerText = value;
+
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
     if (navBtn) navBtn.classList.add("done");
+
     saveState("app");
     updateResult();
 }
 
-function restoreUserSelections() {
-    for (let qNo in userAnswers) {
-        const val = userAnswers[qNo];
-        const row = document.getElementById("row-" + qNo);
-        if (row) {
-            const optElem = row.querySelector(`.option[data-opt="${val}"]`);
-            if (optElem) optElem.classList.add("selected");
-            document.getElementById("yourAns-" + qNo).innerText = val;
-            const navBtn = document.querySelector(`[data-q="${qNo}"]`);
-            if (navBtn) navBtn.classList.add("done");
-        }
-    }
-}
-
 function submitTest(isRestored = false) {
-    if (!testStarted && !isRestored) { alert("Test start nahi hua h!"); return; }
+    if (!testStarted && !isRestored) {
+        alert("Test start nahi hua h!");
+        return;
+    }
+
     submitted = true;
     clearInterval(timerInterval);
+
     document.getElementById("pdfArea").style.display = "block";
     document.getElementById("submitBtn").style.display = "none";
 
     if (autoCheckMode) {
         rightCount = 0; wrongCount = 0;
+
         for (let i = 1; i <= totalQuestions; i++) {
             const row = document.getElementById("row-" + i);
-            if (!row) continue;
             const myAns = userAnswers[i] || "-";
             const picAns = extractedAnswerKey[i] || "-";
+
             document.getElementById("yourAns-" + i).innerText = myAns;
             document.getElementById("correctAns-" + i).innerText = picAns;
 
@@ -890,23 +855,29 @@ function submitTest(isRestored = false) {
             }
         }
         updateResult();
+        if(!isRestored) alert("Auto Checked Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
-            const rBtn = document.getElementById("right-" + i);
-            const wBtn = document.getElementById("wrong-" + i);
-            if (rBtn) rBtn.style.display = "inline-block";
-            if (wBtn) wBtn.style.display = "inline-block";
+            document.getElementById("right-" + i).style.display = "inline-block";
+            document.getElementById("wrong-" + i).style.display = "inline-block";
         }
+        if(!isRestored) alert("Manual Check Mode Active!");
     }
     saveState("app");
 }
 
 function markManual(qNo, status) {
-    if (!userAnswers[qNo]) return;
+    if (!userAnswers[qNo]) {
+        alert("Pehle answer select karein.");
+        return;
+    }
+
     const row = document.getElementById("row-" + qNo);
     if (checkedQuestions[qNo] === status) return;
+
     if (checkedQuestions[qNo] === "right") rightCount--;
     if (checkedQuestions[qNo] === "wrong") wrongCount--;
+
     checkedQuestions[qNo] = status;
 
     if (status === "right") {
@@ -918,6 +889,7 @@ function markManual(qNo, status) {
         row.className = "omr-row wrong-row";
         updateNav(qNo, "wrong");
     }
+
     updateResult();
 }
 
@@ -935,26 +907,32 @@ function updateResult() {
     document.getElementById("attemptedQuestions").innerText = Object.keys(userAnswers).length;
     document.getElementById("rightQuestions").innerText = rightCount;
     document.getElementById("wrongQuestions").innerText = wrongCount;
+
     let acc = (rightCount + wrongCount) > 0 ? ((rightCount / (rightCount + wrongCount)) * 100).toFixed(1) : 0;
     document.getElementById("accuracyPercent").innerText = acc + "%";
 }
 
 function toggleDarkMode() { document.body.classList.toggle("dark"); }
+
 function goHome() { 
     sessionStorage.clear();
+    window.location.hash = "";
     location.reload(); 
 }
 
 function downloadOMRPDF() {
     const name = document.getElementById("watermarkName").value || "Student55";
     const element = document.getElementById("pdfExportArea");
-    html2pdf().set({
-        margin: [0.3, 0.3, 0.3, 0.3],
-        filename: `OMR_Report_${name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    }).from(element).save();
+
+    const opt = {
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     `OMR_Report_${name}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 
 function rateSite(s) { alert(`Rated ${s} stars!`); }
@@ -979,7 +957,6 @@ function addComment() {
 function loadComments() {
     let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
     const container = document.getElementById("commentList");
-    if (!container) return;
     container.innerHTML = "";
     comments.forEach(c => {
         const item = document.createElement("div");
