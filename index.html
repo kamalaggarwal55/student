@@ -64,7 +64,7 @@ body {
     width: 100%;
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(15px);
-    padding: 50px;
+    padding: 40px;
     border-radius: 30px;
     text-align: center;
     color: white;
@@ -74,13 +74,6 @@ body {
     font-size: clamp(32px, 8vw, 55px);
     margin-bottom: 15px;
     line-height: 1.2;
-    word-break: break-word;
-}
-
-.welcome-box p {
-    font-size: 18px;
-    line-height: 1.8;
-    margin-bottom: 25px;
 }
 
 .selector-grid {
@@ -115,38 +108,26 @@ body {
     transform: scale(1.05);
 }
 
-.feature-grid {
-    margin-top: 35px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.feature {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 18px;
-    border-radius: 15px;
-}
-
-/* CROP CONTAINER */
-#cropContainer {
+/* CROP AREA */
+#cropWrapper {
     display: none;
     margin-top: 15px;
-    background: #000;
-    padding: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 15px;
     border-radius: 15px;
+}
+.img-container {
+    max-width: 100%;
+    max-height: 400px;
+    margin: auto;
 }
 #cropImage {
     max-width: 100%;
-    max-height: 350px;
 }
 
-/* APP */
-#app {
-    display: none;
-}
+/* APP MAIN */
+#app { display: none; }
 
-/* HEADER */
 .header {
     background: var(--card);
     padding: 20px;
@@ -163,41 +144,11 @@ body {
     gap: 10px;
 }
 
-.logo {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--theme);
-}
+.logo { font-size: 28px; font-weight: 700; color: var(--theme); }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { background: var(--theme); color: white; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.timer { background: #111827; color: white; padding: 10px 15px; border-radius: 10px; font-weight: 700; }
 
-.controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    background: var(--theme);
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn:hover {
-    opacity: 0.9;
-}
-
-.timer {
-    background: #111827;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-weight: 700;
-}
-
-/* RESULT PANEL */
 .result-panel {
     display: none;
     background: var(--card);
@@ -221,7 +172,6 @@ body {
     text-align: center;
 }
 
-/* NAVIGATOR */
 .navigator {
     display: flex;
     flex-wrap: wrap;
@@ -239,41 +189,11 @@ body {
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    margin: 4px;
-    transition: .2s;
-    position: relative;
 }
 
-.nav-btn.done {
-    background: var(--theme);
-    color: #fff;
-}
-
-.nav-btn.checked-right {
-    background: #16a34a !important;
-    color: white !important;
-}
-
-.nav-btn.checked-right::after {
-    content: "✓";
-    position: absolute;
-    right: 4px;
-    bottom: 2px;
-    font-size: 14px;
-}
-
-.nav-btn.checked-wrong {
-    background: #dc2626 !important;
-    color: white !important;
-}
-
-.nav-btn.checked-wrong::after {
-    content: "✗";
-    position: absolute;
-    right: 4px;
-    bottom: 2px;
-    font-size: 14px;
-}
+.nav-btn.done { background: var(--theme); color: #fff; }
+.nav-btn.checked-right { background: #16a34a !important; color: white !important; }
+.nav-btn.checked-wrong { background: #dc2626 !important; color: white !important; }
 
 /* OMR SHEET */
 .omr-sheet {
@@ -292,32 +212,21 @@ body {
     min-width: 850px;
 }
 
-.omr-header {
-    font-weight: 700;
-    border-bottom: 2px solid var(--border);
-    margin-bottom: 10px;
-}
-
-.omr-row {
-    border-bottom: 1px solid var(--border);
-}
-
-.qno {
-    font-weight: 600;
-}
+.omr-header { font-weight: 700; border-bottom: 2px solid var(--border); margin-bottom: 10px; }
+.omr-row { border-bottom: 1px solid var(--border); }
+.qno { font-weight: 600; }
 
 .option {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border: 3px solid #b8bec8;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    user-select: none;
     margin: auto;
     transition: 0.2s;
 }
@@ -328,13 +237,8 @@ body {
     border-color: var(--theme);
 }
 
-.correct-row {
-    background: rgba(22, 163, 74, 0.15) !important;
-}
-
-.wrong-row {
-    background: rgba(220, 38, 38, 0.15) !important;
-}
+.correct-row { background: rgba(22, 163, 74, 0.15) !important; }
+.wrong-row { background: rgba(220, 38, 38, 0.15) !important; }
 
 .check-btn {
     display: none;
@@ -345,16 +249,14 @@ body {
     color: white;
     font-weight: 600;
 }
-
 .right-btn { background: #16a34a; }
 .wrong-btn { background: #dc2626; }
 
-/* LOADING OVERLAY */
 #loadingOverlay {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     z-index: 9999;
     color: white;
     flex-direction: column;
@@ -363,8 +265,7 @@ body {
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
+    width: 50px; height: 50px;
     border: 5px solid #f3f3f3;
     border-top: 5px solid #2563eb;
     border-radius: 50%;
@@ -372,17 +273,7 @@ body {
     margin-bottom: 15px;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@media(max-width:768px) {
-    .welcome-box { padding: 25px; }
-    .welcome-box h1 { font-size: 32px; }
-    .nav-btn { width: 36px; height: 36px; font-size: 14px; }
-    .check-btn { font-size: 11px; padding: 5px; }
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 
@@ -391,30 +282,25 @@ body {
 <!-- LOADING OVERLAY -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Super Fast Reading Image...</h3>
+    <h3 id="loadingText">Processing...</h3>
 </div>
 
 <!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Advanced OMR V4</h1>
-        <p>Welcome to the Advanced OMR Practice Platform with PDF Export, Live Result, Navigator, Rating System, and Dark Mode.</p>
+        <p>Welcome to the Advanced OMR Practice Platform</p>
 
         <div class="selector-grid">
             <div>
                 <label style="display:block; margin-bottom:5px; font-weight:600;">Questions</label>
                 <select id="questionCount">
                     <option value="10">10 Questions</option>
+                    <option value="14">14 Questions</option>
                     <option value="20">20 Questions</option>
                     <option value="30">30 Questions</option>
-                    <option value="40">40 Questions</option>
                     <option value="50">50 Questions</option>
-                    <option value="60">60 Questions</option>
-                    <option value="70">70 Questions</option>
-                    <option value="80">80 Questions</option>
-                    <option value="90">90 Questions</option>
                     <option value="100">100 Questions</option>
-                    <option value="200">200 Questions</option>
                 </select>
             </div>
             <div>
@@ -423,38 +309,30 @@ body {
                     <option value="#2563eb">Blue</option>
                     <option value="#16a34a">Green</option>
                     <option value="#7c3aed">Purple</option>
-                    <option value="#dc2626">Red</option>
-                    <option value="#b46c3f">Brown</option>
                 </select>
             </div>
         </div>
 
         <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:15px; text-align:left;">
-            <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload Answer Key (Optional)</h3>
-            <input type="file" id="answerKeyImage" accept="image/*" capture="environment" style="width:100%; padding:10px; border-radius:10px; background:white; color:#111827;">
+            <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload & Crop Answer Key Image</h3>
+            <input type="file" id="answerKeyImage" accept="image/*" style="width:100%; padding:10px; border-radius:10px; background:white; color:#111827;">
             
-            <div id="cropContainer">
-                <img id="cropImage" src="">
-                <button class="btn" style="width:100%; margin-top:10px; background:#16a34a;" onclick="cropAndReadFast()">⚡ Crop & Super-Fast Read</button>
+            <div id="cropWrapper">
+                <div class="img-container">
+                    <img id="cropImage" src="">
+                </div>
+                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:16px;" onclick="processCropAndRead()">⚡ Crop & Extract Answer Key</button>
             </div>
         </div>
 
         <button class="start-btn" onclick="startApp()">Start Test</button>
-
-        <div class="feature-grid">
-            <div class="feature">📄 PDF Export</div>
-            <div class="feature">📊 Live Result</div>
-            <div class="feature">🌙 Dark Mode</div>
-            <div class="feature">⭐ Rating</div>
-        </div>
     </div>
 </section>
 
-<!-- APP MAIN CONTAINER -->
+<!-- MAIN APP -->
 <div id="app">
     <div class="container">
         
-        <!-- HEADER -->
         <div class="header">
             <div class="header-top">
                 <div class="logo">Student55 Advanced OMR V4</div>
@@ -466,9 +344,7 @@ body {
             </div>
         </div>
 
-        <!-- EXPORTABLE REPORT AREA FOR PDF -->
-        <div id="pdfExportContainer">
-            <!-- RESULT PANEL -->
+        <div id="pdfExportArea">
             <div id="resultPanel" class="result-panel">
                 <h2 style="margin-bottom:15px;">📊 Live Result</h2>
                 <div class="result-grid">
@@ -480,9 +356,8 @@ body {
                 </div>
             </div>
 
-            <!-- OMR SHEET -->
-            <div class="omr-sheet" id="omrExportSheet">
-                <div style="text-align:center; margin-bottom:15px;" id="startBtnWrapper">
+            <div class="omr-sheet">
+                <div style="text-align:center; margin-bottom:15px;">
                     <button class="btn" id="startTimerBtn" onclick="startTestTimer()">▶ Start Test</button>
                 </div>
 
@@ -502,112 +377,48 @@ body {
             </div>
         </div>
 
-        <!-- NAVIGATOR -->
         <div id="navigator" class="navigator" style="margin-top:20px;"></div>
 
-        <!-- SUBMIT BUTTON -->
         <div style="text-align:center; margin-top:20px;">
             <button id="submitBtn" class="btn" onclick="submitTest()" style="padding:15px 40px; font-size:18px;">Submit Test</button>
         </div>
 
-        <!-- PDF DOWNLOAD SECTION -->
         <div id="pdfArea" style="display:none; text-align:center; margin-top:25px;">
-            <div style="margin-bottom:15px;">
-                <input type="text" id="watermarkName" placeholder="Enter Watermark Name" style="padding:10px; border-radius:8px; border:1px solid #ccc; margin-right:10px;">
-                <button class="btn" onclick="downloadOMRPDF()">📄 Download OMR Report PDF</button>
-            </div>
+            <input type="text" id="watermarkName" placeholder="Enter Name/Watermark" style="padding:10px; border-radius:8px; border:1px solid #ccc; margin-right:10px;">
+            <button class="btn" onclick="downloadOMRPDF()">📄 Download Report PDF</button>
         </div>
 
-        <!-- RESTART -->
         <div style="text-align:center; margin-top:15px;">
-            <button class="btn" onclick="restartTest()">🔄 Restart Test</button>
+            <button class="btn" onclick="goHome()">🔄 Restart Test</button>
         </div>
 
-        <!-- INSTAGRAM -->
+        <!-- INSTAGRAM & RATING -->
         <div class="header" style="margin-top:20px;">
             <h2>📸 Instagram Profile</h2>
-            <p style="margin-top:10px; font-weight:600;">KAMAL AGGARWAL</p>
-            <a href="https://instagram.com" target="_blank">
-                <button class="btn" style="margin-top:10px;">Visit Instagram</button>
-            </a>
+            <p style="margin-top:5px; font-weight:600;">KAMAL AGGARWAL</p>
+            <a href="https://instagram.com" target="_blank"><button class="btn" style="margin-top:10px;">Visit Profile</button></a>
         </div>
 
-        <!-- RATING -->
         <div class="header">
             <h2>⭐ Website Rating</h2>
-            <div style="font-size:38px; margin-top:15px; cursor:pointer;" id="starRatingContainer">
-                <span onclick="rateSite(1)">⭐</span>
-                <span onclick="rateSite(2)">⭐</span>
-                <span onclick="rateSite(3)">⭐</span>
-                <span onclick="rateSite(4)">⭐</span>
-                <span onclick="rateSite(5)">⭐</span>
-            </div>
-            <h3 style="margin-top:15px;">Average Rating: <span id="avgRating">0</span></h3>
-            <h3>Total Ratings: <span id="totalRatings">0</span></h3>
+            <div style="font-size:32px; margin-top:10px; cursor:pointer;" onclick="rateSite(5)">⭐⭐⭐⭐⭐</div>
+            <p style="margin-top:10px;">Total Ratings: <span id="totalRatings">1</span></p>
         </div>
 
-        <!-- COMMENTS -->
-        <div class="header">
-            <h2>💬 Public Comments</h2>
-            <input id="commentName" placeholder="Your Name" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;">
-            <textarea id="commentText" placeholder="Write Comment" style="width:100%; height:100px; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;"></textarea>
-            <button class="btn" onclick="addComment()" style="margin-top:10px;">Post Comment</button>
-            <div id="commentsArea" style="margin-top:20px;"></div>
-        </div>
-
-        <!-- HELP CENTER -->
-        <div class="header">
-            <h2>🛠 Help Center</h2>
-            <p style="margin-top:5px; font-size:14px; opacity:0.8;">Submit an issue or system inquiry below.</p>
-            <textarea id="helpMessage" placeholder="Type Message" style="width:100%; height:100px; padding:10px; border-radius:10px; border:1px solid #ccc; margin-top:10px;"></textarea>
-            <button class="btn" onclick="sendHelpMessage()" style="margin-top:10px;">Send Help Request</button>
-        </div>
-
-        <!-- FOOTER -->
-        <div style="text-align:center; padding:30px; font-size:14px; opacity:0.7;">
-            © Student55 Advanced OMR V4
-        </div>
     </div>
 </div>
 
 <script>
 let totalQuestions = 10;
-let answers = {};
-let submitted = false;
-let rightCount = 0;
-let wrongCount = 0;
-let seconds = 0;
-let checkedQuestions = {};
-let answerKey = {};
+let userAnswers = {};
+let extractedAnswerKey = {};
 let autoCheckMode = false;
 let testStarted = false;
-let timerInterval = null;
+let submitted = false;
+let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
+let checkedQuestions = {};
 let cropper = null;
 
-let totalStars = 0;
-let ratingUsers = 0;
-
-window.onload = () => {
-    if (sessionStorage.getItem("omrStarted") === "yes") {
-        totalQuestions = parseInt(sessionStorage.getItem("questionCount")) || 10;
-        document.getElementById("welcomePage").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        generateOMR();
-        updateResult();
-        document.getElementById("resultPanel").style.display = "block";
-    }
-};
-
-function showLoading(text) {
-    document.getElementById("loadingText").innerText = text;
-    document.getElementById("loadingOverlay").style.display = "flex";
-}
-
-function hideLoading() {
-    document.getElementById("loadingOverlay").style.display = "none";
-}
-
-// Crop Init
 document.getElementById('answerKeyImage').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
@@ -615,18 +426,20 @@ document.getElementById('answerKeyImage').addEventListener('change', function(e)
         reader.onload = function(event) {
             const cropImg = document.getElementById('cropImage');
             cropImg.src = event.target.result;
-            document.getElementById('cropContainer').style.display = 'block';
+            document.getElementById('cropWrapper').style.display = 'block';
             if (cropper) cropper.destroy();
-            cropper = new Cropper(cropImg, { viewMode: 1 });
+            cropper = new Cropper(cropImg, { aspectRatio: NaN, viewMode: 1 });
         };
         reader.readAsDataURL(file);
     }
 });
 
-async function cropAndReadFast() {
+async function processCropAndRead() {
     if (!cropper) return;
-    showLoading("Reading Questions Super Fast...");
     
+    document.getElementById("loadingText").innerText = "Reading Crop Area Super Fast...";
+    document.getElementById("loadingOverlay").style.display = "flex";
+
     const canvas = cropper.getCroppedCanvas();
     
     const worker = await Tesseract.createWorker('eng', 1);
@@ -637,29 +450,25 @@ async function cropAndReadFast() {
     const { data: { text } } = await worker.recognize(canvas);
     await worker.terminate();
 
-    answerKey = {};
+    extractedAnswerKey = {};
     const lines = text.split('\n');
 
     lines.forEach(line => {
-        // High accuracy pattern match for 1.A, 1. A, 1-A, 1 A etc.
         const match = line.match(/(\d+)\s*[\.\-:\s]*\s*([A-D])/i);
         if (match) {
-            const qNum = parseInt(match[1]);
-            const ans = match[2].toUpperCase();
-            answerKey[qNum] = ans;
+            extractedAnswerKey[parseInt(match[1])] = match[2].toUpperCase();
         }
     });
 
-    hideLoading();
+    document.getElementById("loadingOverlay").style.display = "none";
 
-    const detectedKeys = Object.keys(answerKey);
+    const detectedKeys = Object.keys(extractedAnswerKey);
     if (detectedKeys.length > 0) {
         autoCheckMode = true;
         totalQuestions = Math.max(...detectedKeys.map(Number));
-        alert(`Success! Auto-Detected ${detectedKeys.length} Answer Keys (Max Question No: ${totalQuestions}).`);
-        startApp();
+        alert(`Success! Read ${detectedKeys.length} Questions (Max Q.No: ${totalQuestions}). Click 'Start Test' now.`);
     } else {
-        alert("Text read nahi hua. Kripya image ko tightly crop karke dubara try karein.");
+        alert("Text clear nahi mila. Kripya tight crop karke dubara try karein.");
     }
 }
 
@@ -676,10 +485,6 @@ function startApp() {
 
     generateOMR();
     updateResult();
-
-    sessionStorage.setItem("omrStarted", "yes");
-    sessionStorage.setItem("questionCount", totalQuestions);
-
     document.getElementById("resultPanel").style.display = "block";
 }
 
@@ -717,10 +522,7 @@ function generateOMR() {
         btn.className = "nav-btn";
         btn.innerText = i;
         btn.setAttribute("data-q", i);
-        btn.onclick = () => {
-            document.getElementById("row-" + i).scrollIntoView({ behavior: "smooth" });
-        };
-
+        btn.onclick = () => document.getElementById("row-" + i).scrollIntoView({ behavior: "smooth" });
         nav.appendChild(btn);
     }
 }
@@ -740,7 +542,7 @@ function startTestTimer() {
 
 function selectOption(qNo, value, element) {
     if (!testStarted) {
-        alert("Please click 'Start Test' button first to enable answering.");
+        alert("Pehle 'Start Test' button par click karein!");
         return;
     }
     if (submitted) return;
@@ -749,7 +551,7 @@ function selectOption(qNo, value, element) {
     row.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
 
     element.classList.add("selected");
-    answers[qNo] = value;
+    userAnswers[qNo] = value;
     document.getElementById("yourAns-" + qNo).innerText = value;
 
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
@@ -760,7 +562,7 @@ function selectOption(qNo, value, element) {
 
 function submitTest() {
     if (!testStarted) {
-        alert("Test has not been started yet.");
+        alert("Test start nahi hua h!");
         return;
     }
 
@@ -771,44 +573,43 @@ function submitTest() {
     document.getElementById("submitBtn").style.display = "none";
 
     if (autoCheckMode) {
-        rightCount = 0;
-        wrongCount = 0;
+        rightCount = 0; wrongCount = 0;
 
         for (let i = 1; i <= totalQuestions; i++) {
             const row = document.getElementById("row-" + i);
-            const userAns = answers[i] || "-";
-            const correctAns = answerKey[i] || "-";
+            const myAns = userAnswers[i] || "-";
+            const picAns = extractedAnswerKey[i] || "-";
 
-            document.getElementById("yourAns-" + i).innerText = userAns;
-            document.getElementById("correctAns-" + i).innerText = correctAns;
+            document.getElementById("yourAns-" + i).innerText = myAns;
+            document.getElementById("correctAns-" + i).innerText = picAns;
 
-            if (answers[i] && answerKey[i]) {
-                if (answers[i] === answerKey[i]) {
+            if (userAnswers[i] && extractedAnswerKey[i]) {
+                if (userAnswers[i] === extractedAnswerKey[i]) {
                     row.classList.add("correct-row");
                     rightCount++;
-                    updateNavigatorStatus(i, "right");
+                    updateNav(i, "right");
                 } else {
                     row.classList.add("wrong-row");
                     wrongCount++;
-                    updateNavigatorStatus(i, "wrong");
+                    updateNav(i, "wrong");
                 }
-            } else if (!answers[i] && answerKey[i]) {
+            } else if (!userAnswers[i] && extractedAnswerKey[i]) {
                 row.classList.add("wrong-row");
             }
         }
         updateResult();
-        alert("Auto Checking Completed!");
+        alert("Auto Checked Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
             document.getElementById("right-" + i).style.display = "inline-block";
             document.getElementById("wrong-" + i).style.display = "inline-block";
         }
-        alert("Manual Checking Mode Enabled!");
+        alert("Manual Check Mode Active!");
     }
 }
 
 function markManual(qNo, status) {
-    if (!answers[qNo]) {
+    if (!userAnswers[qNo]) {
         alert("Pehle answer select karein.");
         return;
     }
@@ -823,20 +624,18 @@ function markManual(qNo, status) {
 
     if (status === "right") {
         rightCount++;
-        row.classList.remove("wrong-row");
-        row.classList.add("correct-row");
-        updateNavigatorStatus(qNo, "right");
+        row.className = "omr-row correct-row";
+        updateNav(qNo, "right");
     } else {
         wrongCount++;
-        row.classList.remove("correct-row");
-        row.classList.add("wrong-row");
-        updateNavigatorStatus(qNo, "wrong");
+        row.className = "omr-row wrong-row";
+        updateNav(qNo, "wrong");
     }
 
     updateResult();
 }
 
-function updateNavigatorStatus(qNo, status) {
+function updateNav(qNo, status) {
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
     if (navBtn) {
         navBtn.classList.remove("checked-right", "checked-wrong");
@@ -847,86 +646,33 @@ function updateNavigatorStatus(qNo, status) {
 
 function updateResult() {
     document.getElementById("totalQuestions").innerText = totalQuestions;
-    document.getElementById("attemptedQuestions").innerText = Object.keys(answers).length;
+    document.getElementById("attemptedQuestions").innerText = Object.keys(userAnswers).length;
     document.getElementById("rightQuestions").innerText = rightCount;
     document.getElementById("wrongQuestions").innerText = wrongCount;
 
-    let acc = 0;
-    if ((rightCount + wrongCount) > 0) {
-        acc = ((rightCount / (rightCount + wrongCount)) * 100).toFixed(2);
-    }
+    let acc = (rightCount + wrongCount) > 0 ? ((rightCount / (rightCount + wrongCount)) * 100).toFixed(1) : 0;
     document.getElementById("accuracyPercent").innerText = acc + "%";
 }
 
-function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-}
-
-function goHome() {
-    sessionStorage.removeItem("omrStarted");
-    location.reload();
-}
-
-function restartTest() {
-    sessionStorage.removeItem("omrStarted");
-    location.reload();
-}
+function toggleDarkMode() { document.body.classList.toggle("dark"); }
+function goHome() { location.reload(); }
 
 function downloadOMRPDF() {
-    const watermark = document.getElementById("watermarkName").value || "Student55";
-    const element = document.getElementById("pdfExportContainer");
+    const name = document.getElementById("watermarkName").value || "Student55";
+    const element = document.getElementById("pdfExportArea");
 
-    // Optimized HTML2PDF Settings for A4 pages
     const opt = {
         margin:       [0.3, 0.3, 0.3, 0.3],
-        filename:     `OMR_Report_${watermark}.pdf`,
+        filename:     `OMR_Report_${name}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save();
 }
 
-function rateSite(stars) {
-    totalStars += stars;
-    ratingUsers++;
-    document.getElementById("avgRating").innerText = (totalStars / ratingUsers).toFixed(1);
-    document.getElementById("totalRatings").innerText = ratingUsers;
-    alert(`Thank you for giving ${stars} stars!`);
-}
-
-function addComment() {
-    const name = document.getElementById("commentName").value.trim();
-    const text = document.getElementById("commentText").value.trim();
-
-    if (!name || !text) {
-        alert("Please enter both name and comment.");
-        return;
-    }
-
-    const box = document.createElement("div");
-    box.style.background = "rgba(0,0,0,0.05)";
-    box.style.padding = "10px";
-    box.style.borderRadius = "8px";
-    box.style.marginTop = "10px";
-    box.innerHTML = `<strong>${name}</strong><p style="margin-top:5px;">${text}</p>`;
-
-    document.getElementById("commentsArea").appendChild(box);
-    document.getElementById("commentName").value = "";
-    document.getElementById("commentText").value = "";
-}
-
-function sendHelpMessage() {
-    const msg = document.getElementById("helpMessage").value.trim();
-    if (!msg) {
-        alert("Please write a message first.");
-        return;
-    }
-    alert("Help request submitted successfully!");
-    document.getElementById("helpMessage").value = "";
-}
+function rateSite(s) { alert(`Rated ${s} stars!`); }
 </script>
 </body>
 </html>
