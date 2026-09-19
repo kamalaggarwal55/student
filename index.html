@@ -1109,6 +1109,10 @@ let answerKey = {};
 
 let autoCheckMode = false;
 
+let autoRightCount = 0;
+
+let autoWrongCount = 0;
+
 let testStarted = false;
 
 window.onload=()=>{
@@ -1145,11 +1149,104 @@ wrongCount=0;
 
 };
 
+ async function loadAnswerKey(){
+
+const file =
+document.getElementById(
+"answerKeyImage"
+).files[0];
+
+if(!file){
+
+autoCheckMode=false;
+
+return true;
+
+}
+
+try{
+
+alert(
+"Reading Answer Key..."
+);
+
+const result =
+await Tesseract.recognize(
+file,
+"eng"
+);
+
+const text =
+result.data.text;
+
+answerKey={};
+
+const lines =
+text.split("\n");
+
+lines.forEach(line=>{
+
+const match =
+line.match(
+/(\d+)\s*[-:]\s*([ABCD])/i
+);
+
+if(match){
+
+answerKey[
+parseInt(match[1])
+] =
+match[2].toUpperCase();
+
+}
+
+});
+
+if(
+Object.keys(answerKey)
+.length>0
+){
+
+autoCheckMode=true;
+
+alert(
+"Answer Key Loaded Successfully"
+);
+
+}else{
+
+alert(
+"No Answers Found In Image"
+);
+
+}
+
+return true;
+
+}catch(error){
+
+console.log(error);
+
+alert(
+"Answer Key Read Failed"
+);
+
+return false;
+
+}
+
+ }
+
 /* ======================
 START APP
 ====================== */
 
-function startApp(){
+async function startApp(){
+
+const loaded =
+await loadAnswerKey();
+
+if(!loaded) return;
 
 totalQuestions =
 parseInt(
