@@ -108,7 +108,23 @@ body {
     transform: scale(1.05);
 }
 
-/* UPLOAD SECTION */
+/* HIGH-VISIBILITY UPLOAD SECTION */
+.upload-hero-container {
+    margin-top: 25px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px dashed rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    text-align: center;
+}
+
+.upload-hero-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
 .upload-btn-group {
     display: flex;
     gap: 15px;
@@ -119,17 +135,19 @@ body {
     flex: 1;
     background: #ffffff;
     color: #111827;
-    padding: 20px;
-    border-radius: 16px;
+    padding: 22px 15px;
+    border-radius: 18px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 20px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    display: block;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .big-upload-btn:hover {
+    transform: translateY(-2px);
     background: #f8fafc;
 }
 
@@ -148,14 +166,14 @@ body {
 #cropWrapper {
     display: none;
     margin-top: 15px;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     padding: 15px;
     border-radius: 15px;
 }
 
 .img-container {
     max-width: 100%;
-    max-height: 400px;
+    max-height: 450px;
     margin: auto;
 }
 
@@ -379,24 +397,25 @@ body {
             </div>
         </div>
 
-        <div style="margin-top:25px; padding:20px; background:rgba(255,255,255,.15); border-radius:20px; text-align:left;">
-            <h3 style="margin-bottom:15px; color:white; text-align:center;">📸 Upload or Take Photo of Answer Key</h3>
+        <!-- ENHANCED BOLD UPLOAD SECTION -->
+        <div class="upload-hero-container">
+            <div class="upload-hero-title">⚡ UPLOAD ANSWER KEY FOR HIGH-PRECISION AUTO CHECK ⚡</div>
             
             <div class="upload-btn-group">
                 <button type="button" class="big-upload-btn" onclick="document.getElementById('cameraInput').click()">📷 Take Photo</button>
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
 
-                <button type="button" class="big-upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose File</button>
+                <button type="button" class="big-upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Image File</button>
                 <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
             </div>
 
-            <div id="uploadStatusBadge">✅ Image Uploaded Successfully! Now crop below.</div>
+            <div id="uploadStatusBadge">✅ Image Selected! Crop clearly below and Click Read.</div>
             
             <div id="cropWrapper">
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ Read Cropped Answer Key</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#16a34a; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ READ CROPPED ANSWER KEY</button>
             </div>
         </div>
 
@@ -505,6 +524,15 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
+// MOBILE PHONE BACK BUTTON FIX
+window.addEventListener('popstate', function (event) {
+    if (document.getElementById("app").style.display === "block") {
+        document.getElementById("app").style.display = "none";
+        document.getElementById("welcomePage").style.display = "flex";
+        sessionStorage.setItem("activePage", "welcome");
+    }
+});
+
 window.addEventListener('DOMContentLoaded', () => {
     const activePage = sessionStorage.getItem("activePage");
     if (activePage === "app" || window.location.hash === "#omr") {
@@ -518,7 +546,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById("welcomePage").style.display = "none";
         document.getElementById("app").style.display = "block";
-        window.location.hash = "omr";
 
         generateOMR();
         restoreUserSelections();
@@ -563,22 +590,47 @@ function handleImageSelect(e) {
     }
 }
 
-// UPDATED ERROR-FREE OCR LOGIC
+// IMAGE CONTRAST ENHANCEMENT FOR HIGH PRECISION OCR
+function preprocessCanvas(sourceCanvas) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = sourceCanvas.width;
+    canvas.height = sourceCanvas.height;
+    
+    ctx.drawImage(sourceCanvas, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const d = imgData.data;
+
+    for (let i = 0; i < d.length; i += 4) {
+        // Grayscale conversion
+        let avg = 0.34 * d[i] + 0.5 * d[i+1] + 0.16 * d[i+2];
+        // Binarization & High Contrast Thresholding
+        avg = avg < 140 ? 0 : 255;
+        d[i] = avg;
+        d[i+1] = avg;
+        d[i+2] = avg;
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return canvas.toDataURL('image/png');
+}
+
+// ULTRA HIGH ACCURACY OCR READING LOGIC
 async function processCropAndRead() {
     if (!cropper) return;
     
-    document.getElementById("loadingText").innerText = "Extracting Answer Key accurately...";
+    document.getElementById("loadingText").innerText = "Performing High-Precision OCR Scan...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
-        const canvas = cropper.getCroppedCanvas();
-        const imageDataUrl = canvas.toDataURL('image/png');
+        const rawCanvas = cropper.getCroppedCanvas();
+        const processedImageData = preprocessCanvas(rawCanvas);
 
         const result = await Tesseract.recognize(
-            imageDataUrl,
+            processedImageData,
             'eng',
             {
-                logger: m => console.log(m)
+                tessedit_pageseg_mode: '6',
+                tessedit_char_whitelist: '0123456789ABCD.-: \n'
             }
         );
 
@@ -587,6 +639,7 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
+            // High precision regex matching for question numbers and options A-D
             const match = line.match(/(?:^|\D)(\d{1,3})\s*[\.\-:\s]*\s*([A-D])(?:\D|$)/i);
             if (match) {
                 const qNum = parseInt(match[1]);
@@ -604,15 +657,15 @@ async function processCropAndRead() {
             autoCheckMode = true;
             totalQuestions = Math.max(...detectedKeys.map(Number));
             
-            let previewStr = detectedKeys.map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
+            let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
             alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("❌ Text clear read nahi hua. Kripya image ko tightly crop karein aur clear photo upload karein.");
+            alert("❌ Text clear read nahi hua. Kripya image ko closely crop karein aur bilkul clear image upload karein.");
         }
     } catch(err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("OCR Engine Error! Direct Image processing issue. Clear photo use karein.");
+        alert("OCR Engine Error! Kripya dobara try karein.");
     }
 }
 
@@ -626,7 +679,9 @@ function startApp() {
 
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
-    window.location.hash = "omr";
+    
+    // Push State for Mobile Back Button Handling
+    history.pushState({ page: 'app' }, 'OMR Test', '#omr');
 
     saveState("app");
     generateOMR();
