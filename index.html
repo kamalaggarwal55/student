@@ -1255,12 +1255,24 @@ await loadAnswerKey();
 
 if(!loaded) return;
 
-totalQuestions =
+if(
+autoCheckMode &&
+Object.keys(answerKey).length>0
+){
+
+totalQuestions=
+Object.keys(answerKey).length;
+
+}else{
+
+totalQuestions=
 parseInt(
 document.getElementById(
 "questionCount"
 ).value
 );
+
+}
 
 const theme =
 document.getElementById(
@@ -1564,6 +1576,28 @@ element.classList.add(
 );
 
 answers[qNo]=value;
+function selectOption(
+qNo,
+value,
+element
+){
+
+if(!testStarted) return;
+if(submitted) return;
+
+const row =
+document.getElementById(
+"row-"+qNo
+);
+
+row.querySelectorAll(".option")
+.forEach(opt=>{
+opt.classList.remove("selected");
+});
+
+element.classList.add("selected");
+
+answers[qNo]=value;
 
 document.getElementById(
 "yourAns-"+qNo
@@ -1583,29 +1617,19 @@ if(
 value===answerKey[qNo]
 ){
 
-if(
-row.dataset.status!=="right"
-){
+if(row.dataset.status!=="right"){
 
-if(
-row.dataset.status==="wrong"
-){
+if(row.dataset.status==="wrong"){
 wrongCount--;
 }
 
 rightCount++;
-
 }
 
 row.dataset.status="right";
 
-row.classList.remove(
-"wrong-row"
-);
-
-row.classList.add(
-"correct-row"
-);
+row.classList.remove("wrong-row");
+row.classList.add("correct-row");
 
 updateNavigatorStatus(
 qNo,
@@ -1614,29 +1638,19 @@ qNo,
 
 }else{
 
-if(
-row.dataset.status!=="wrong"
-){
+if(row.dataset.status!=="wrong"){
 
-if(
-row.dataset.status==="right"
-){
+if(row.dataset.status==="right"){
 rightCount--;
 }
 
 wrongCount++;
-
 }
 
 row.dataset.status="wrong";
 
-row.classList.remove(
-"correct-row"
-);
-
-row.classList.add(
-"wrong-row"
-);
+row.classList.remove("correct-row");
+row.classList.add("wrong-row");
 
 updateNavigatorStatus(
 qNo,
@@ -1653,16 +1667,14 @@ document.querySelector(
 );
 
 if(navBtn){
-
-navBtn.classList.add(
-"done"
-);
-
+navBtn.classList.add("done");
 }
 
 updateResult();
 
 }
+
+
 
  function updateNavigatorStatus(qNo,status){
 
@@ -1696,7 +1708,6 @@ navBtn.classList.add(
 SUBMIT
 ====================== */
 
-document
 document
 .getElementById(
 "submitBtn"
