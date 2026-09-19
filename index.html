@@ -1389,18 +1389,31 @@ if(!answers[qNo]) return;
 
 const row=document.getElementById("row-"+qNo);
 
-if(!row.classList.contains("correct-row")
+if(
+!row.classList.contains("correct-row")
 &&
-!row.classList.contains("wrong-row")){
-
+!row.classList.contains("wrong-row")
+){
 checkedCount++;
-
 }
+
+if(row.dataset.status==="wrong"){
+wrongCount--;
+}
+
+if(row.dataset.status!=="right"){
+rightCount++;
+}
+
+row.dataset.status="right";
 
 row.classList.remove("wrong-row");
 row.classList.add("correct-row");
 
-updateNavigatorStatus(qNo,"right");
+updateNavigatorStatus(
+qNo,
+"right"
+);
 
 updateResult();
 
@@ -1416,23 +1429,35 @@ if(!answers[qNo]) return;
 
 const row=document.getElementById("row-"+qNo);
 
-if(!row.classList.contains("correct-row")
+if(
+!row.classList.contains("correct-row")
 &&
-!row.classList.contains("wrong-row")){
-
+!row.classList.contains("wrong-row")
+){
 checkedCount++;
-
 }
+
+if(row.dataset.status==="right"){
+rightCount--;
+}
+
+if(row.dataset.status!=="wrong"){
+wrongCount++;
+}
+
+row.dataset.status="wrong";
 
 row.classList.remove("correct-row");
 row.classList.add("wrong-row");
 
-updateNavigatorStatus(qNo,"wrong");
+updateNavigatorStatus(
+qNo,
+"wrong"
+);
 
 updateResult();
 
 }
-
 /* ======================
 RESULT
 ====================== */
