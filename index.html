@@ -388,7 +388,7 @@ border:1px solid var(--border);
 display:grid;
 
 grid-template-columns:
-80px repeat(4,70px) 110px 110px;
+80px repeat(4,70px) 110px 110px 110px 110px;
 
 align-items:center;
 
@@ -406,7 +406,7 @@ margin-bottom:10px;
 display:grid;
 
 grid-template-columns:
-80px repeat(4,70px) 110px 110px;
+80px repeat(4,70px) 110px 110px 110px 110px;
 
 align-items:center;
 
@@ -529,7 +529,7 @@ font-size:32px;
 .omr-header,
 .omr-row{
 grid-template-columns:
-60px repeat(4,50px) 80px 80px;
+60px repeat(4,50px) 80px 80px 90px 90px;
 font-size:12px;
 }
 
@@ -809,6 +809,14 @@ Right
 
 <div style="text-align:center;">
 Wrong
+</div>
+
+ <div style="text-align:center;">
+Your Ans
+</div>
+
+<div style="text-align:center;">
+Correct Ans
 </div>
 
 </div>
@@ -1362,6 +1370,24 @@ onclick="markWrong(${i})">
 ❌ Wrong
 
 </button>
+
+<div
+id="yourAns-${i}"
+style="
+text-align:center;
+font-weight:700;
+">
+-
+</div>
+
+<div
+id="correctAns-${i}"
+style="
+text-align:center;
+font-weight:700;
+">
+-
+</div>
 
 `;
 
