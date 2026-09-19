@@ -619,6 +619,47 @@ Rating System and Dark Mode.
 
 </div>
 
+  <div style="
+margin-top:25px;
+padding:20px;
+background:rgba(255,255,255,.15);
+border-radius:15px;
+">
+
+<h3 style="
+margin-bottom:15px;
+color:white;
+">
+
+📸 Upload Answer Key (Optional)
+
+</h3>
+
+<input
+type="file"
+id="answerKeyImage"
+accept="image/*"
+capture="environment"
+style="
+width:100%;
+padding:10px;
+border-radius:10px;
+border:none;
+">
+
+<p style="
+margin-top:10px;
+font-size:14px;
+">
+
+Upload answer key before test.
+If not uploaded,
+Manual Checking Mode will work.
+
+</p>
+
+</div>
+
 <button
 class="start-btn"
 onclick="startApp()">
@@ -1064,7 +1105,11 @@ let checkedQuestions = {};
 
  let checkedCount = 0;
 
- let testStarted = false;
+let answerKey = {};
+
+let autoCheckMode = false;
+
+let testStarted = false;
 
 window.onload=()=>{
 
@@ -1777,6 +1822,8 @@ document.getElementById(
 
 </div>
 </div>
+
+  <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
 
 </body>
 </html>
