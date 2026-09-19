@@ -587,6 +587,39 @@ function hideLoading() {
     document.getElementById("loadingOverlay").style.display = "none";
 }
 
+/* Image Pre-processing for better OCR reading */
+function preprocessImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+
+                // Increase Contrast & Grayscale
+                for (let i = 0; i < data.length; i += 4) {
+                    let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    let v = avg < 128 ? 0 : 255; 
+                    data[i] = v;
+                    data[i + 1] = v;
+                    data[i + 2] = v;
+                }
+                ctx.putImageData(imgData, 0, 0);
+                resolve(canvas.toDataURL());
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 async function loadAnswerKey() {
     const fileInput = document.getElementById("answerKeyImage");
     const file = fileInput.files[0];
@@ -596,28 +629,39 @@ async function loadAnswerKey() {
         return true;
     }
 
-    showLoading("Reading Answer Key Image...");
+    showLoading("Enhancing & Reading Answer Key...");
 
     try {
-        const result = await Tesseract.recognize(file, "eng");
+        const processedImage = await preprocessImage(file);
+
+        const result = await Tesseract.recognize(processedImage, "eng", {
+            tessedit_char_whitelist: '0123456789ABCD.-: '
+        });
+
         const text = result.data.text;
         answerKey = {};
 
         const lines = text.split("\n");
         lines.forEach(line => {
-            const match = line.match(/(\d+)\s*[-:]\s*([ABCD])/i);
+            // Updated flexible regex to match formats like "1.B", "1. B", "1 - B", "1 B", "1:B"
+            const match = line.match(/(\d+)\s*[\.\-:]*\s*([A-D])/i);
             if (match) {
-                answerKey[parseInt(match[1])] = match[2].toUpperCase();
+                const qNum = parseInt(match[1]);
+                const ansVal = match[2].toUpperCase();
+                answerKey[qNum] = ansVal;
             }
         });
 
         hideLoading();
 
-        if (Object.keys(answerKey).length > 0) {
+        const detectedKeys = Object.keys(answerKey);
+        if (detectedKeys.length > 0) {
             autoCheckMode = true;
-            alert(`Answer Key Loaded Successfully! Found ${Object.keys(answerKey).length} answers.`);
+            // Set OMR sheet count to exactly the number of detected questions
+            totalQuestions = detectedKeys.length; 
+            alert(`Answer Key Read Successfully! Total ${totalQuestions} questions detected.`);
         } else {
-            alert("No structured answers found in image (e.g. '1-A'). Proceeding with manual mode.");
+            alert("Could not clearly read questions from image. Proceeding with manual mode.");
             autoCheckMode = false;
         }
         return true;
@@ -633,9 +677,7 @@ async function startApp() {
     const loaded = await loadAnswerKey();
     if (!loaded) return;
 
-    if (autoCheckMode && Object.keys(answerKey).length > 0) {
-        totalQuestions = Object.keys(answerKey).length;
-    } else {
+    if (!autoCheckMode) {
         totalQuestions = parseInt(document.getElementById("questionCount").value);
     }
 
@@ -777,7 +819,6 @@ function submitTest() {
 }
 
 function markManual(qNo, status) {
-    /* STRICT REQUIREMENT: Sirf unhi questions ko mark karne denge jinhe user ne attempt kiya ho */
     if (!answers[qNo]) {
         alert("Aapne is question ka answer select nahi kiya hai. Pehle answer lagayein tabhi mark kar sakte hain.");
         return;
