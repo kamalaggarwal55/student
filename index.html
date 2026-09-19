@@ -1466,8 +1466,6 @@ document.getElementById(
 
  }
 
- }
-
 /* ======================
 OPTION SELECT
 ====================== */
@@ -1647,47 +1645,7 @@ acc+"%";
 TIMER
 ====================== */
 
-let timerInterval = setInterval(()=>{
 
-if(!testStarted) return;
-
-seconds++;
-
-const m =
-Math.floor(
-seconds/60
-);
-
-const s =
-seconds%60;
-
-document.getElementById(
-"timer"
-).innerText=
-
-String(m)
-.padStart(2,"0")
-
-+
-
-":"
-
-+
-
-String(s)
-.padStart(2,"0");
-
-},1000);
-
-function startTestTimer(){
-
-testStarted = true;
-
-document.getElementById(
-"startTimerBtn"
-).style.display="none";
-
-}
 
 /* ======================
 DARK MODE
