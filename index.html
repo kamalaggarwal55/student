@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR - Final Review & Perfected</title>
+<title>Student55 Ultra AI OMR - Categorized Review</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -357,7 +357,7 @@ body {
     color: var(--text);
     padding: 30px;
     border-radius: 20px;
-    max-width: 450px;
+    max-width: 500px;
     width: 90%;
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -406,11 +406,11 @@ body {
 <!-- OCR REVIEW & MANUAL CORRECTION MODAL -->
 <div id="reviewModal">
     <div class="confirm-box" style="max-width: 600px;">
-        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Review</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:15px;">Detected answers aur confusion wale questions ko yahan check/manual fix karein. (Optional)</p>
+        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Categorized Review</h3>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:15px;">Detect hue, confusion wale aur missing questions alag-alag section mein diye gaye hain. Aap chahein toh badal sakte hain (Optional).</p>
         
-        <div id="reviewListContainer" style="text-align:left; max-height:350px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:15px;">
-            <!-- Dynamically populated -->
+        <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;">
+            <!-- Dynamically populated sections -->
         </div>
 
         <div style="display:flex; gap:10px; justify-content:center;">
@@ -423,7 +423,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OCR & Smart Review System</p>
+        <p>Advanced OCR & Smart Categorized Review</p>
 
         <div class="selector-grid">
             <div>
@@ -569,7 +569,7 @@ body {
 let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
-let questionStatusMap = {}; // Tracks 'detected', 'missing', 'confusion'
+let questionStatusMap = {}; 
 let autoCheckMode = false;
 let testStarted = false;
 let testPaused = false;
@@ -651,7 +651,7 @@ async function processOCR() {
             totalQuestions = Math.max(...keys.map(Number));
             document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
             
-            // Show Review Modal to let user verify detected vs missing/confusion questions
+            // Open Categorized Review Modal
             openReviewModal();
         } else {
             alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
@@ -668,7 +668,6 @@ function parseTextToAnswers(text) {
     let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
     
     lines.forEach(line => {
-        // Match standard format like 1. A or 1-B or 1) C with optional confidence flags
         const matches = [...line.matchAll(/(\d{1,3})[\.\-:\)]*\s*([A-Da-d\?])/g)];
         matches.forEach(m => {
             const q = parseInt(m[1]);
@@ -685,7 +684,6 @@ function parseTextToAnswers(text) {
         });
     });
 
-    // Identify missing questions up to maxQ or detected limit
     let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
     for (let i = 1; i <= limit; i++) {
         if (!extractedAnswerKey[i]) {
@@ -701,40 +699,43 @@ function openReviewModal() {
 
     const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
 
-    sortedKeys.forEach(q => {
-        const status = questionStatusMap[q] || 'missing';
-        const currentAns = extractedAnswerKey[q] || '';
+    let detectedKeys = sortedKeys.filter(q => questionStatusMap[q] === 'detected');
+    let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
+    let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
 
-        let badgeText = "✅ Detected";
-        let badgeColor = "#16a34a";
-        if (status === 'missing') {
-            badgeText = "⚠️ Missing";
-            badgeColor = "#d97706";
-        } else if (status === 'confusion') {
-            badgeText = "❓ Confusion";
-            badgeColor = "#dc2626";
-        }
+    function renderSection(title, keys, color, badgeText) {
+        if (keys.length === 0) return '';
+        let sectionHtml = `<div style="margin-bottom:15px;"><h4 style="margin-bottom:6px; color:${color}; font-size:15px; border-bottom:1px solid var(--border); padding-bottom:4px;">${title} (${keys.length})</h4>`;
+        keys.forEach(q => {
+            const currentAns = extractedAnswerKey[q] || '';
+            sectionHtml += `
+                <div class="review-item">
+                    <div>
+                        <strong>Q.${q}</strong> 
+                        <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:${color}; color:white; margin-left:6px;">${badgeText}</span>
+                    </div>
+                    <div>
+                        <select id="rev-ans-${q}">
+                            <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
+                            <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
+                            <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
+                            <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
+                            <option value="D" ${currentAns === "D" ? "selected" : ""}>D</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        });
+        sectionHtml += `</div>`;
+        return sectionHtml;
+    }
 
-        const item = document.createElement("div");
-        item.className = "review-item";
-        item.innerHTML = `
-            <div>
-                <strong>Q.${q}</strong> 
-                <span style="font-size:11px; padding:2px 6px; border-radius:4px; background:${badgeColor}; color:white; margin-left:6px;">${badgeText}</span>
-            </div>
-            <div>
-                <select id="rev-ans-${q}">
-                    <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
-                    <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
-                    <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
-                    <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
-                    <option value="D" ${currentAns === "D" ? "selected" : ""}>D</option>
-                </select>
-            </div>
-        `;
-        container.appendChild(item);
-    });
+    let finalHTML = "";
+    finalHTML += renderSection("✅ Successfully Detected Questions", detectedKeys, "#16a34a", "Detected");
+    finalHTML += renderSection("❓ Confusion / Doubt Questions", confusionKeys, "#dc2626", "Confusion");
+    finalHTML += renderSection("⚠️ Missing / Un-detected Questions", missingKeys, "#d97706", "Missing");
 
+    container.innerHTML = finalHTML;
     document.getElementById("reviewModal").style.display = "flex";
 }
 
