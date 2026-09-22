@@ -364,6 +364,7 @@ body {
     border: 1px solid var(--border);
     max-height: 85vh;
     overflow-y: auto;
+    position: relative; /* Added for close button positioning */
 }
 .review-item {
     display: flex;
@@ -406,6 +407,9 @@ body {
 <!-- OCR REVIEW & MANUAL CORRECTION MODAL -->
 <div id="reviewModal">
     <div class="confirm-box" style="max-width: 600px;">
+        <!-- Close / Cross Button -->
+        <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
+
         <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
         <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected, confusion aur missing questions ki list niche di gayi hai.</p>
         
@@ -745,6 +749,10 @@ function openReviewModal() {
 
     container.innerHTML = finalHTML;
     document.getElementById("reviewModal").style.display = "flex";
+}
+
+function closeReviewModal() {
+    document.getElementById("reviewModal").style.display = "none";
 }
 
 function applyReviewAndStart() {
