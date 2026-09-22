@@ -550,7 +550,7 @@ body {
 </div>
 
 <script>
-    let totalQuestions = 10;
+let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
 let autoCheckMode = false;
@@ -611,9 +611,9 @@ function handleImageSelect(e) {
     }
 }
 
-// STABLE & SHARP IMAGE PREPROCESSING (HIGH PRECISION)
+// ADVANCED HIGH-PRECISION PREPROCESSING
 function preprocessBlurImage(sourceCanvas) {
-    const scale = 3; 
+    const scale = 4; // Increased scaling for razor-sharp OCR clarity
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -656,7 +656,7 @@ function preprocessBlurImage(sourceCanvas) {
     }
 
     for (let i = 0; i < data.length; i += 4) {
-        let val = data[i] < threshold ? 0 : 255;
+        let val = data[i] < (threshold - 10) ? 0 : 255; // Tuned for high contrast
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -664,17 +664,17 @@ function preprocessBlurImage(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
-// ROBUST OCR SCANNER WITH LIVE PERCENTAGE
+// ENHANCED PRECISION OCR SCANNER WITH SEAMLESS PARSING
 async function processCropAndRead() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Initializing OCR Scanner (0%)...";
+    document.getElementById("loadingText").innerText = "Initializing Ultra OCR Engine (0%)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
         const processedImageData = preprocessBlurImage(rawCanvas);
 
-        document.getElementById("loadingText").innerText = "Scanning Answers & Questions (20%)...";
+        document.getElementById("loadingText").innerText = "Scanning Text & Extracting Answers (30%)...";
 
         const result = await Tesseract.recognize(
             processedImageData,
@@ -682,7 +682,7 @@ async function processCropAndRead() {
             {
                 logger: m => {
                     if (m.status === 'recognizing text') {
-                        let prog = Math.floor(m.progress * 80) + 20;
+                        let prog = Math.floor(m.progress * 70) + 30;
                         document.getElementById("loadingText").innerText = `Scanning OCR: ${prog}% completed...`;
                     }
                 },
@@ -694,6 +694,7 @@ async function processCropAndRead() {
         let text = result.data.text;
         extractedAnswerKey = {};
 
+        // Normalizing OCR common characters errors
         text = text.replace(/O/g, '0')
                    .replace(/I|l|\|/g, '1')
                    .replace(/S/g, '5')
@@ -702,7 +703,8 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
-            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            // Enhanced regex pattern to precisely catch question numbers and corresponding options (A, B, C, D)
+            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]+\s*([A-Da-d])/g)];
             matches.forEach(match => {
                 const qNum = parseInt(match[1]);
                 const qAns = match[2].toUpperCase();
@@ -719,10 +721,9 @@ async function processCropAndRead() {
             autoCheckMode = true;
             totalQuestions = Math.max(...detectedKeys.map(Number));
             
-            let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
-            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
+            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("❌ Text detect nahi hua. Image ko pass se crop karein aur text clearly highlight rakhein.");
+            alert("❌ Accurate text detect nahi hua. Kripya image ko thoda paas se crop karein aur text saaf dikhein.");
         }
     } catch(err) {
         console.error(err);
@@ -761,6 +762,7 @@ function generateOMR() {
         row.className = "omr-row";
         row.id = "row-" + i;
 
+        // Correct Ans column is hidden/masked with '-' initially to prevent leaking before submission
         row.innerHTML = `
             <div class="qno">${String(i).padStart(2, "0")}</div>
             <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">A</div>
@@ -774,7 +776,7 @@ function generateOMR() {
                 <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">✖ Wrong</button>
             </div>
             <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
-            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">${autoCheckMode && extractedAnswerKey[i] ? extractedAnswerKey[i] : '-'}</div>
+            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">-</div>
         `;
 
         omr.appendChild(row);
@@ -871,6 +873,7 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
+            // Revealing Correct Answer ONLY after submit
             document.getElementById("correctAns-" + i).innerText = picAns;
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
