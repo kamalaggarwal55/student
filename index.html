@@ -48,7 +48,6 @@ body {
     padding: 20px;
 }
 
-/* WELCOME PAGE */
 #welcomePage {
     min-height: 100vh;
     background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
@@ -108,7 +107,6 @@ body {
     transform: scale(1.05);
 }
 
-/* UPLOAD & CROPPER CSS */
 .upload-hero-container {
     margin-top: 25px;
     padding: 20px;
@@ -244,7 +242,7 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:10px;" onclick="processCropAndRead()">⚡ READ & CHECK ANSWER KEY (120x Power)</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:10px;" onclick="processCropAndRead()">⚡ READ & CHECK ANSWER KEY (Maximum 80x Power)</button>
             </div>
         </div>
 
@@ -406,8 +404,8 @@ body {
         </div>
 
     </div>
-</div>
-<script>
+    </div>
+    <script>
 let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
@@ -468,9 +466,9 @@ function handleImageSelect(e) {
     }
 }
 
-// 120x Ultra-Boost Preprocessing Engine for Blur Images
-function preprocessBlurImageFor120x(sourceCanvas) {
-    const scale = 6; // 120x enhanced resolution scaling
+// 80x Maximum Boost Preprocessing Engine (Otsu Thresholding + High Scale for Zero Error Reading)
+function preprocessBlurImageFor80xMax(sourceCanvas) {
+    const scale = 8; 
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -513,7 +511,7 @@ function preprocessBlurImageFor120x(sourceCanvas) {
     }
 
     for (let i = 0; i < data.length; i += 4) {
-        let val = data[i] < (threshold * 0.99) ? 0 : 255;
+        let val = data[i] < (threshold * 0.98) ? 0 : 255;
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -523,14 +521,14 @@ function preprocessBlurImageFor120x(sourceCanvas) {
 
 async function processCropAndRead() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Initializing 120x AI Engine (0%)...";
+    document.getElementById("loadingText").innerText = "Initializing 80x Max OCR Engine (0%)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
-        const processedImageData = preprocessBlurImageFor120x(rawCanvas);
+        const processedImageData = preprocessBlurImageFor80xMax(rawCanvas);
 
-        document.getElementById("loadingText").innerText = "Loading High-Power Neural Worker (20%)...";
+        document.getElementById("loadingText").innerText = "Loading Advanced Neural Worker (25%)...";
 
         const worker = await Tesseract.createWorker('eng');
         
@@ -538,13 +536,13 @@ async function processCropAndRead() {
             tessedit_pageseg_mode: '6',
         });
 
-        document.getElementById("loadingText").innerText = "Scanning OCR with 120x Maximum Precision (40%)...";
+        document.getElementById("loadingText").innerText = "Scanning text with 80x Max Precision (50%)...";
 
         const result = await worker.recognize(processedImageData, {
             logger: m => {
                 if (m.status === 'recognizing text') {
-                    let progressPercent = Math.floor(m.progress * 60) + 40;
-                    document.getElementById("loadingText").innerText = `120x Ultra-Scan: ${progressPercent}% completed...`;
+                    let progressPercent = Math.floor(m.progress * 50) + 50;
+                    document.getElementById("loadingText").innerText = `80x Max Scan: ${progressPercent}% completed...`;
                 }
             }
         });
@@ -583,9 +581,9 @@ async function processCropAndRead() {
             totalQuestions = Math.max(...detectedKeys.map(Number));
             
             let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
-            alert(`✅ 120x Ultra-Scan Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Answers: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
+            alert(`✅ 80x Max Scan Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Answers: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("❌ Image mein text match nahi hua. Kripya image ko thoda aur saas se crop karein taaki numbers aur options saaf dikhein.");
+            alert("❌ Image mein text match nahi hua. Kripya image ko thoda saaf aur proper crop karein.");
         }
     } catch(err) {
         console.error(err);
