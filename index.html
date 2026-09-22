@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR - Categorized Review</title>
+<title>Student55 Ultra AI OMR - Summary & Categorized Review</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -406,11 +406,11 @@ body {
 <!-- OCR REVIEW & MANUAL CORRECTION MODAL -->
 <div id="reviewModal">
     <div class="confirm-box" style="max-width: 600px;">
-        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Categorized Review</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:15px;">Detect hue, confusion wale aur missing questions alag-alag section mein diye gaye hain. Aap chahein toh badal sakte hain (Optional).</p>
+        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected, confusion aur missing questions ki list niche di gayi hai.</p>
         
         <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;">
-            <!-- Dynamically populated sections -->
+            <!-- Dynamically populated summary and sections -->
         </div>
 
         <div style="display:flex; gap:10px; justify-content:center;">
@@ -423,7 +423,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OCR & Smart Categorized Review</p>
+        <p>Advanced OCR & Summary Review</p>
 
         <div class="selector-grid">
             <div>
@@ -651,7 +651,6 @@ async function processOCR() {
             totalQuestions = Math.max(...keys.map(Number));
             document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
             
-            // Open Categorized Review Modal
             openReviewModal();
         } else {
             alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
@@ -703,9 +702,18 @@ function openReviewModal() {
     let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
     let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
 
+    // Summary Line at the top inside modal
+    let summaryLine = `
+        <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around; flex-wrap:wrap; gap:5px;">
+            <span style="color:#16a34a;">✅ Detected: ${detectedKeys.length}</span>
+            <span style="color:#dc2626;">❓ Confusion: ${confusionKeys.length}</span>
+            <span style="color:#d97706;">⚠️ Missing: ${missingKeys.length}</span>
+        </div>
+    `;
+
     function renderSection(title, keys, color, badgeText) {
         if (keys.length === 0) return '';
-        let sectionHtml = `<div style="margin-bottom:15px;"><h4 style="margin-bottom:6px; color:${color}; font-size:15px; border-bottom:1px solid var(--border); padding-bottom:4px;">${title} (${keys.length})</h4>`;
+        let sectionHtml = `<div style="margin-bottom:15px;"><h4 style="margin-bottom:6px; color:${color}; font-size:14px; border-bottom:1px solid var(--border); padding-bottom:4px;">${title} (${keys.length})</h4>`;
         keys.forEach(q => {
             const currentAns = extractedAnswerKey[q] || '';
             sectionHtml += `
@@ -730,10 +738,10 @@ function openReviewModal() {
         return sectionHtml;
     }
 
-    let finalHTML = "";
-    finalHTML += renderSection("✅ Successfully Detected Questions", detectedKeys, "#16a34a", "Detected");
-    finalHTML += renderSection("❓ Confusion / Doubt Questions", confusionKeys, "#dc2626", "Confusion");
-    finalHTML += renderSection("⚠️ Missing / Un-detected Questions", missingKeys, "#d97706", "Missing");
+    let finalHTML = summaryLine;
+    finalHTML += renderSection("✅ Successfully Detected", detectedKeys, "#16a34a", "Detected");
+    finalHTML += renderSection("❓ Confusion / Doubt", confusionKeys, "#dc2626", "Confusion");
+    finalHTML += renderSection("⚠️ Missing / Un-detected", missingKeys, "#d97706", "Missing");
 
     container.innerHTML = finalHTML;
     document.getElementById("reviewModal").style.display = "flex";
