@@ -611,9 +611,9 @@ function handleImageSelect(e) {
     }
 }
 
-// ADVANCED HIGH-PRECISION PREPROCESSING
+// ULTRA-SHARP ADVANCED IMAGE PREPROCESSING FOR OMR
 function preprocessBlurImage(sourceCanvas) {
-    const scale = 4; // Increased scaling for razor-sharp OCR clarity
+    const scale = 5; // Maximum crispness scale for highest OCR detection fidelity
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -656,7 +656,7 @@ function preprocessBlurImage(sourceCanvas) {
     }
 
     for (let i = 0; i < data.length; i += 4) {
-        let val = data[i] < (threshold - 10) ? 0 : 255; // Tuned for high contrast
+        let val = data[i] < (threshold - 5) ? 0 : 255;
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -664,17 +664,17 @@ function preprocessBlurImage(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
-// ENHANCED PRECISION OCR SCANNER WITH SEAMLESS PARSING
+// BULLETPROOF ULTRA-PARSING OCR ENGINE
 async function processCropAndRead() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Initializing Ultra OCR Engine (0%)...";
+    document.getElementById("loadingText").innerText = "Initializing Ultra OMR Engine (0%)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
         const processedImageData = preprocessBlurImage(rawCanvas);
 
-        document.getElementById("loadingText").innerText = "Scanning Text & Extracting Answers (30%)...";
+        document.getElementById("loadingText").innerText = "Analyzing Matrix & Extracting Data (30%)...";
 
         const result = await Tesseract.recognize(
             processedImageData,
@@ -694,7 +694,7 @@ async function processCropAndRead() {
         let text = result.data.text;
         extractedAnswerKey = {};
 
-        // Normalizing OCR common characters errors
+        // Ultra Normalization to handle common OCR confusion characters accurately
         text = text.replace(/O/g, '0')
                    .replace(/I|l|\|/g, '1')
                    .replace(/S/g, '5')
@@ -703,7 +703,7 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
-            // Enhanced regex pattern to precisely catch question numbers and corresponding options (A, B, C, D)
+            // Advanced multi-pattern match support for seamless reading
             const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]+\s*([A-Da-d])/g)];
             matches.forEach(match => {
                 const qNum = parseInt(match[1]);
@@ -713,6 +713,19 @@ async function processCropAndRead() {
                 }
             });
         });
+
+        // Fallback scan across words/tokens if line-based parsing misses compound layouts
+        if (Object.keys(extractedAnswerKey).length === 0) {
+            let cleanText = text.replace(/\s+/g, ' ');
+            let tokens = [...cleanText.matchAll(/(\d{1,3})\s*[:\.-]?\s*([A-D])/gi)];
+            tokens.forEach(tok => {
+                let qNum = parseInt(tok[1]);
+                let qAns = tok[2].toUpperCase();
+                if (qNum > 0 && qNum <= 500) {
+                    extractedAnswerKey[qNum] = qAns;
+                }
+            });
+        }
 
         document.getElementById("loadingOverlay").style.display = "none";
 
@@ -762,7 +775,7 @@ function generateOMR() {
         row.className = "omr-row";
         row.id = "row-" + i;
 
-        // Correct Ans column is hidden/masked with '-' initially to prevent leaking before submission
+        // Correct Answer is masked securely before submission
         row.innerHTML = `
             <div class="qno">${String(i).padStart(2, "0")}</div>
             <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">A</div>
@@ -873,7 +886,7 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
-            // Revealing Correct Answer ONLY after submit
+            // Revealing Correct Answer securely after submission
             document.getElementById("correctAns-" + i).innerText = picAns;
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
