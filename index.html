@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR V6</title>
+<title>Student55 Advanced OMR V6</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -183,209 +183,8 @@ body {
 #cropImage {
     max-width: 100%;
 }
-
-/* APP MAIN */
-#app { display: none; }
-
-.header {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-}
-
-.header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.logo { font-size: 28px; font-weight: 700; color: var(--theme); }
-.controls { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn { background: var(--theme); color: white; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
-.timer { background: #111827; color: white; padding: 10px 15px; border-radius: 10px; font-weight: 700; }
-
-.result-panel {
-    display: none;
-    background: var(--card);
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    margin-bottom: 20px;
-}
-
-.result-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.result-box {
-    background: #eef2ff;
-    color: #111827;
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
-}
-
-.navigator {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-}
-
-.nav-btn {
-    width: 48px;
-    height: 48px;
-    border: none;
-    border-radius: 50%;
-    background: #e5e7eb;
-    color: #111827;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.nav-btn.done { background: var(--theme); color: #fff; }
-.nav-btn.checked-right { background: #16a34a !important; color: white !important; }
-.nav-btn.checked-wrong { background: #dc2626 !important; color: white !important; }
-
-/* OMR SHEET */
-.omr-sheet {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    overflow-x: auto;
-}
-
-.omr-header, .omr-row {
-    display: grid;
-    grid-template-columns: 80px repeat(4, 70px) 110px 110px 110px 110px;
-    align-items: center;
-    padding: 12px;
-    min-width: 850px;
-}
-
-.omr-header { font-weight: 700; border-bottom: 2px solid var(--border); margin-bottom: 10px; }
-.omr-row { border-bottom: 1px solid var(--border); }
-.qno { font-weight: 600; }
-
-.option {
-    width: 45px;
-    height: 45px;
-    border: 3px solid #b8bec8;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    margin: auto;
-    transition: 0.2s;
-}
-
-.option.selected {
-    background: var(--theme);
-    color: white;
-    border-color: var(--theme);
-}
-
-.correct-row { background: rgba(22, 163, 74, 0.15) !important; }
-.wrong-row { background: rgba(220, 38, 38, 0.15) !important; }
-
-.check-btn {
-    display: none;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    font-weight: 600;
-}
-.right-btn { background: #16a34a; }
-.wrong-btn { background: #dc2626; }
-
-/* COMMENTS & REVIEWS */
-.comment-box {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    margin-top: 20px;
-}
-
-.comment-input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    margin-bottom: 10px;
-    background: var(--bg);
-    color: var(--text);
-}
-
-.comment-list {
-    margin-top: 15px;
-}
-
-.comment-item {
-    padding: 10px;
-    border-bottom: 1px solid var(--border);
-}
-
-#loadingOverlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 9999;
-    color: white;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.spinner {
-    width: 50px; height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #2563eb;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 15px;
-}
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* LEAVE CONFIRMATION MODAL */
-#leaveConfirmModal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 10000;
-    justify-content: center;
-    align-items: center;
-}
-.confirm-box {
-    background: var(--card);
-    color: var(--text);
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-}
 </style>
 </head>
-
 <body>
 
 <div id="loadingOverlay">
@@ -443,7 +242,6 @@ body {
                 </button>
             </div>
 
-            <!-- Direct inputs for Camera & Gallery -->
             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(event)">
             <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
 
@@ -475,8 +273,7 @@ body {
                 </div>
             </div>
         </div>
-
-        <div id="pdfExportArea">
+                <div id="pdfExportArea">
             <div id="resultPanel" class="result-panel">
                 <h2 style="margin-bottom:15px;">📊 Live Result</h2>
                 <div class="result-grid">
@@ -548,7 +345,6 @@ body {
 
     </div>
 </div>
-
 <script>
 let totalQuestions = 10;
 let userAnswers = {};
@@ -561,7 +357,6 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-// LEAVE / REFRESH CONFIRMATION HANDLERS
 window.addEventListener('beforeunload', function (e) {
     if (document.getElementById("app").style.display === "block" && !submitted) {
         e.preventDefault();
@@ -611,9 +406,8 @@ function handleImageSelect(e) {
     }
 }
 
-// STABLE & SHARP IMAGE PREPROCESSING (HIGH PRECISION)
 function preprocessBlurImage(sourceCanvas) {
-    const scale = 3; 
+    const scale = 5;
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -656,7 +450,7 @@ function preprocessBlurImage(sourceCanvas) {
     }
 
     for (let i = 0; i < data.length; i += 4) {
-        let val = data[i] < threshold ? 0 : 255;
+        let val = data[i] < (threshold * 0.98) ? 0 : 255;
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -664,32 +458,35 @@ function preprocessBlurImage(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
-// ROBUST OCR SCANNER WITH LIVE PERCENTAGE
 async function processCropAndRead() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Initializing OCR Scanner (0%)...";
+    document.getElementById("loadingText").innerText = "Initializing 80x AI Engine (0%)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const rawCanvas = cropper.getCroppedCanvas();
         const processedImageData = preprocessBlurImage(rawCanvas);
 
-        document.getElementById("loadingText").innerText = "Scanning Answers & Questions (20%)...";
+        document.getElementById("loadingText").innerText = "Loading Neural Worker (15%)...";
 
-        const result = await Tesseract.recognize(
-            processedImageData,
-            'eng',
-            {
-                logger: m => {
-                    if (m.status === 'recognizing text') {
-                        let prog = Math.floor(m.progress * 80) + 20;
-                        document.getElementById("loadingText").innerText = `Scanning OCR: ${prog}% completed...`;
-                    }
-                },
-                tessedit_pageseg_mode: '6',
-                tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
+        const worker = await Tesseract.createWorker('eng');
+        
+        await worker.setParameters({
+            tessedit_pageseg_mode: '6',
+        });
+
+        document.getElementById("loadingText").innerText = "Scanning OCR with Maximum Power (30%)...";
+
+        const result = await worker.recognize(processedImageData, {
+            logger: m => {
+                if (m.status === 'recognizing text') {
+                    let progressPercent = Math.floor(m.progress * 70) + 30;
+                    document.getElementById("loadingText").innerText = `Ultra-Scanning OCR: ${progressPercent}% completed...`;
+                }
             }
-        );
+        });
+
+        await worker.terminate();
 
         let text = result.data.text;
         extractedAnswerKey = {};
@@ -702,11 +499,14 @@ async function processCropAndRead() {
         const lines = text.split('\n');
 
         lines.forEach(line => {
-            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            const cleanLine = line.trim();
+            if (cleanLine.length === 0) return;
+
+            const matches = [...cleanLine.matchAll(/(\d{1,3})\s*[\.\-:\)\s]+\s*([A-Da-d])/g)];
             matches.forEach(match => {
                 const qNum = parseInt(match[1]);
                 const qAns = match[2].toUpperCase();
-                if (qNum > 0 && qNum <= 500) {
+                if (qNum > 0 && qNum <= 500 && ['A','B','C','D'].includes(qAns)) {
                     extractedAnswerKey[qNum] = qAns;
                 }
             });
@@ -720,9 +520,9 @@ async function processCropAndRead() {
             totalQuestions = Math.max(...detectedKeys.map(Number));
             
             let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
-            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
+            alert(`✅ Ultra-Scan Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Answers: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
         } else {
-            alert("❌ Text detect nahi hua. Image ko pass se crop karein aur text clearly highlight rakhein.");
+            alert("❌ Image mein text match nahi hua. Kripya image ko thoda aur paas se crop karein taaki numbers aur options saaf dikhein.");
         }
     } catch(err) {
         console.error(err);
@@ -1001,3 +801,4 @@ window.onload = loadComments;
 </script>
 </body>
 </html>
+0
