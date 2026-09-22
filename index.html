@@ -460,7 +460,6 @@ body {
         <button class="start-btn" onclick="startApp()">Start Test</button>
     </div>
 </section>
-
 <!-- MAIN APP -->
 <div id="app">
     <div class="container">
@@ -548,7 +547,6 @@ body {
 
     </div>
 </div>
-
 <script>
 let totalQuestions = 10;
 let userAnswers = {};
@@ -677,7 +675,245 @@ async function processCropAndRead() {
             'eng',
             {
                 tessedit_pageseg_mode: '6',
-              function updateNav(qNo, status) {
+                tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
+            }
+        );
+
+        let text = result.data.text;
+        extractedAnswerKey = {};
+
+        text = text.replace(/O/g, '0')
+                   .replace(/I|l|\|/g, '1')
+                   .replace(/S/g, '5')
+                   .replace(/Z/g, '2');
+
+        const lines = text.split('\n');
+
+        lines.forEach(line => {
+            const matches = [...line.matchAll(/(\d{1,3})\s*[\.\-:\)\s]*\s*([A-D])/gi)];
+            matches.forEach(match => {
+                const qNum = parseInt(match[1]);
+                const qAns = match[2].toUpperCase();
+                if (qNum > 0 && qNum <= 200) {
+                    extractedAnswerKey[qNum] = qAns;
+                }
+            });
+        });
+
+        document.getElementById("loadingOverlay").style.display = "none";
+
+        const detectedKeys = Object.keys(extractedAnswerKey);
+        if (detectedKeys.length > 0) {
+            autoCheckMode = true;
+            totalQuestions = Math.max(...detectedKeys.map(Number));
+            
+            let previewStr = detectedKeys.sort((a,b)=>a-b).map(k => `${k}:${extractedAnswerKey[k]}`).join(", ");
+            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\nDetected Key: ${previewStr}\n\nAb 'Start Test' button par click karein.`);
+        } else {
+            alert("❌ Text detect nahi hua. Image ko pass se crop karein aur text clearly highlight rakhein.");
+        }
+    } catch(err) {
+        console.error(err);
+        document.getElementById("loadingOverlay").style.display = "none";
+        alert("OCR Engine Error! Kripya dobara try karein.");
+    }
+}
+
+function startApp() {
+    if (!autoCheckMode) {
+        totalQuestions = parseInt(document.getElementById("questionCount").value);
+    }
+
+    const theme = document.getElementById("themeColor").value;
+    document.documentElement.style.setProperty("--theme", theme);
+
+    document.getElementById("welcomePage").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    
+    history.pushState({ page: 'app' }, 'OMR Test', '#omr');
+
+    generateOMR();
+    updateResult();
+    document.getElementById("resultPanel").style.display = "block";
+}
+
+function generateOMR() {
+    const omr = document.getElementById("omrContainer");
+    const nav = document.getElementById("navigator");
+
+    omr.innerHTML = "";
+    nav.innerHTML = "";
+
+    for (let i = 1; i <= totalQuestions; i++) {
+        const row = document.createElement("div");
+        row.className = "omr-row";
+        row.id = "row-" + i;
+
+        row.innerHTML = `
+            <div class="qno">${String(i).padStart(2, "0")}</div>
+            <div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">A</div>
+            <div class="option" data-opt="B" onclick="selectOption(${i},'B',this)">B</div>
+            <div class="option" data-opt="C" onclick="selectOption(${i},'C',this)">C</div>
+            <div class="option" data-opt="D" onclick="selectOption(${i},'D',this)">D</div>
+            <div style="text-align:center;">
+                <button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✔ Right</button>
+            </div>
+            <div style="text-align:center;">
+                <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">✖ Wrong</button>
+            </div>
+            <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
+            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">${autoCheckMode && extractedAnswerKey[i] ? extractedAnswerKey[i] : '-'}</div>
+        `;
+
+        omr.appendChild(row);
+
+        const btn = document.createElement("button");
+        btn.className = "nav-btn";
+        btn.innerText = i;
+        btn.setAttribute("data-q", i);
+        btn.onclick = () => document.getElementById("row-" + i).scrollIntoView({ behavior: "smooth" });
+        nav.appendChild(btn);
+    }
+}
+
+function startTestTimer() {
+    if (testStarted) return;
+    testStarted = true;
+    testPaused = false;
+    document.getElementById("startTimerBtn").style.display = "none";
+    document.getElementById("pauseResumeBtn").style.display = "inline-block";
+    resumeTimer();
+}
+
+function togglePauseTest() {
+    if (!testStarted || submitted) return;
+    
+    if (!testPaused) {
+        testPaused = true;
+        clearInterval(timerInterval);
+        document.getElementById("pauseResumeBtn").innerText = "▶ Resume Test";
+        document.getElementById("pauseResumeBtn").style.background = "#16a34a";
+        document.querySelectorAll(".option").forEach(opt => opt.style.pointerEvents = "none");
+        alert("Test Paused! Timer aur options lock kar diye gaye hain.");
+    } else {
+        testPaused = false;
+        resumeTimer();
+        document.getElementById("pauseResumeBtn").innerText = "⏸ Pause Test";
+        document.getElementById("pauseResumeBtn").style.background = "#d97706";
+        document.querySelectorAll(".option").forEach(opt => opt.style.pointerEvents = "auto");
+        alert("Test Resumed!");
+    }
+}
+
+function resumeTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (!testPaused) {
+            seconds++;
+            const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+            const sec = String(seconds % 60).padStart(2, "0");
+            document.getElementById("timer").innerText = `${min}:${sec}`;
+        }
+    }, 1000);
+}
+
+function selectOption(qNo, value, element) {
+    if (!testStarted) {
+        alert("Pehle '▶ Start Test' button par click karke test start karein!");
+        return;
+    }
+    if (testPaused || submitted) return;
+
+    const row = document.getElementById("row-" + qNo);
+    row.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+
+    element.classList.add("selected");
+    userAnswers[qNo] = value;
+    document.getElementById("yourAns-" + qNo).innerText = value;
+
+    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
+    if (navBtn) navBtn.classList.add("done");
+
+    updateResult();
+}
+
+function submitTest() {
+    if (!testStarted) {
+        alert("Test start nahi hua h!");
+        return;
+    }
+
+    submitted = true;
+    clearInterval(timerInterval);
+
+    document.getElementById("pdfArea").style.display = "block";
+    document.getElementById("submitBtn").style.display = "none";
+    document.getElementById("pauseResumeBtn").style.display = "none";
+
+    if (autoCheckMode) {
+        rightCount = 0; wrongCount = 0;
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            const row = document.getElementById("row-" + i);
+            const myAns = userAnswers[i] || "-";
+            const picAns = extractedAnswerKey[i] || "-";
+
+            document.getElementById("yourAns-" + i).innerText = myAns;
+            document.getElementById("correctAns-" + i).innerText = picAns;
+
+            if (userAnswers[i] && extractedAnswerKey[i]) {
+                if (userAnswers[i] === extractedAnswerKey[i]) {
+                    row.classList.add("correct-row");
+                    rightCount++;
+                    updateNav(i, "right");
+                } else {
+                    row.classList.add("wrong-row");
+                    wrongCount++;
+                    updateNav(i, "wrong");
+                }
+            } else if (!userAnswers[i] && extractedAnswerKey[i]) {
+                row.classList.add("wrong-row");
+            }
+        }
+        updateResult();
+        alert("Auto Checked Successfully!");
+    } else {
+        for (let i = 1; i <= totalQuestions; i++) {
+            document.getElementById("right-" + i).style.display = "inline-block";
+            document.getElementById("wrong-" + i).style.display = "inline-block";
+        }
+        alert("Manual Check Mode Active!");
+    }
+}
+
+function markManual(qNo, status) {
+    if (!userAnswers[qNo]) {
+        alert("Pehle answer select karein.");
+        return;
+    }
+
+    const row = document.getElementById("row-" + qNo);
+    if (checkedQuestions[qNo] === status) return;
+
+    if (checkedQuestions[qNo] === "right") rightCount--;
+    if (checkedQuestions[qNo] === "wrong") wrongCount--;
+
+    checkedQuestions[qNo] = status;
+
+    if (status === "right") {
+        rightCount++;
+        row.className = "omr-row correct-row";
+        updateNav(qNo, "right");
+    } else {
+        wrongCount++;
+        row.className = "omr-row wrong-row";
+        updateNav(qNo, "wrong");
+    }
+
+    updateResult();
+}
+
+function updateNav(qNo, status) {
     const navBtn = document.querySelector(`[data-q="${qNo}"]`);
     if (navBtn) {
         navBtn.classList.remove("checked-right", "checked-wrong");
