@@ -7,7 +7,6 @@
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -82,7 +81,7 @@ body {
     margin-top: 20px;
 }
 
-.selector-grid select {
+.selector-grid select, .selector-grid input {
     width: 100%;
     padding: 12px;
     border: none;
@@ -389,7 +388,7 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Scanning Image... 0%</h3>
+    <h3 id="loadingText">Scanning with Gemini AI...</h3>
 </div>
 
 <!-- LEAVE CONFIRMATION MODAL -->
@@ -410,8 +409,8 @@ body {
         <!-- Close / Cross Button -->
         <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
 
-        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected, confusion aur missing questions ki list niche di gayi hai.</p>
+        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Gemini AI Scan Results</h3>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected aur parsed questions ki list niche di gayi hai.</p>
         
         <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;">
             <!-- Dynamically populated summary and sections -->
@@ -427,7 +426,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OCR & Summary Review</p>
+        <p>100% Accurate Gemini Vision AI Scanning</p>
 
         <div class="selector-grid">
             <div>
@@ -454,6 +453,10 @@ body {
                     <option value="#7c3aed">Purple</option>
                 </select>
             </div>
+            <div style="grid-column: 1 / -1;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Gemini API Key</label>
+                <input type="password" id="geminiApiKey" placeholder="Enter your Google Gemini API Key here">
+            </div>
         </div>
 
         <div class="upload-hero-container">
@@ -473,7 +476,7 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan with Gemini AI</button>
             </div>
         </div>
 
@@ -582,6 +585,14 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
+window.onload = function() {
+    loadComments();
+    const savedKey = localStorage.getItem("gemini_api_key");
+    if (savedKey) {
+        document.getElementById("geminiApiKey").value = savedKey;
+    }
+};
+
 // Clean Single Pop-up Handler for Back Button
 window.addEventListener('popstate', function (e) {
     if (document.getElementById("app").style.display === "block" && !submitted) {
@@ -624,75 +635,96 @@ function handleImageSelect(e) {
 
 async function processOCR() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Scanning Image... 0%";
+    const apiKey = document.getElementById("geminiApiKey").value.trim();
+    if (!apiKey) {
+        alert("⚠️ Please enter your Gemini API Key in the settings field above!");
+        return;
+    }
+    localStorage.setItem("gemini_api_key", apiKey);
+
+    document.getElementById("loadingText").innerText = "Analyzing with Gemini AI Vision...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const canvas = cropper.getCroppedCanvas({ width: cropper.getCroppedCanvas().width * 2, height: cropper.getCroppedCanvas().height * 2 });
-        
-        const worker = await Tesseract.createWorker('eng', 1, {
-            logger: m => {
-                if (m.status === 'recognizing text') {
-                    let progressPercent = Math.round(m.progress * 100);
-                    document.getElementById("loadingText").innerText = `Scanning Image... ${progressPercent}%`;
-                } else if (m.status) {
-                    document.getElementById("loadingText").innerText = `${m.status}...`;
-                }
-            }
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const base64Data = dataUrl.split(',')[1];
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: "Analyze this image containing question numbers and corresponding answer options (A, B, C, or D). Extract every question number and its exact answer. Return ONLY a valid JSON object where keys are question numbers (as strings, e.g. \"1\", \"2\") and values are the answer letters (uppercase 'A', 'B', 'C', or 'D'). Do not include any extra text or markdown formatting outside the JSON." },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: base64Data
+                            }
+                        }
+                    ]
+                }]
+            })
         });
 
-        const result = await worker.recognize(canvas.toDataURL('image/png'));
-        await worker.terminate();
+        const result = await response.json();
+        document.getElementById("loadingOverlay").style.display = "none";
+
+        if (result.error) {
+            alert("Gemini API Error: " + result.error.message);
+            return;
+        }
+
+        const candidateText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!candidateText) {
+            alert("❌ Could not read response from Gemini AI.");
+            return;
+        }
+
+        let cleanJsonStr = candidateText.trim();
+        if (cleanJsonStr.startsWith("```json")) {
+            cleanJsonStr = cleanJsonStr.replace(/^```json/, "").replace(/```$/, "").trim();
+        } else if (cleanJsonStr.startsWith("```")) {
+            cleanJsonStr = cleanJsonStr.replace(/^```/, "").replace(/```$/, "").trim();
+        }
+
+        const parsedAnswers = JSON.parse(cleanJsonStr);
 
         extractedAnswerKey = {};
         questionStatusMap = {};
-        parseTextToAnswers(result.data.text);
-        document.getElementById("loadingOverlay").style.display = "none";
 
-        const keys = Object.keys(extractedAnswerKey);
+        Object.keys(parsedAnswers).forEach(qStr => {
+            const q = parseInt(qStr);
+            const ans = String(parsedAnswers[qStr]).toUpperCase();
+            if (q > 0 && ['A', 'B', 'C', 'D'].includes(ans)) {
+                extractedAnswerKey[q] = ans;
+                questionStatusMap[q] = 'detected';
+            }
+        });
+
+        let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
+        let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
+        for (let i = 1; i <= limit; i++) {
+            if (!extractedAnswerKey[i]) {
+                questionStatusMap[i] = 'missing';
+                extractedAnswerKey[i] = '';
+            }
+        }
+
+        const keys = Object.keys(extractedAnswerKey).filter(k => extractedAnswerKey[k] !== '');
         if (keys.length > 0) {
             autoCheckMode = true;
-            totalQuestions = Math.max(...keys.map(Number));
+            totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
             document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
-            
             openReviewModal();
         } else {
-            alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
+            alert("❌ No valid answers detected by Gemini AI. Please crop clearly.");
         }
     } catch(err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("OCR Error! Please try again.");
-    }
-}
-
-function parseTextToAnswers(text) {
-    const lines = text.split('\n');
-    let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
-    
-    lines.forEach(line => {
-        const matches = [...line.matchAll(/(\d{1,3})[\.\-:\)]*\s*([A-Da-d\?])/g)];
-        matches.forEach(m => {
-            const q = parseInt(m[1]);
-            let rawAns = m[2];
-            if (q > 0 && q <= 300) {
-                if (rawAns === '?' || rawAns.toLowerCase() === 'x') {
-                    questionStatusMap[q] = 'confusion';
-                    extractedAnswerKey[q] = '';
-                } else {
-                    questionStatusMap[q] = 'detected';
-                    extractedAnswerKey[q] = rawAns.toUpperCase();
-                }
-            }
-        });
-    });
-
-    let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
-    for (let i = 1; i <= limit; i++) {
-        if (!extractedAnswerKey[i]) {
-            if (!questionStatusMap[i]) questionStatusMap[i] = 'missing';
-            extractedAnswerKey[i] = '';
-        }
+        alert("Error connecting to Gemini API. Please check your API key and network.");
     }
 }
 
@@ -703,15 +735,12 @@ function openReviewModal() {
     const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
 
     let detectedKeys = sortedKeys.filter(q => questionStatusMap[q] === 'detected');
-    let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
     let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
 
-    // Summary Line at the top inside modal including Total Qns Count
     let summaryLine = `
         <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around; flex-wrap:wrap; gap:5px;">
             <span style="color:#2563eb;">📌 Total: ${sortedKeys.length}</span>
             <span style="color:#16a34a;">✅ Detected: ${detectedKeys.length}</span>
-            <span style="color:#dc2626;">❓ Confusion: ${confusionKeys.length}</span>
             <span style="color:#d97706;">⚠️ Missing: ${missingKeys.length}</span>
         </div>
     `;
@@ -745,7 +774,6 @@ function openReviewModal() {
 
     let finalHTML = summaryLine;
     finalHTML += renderSection("✅ Successfully Detected", detectedKeys, "#16a34a", "Detected");
-    finalHTML += renderSection("❓ Confusion / Doubt", confusionKeys, "#dc2626", "Confusion");
     finalHTML += renderSection("⚠️ Missing / Un-detected", missingKeys, "#d97706", "Missing");
 
     container.innerHTML = finalHTML;
@@ -908,7 +936,7 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
-            document.getElementById("correctAns-" + i).innerText = picAns; // Revels correct answer only on submit
+            document.getElementById("correctAns-" + i).innerText = picAns;
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
                 if (userAnswers[i] === extractedAnswerKey[i]) {
@@ -1022,8 +1050,6 @@ function loadComments() {
         container.appendChild(item);
     });
 }
-
-window.onload = loadComments;
 </script>
 </body>
 </html>
