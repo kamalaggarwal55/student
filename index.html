@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR V6</title>
+<title>Student55 Ultra AI OMR V7 - Multi-Column Smart OCR</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -70,7 +70,7 @@ body {
 }
 
 .welcome-box h1 {
-    font-size: clamp(32px, 8vw, 55px);
+    font-size: clamp(28px, 6vw, 50px);
     margin-bottom: 15px;
     line-height: 1.2;
 }
@@ -203,7 +203,7 @@ body {
     gap: 10px;
 }
 
-.logo { font-size: 28px; font-weight: 700; color: var(--theme); }
+.logo { font-size: 26px; font-weight: 700; color: var(--theme); }
 .controls { display: flex; gap: 10px; flex-wrap: wrap; }
 .btn { background: var(--theme); color: white; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
 .timer { background: #111827; color: white; padding: 10px 15px; border-radius: 10px; font-weight: 700; }
@@ -311,7 +311,7 @@ body {
 .right-btn { background: #16a34a; }
 .wrong-btn { background: #dc2626; }
 
-/* COMMENTS & REVIEWS */
+/* COMMENTS */
 .comment-box {
     background: var(--card);
     padding: 20px;
@@ -349,6 +349,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    padding: 20px;
 }
 
 .spinner {
@@ -390,7 +392,7 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Processing Image & Scanning...</h3>
+    <h3 id="loadingText">Processing Dual-Column Layout...</h3>
 </div>
 
 <!-- LEAVE CONFIRMATION MODAL -->
@@ -408,18 +410,17 @@ body {
 <!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
-        <h1>🎯 Student55 Advanced OMR V6</h1>
-        <p>Ultra-Precision Dual Reader (Camera + Gallery Support)</p>
+        <h1>🎯 Student55 Ultra AI OMR V7</h1>
+        <p>Smart Multi-Column Splitter (Dual-Column Support)</p>
 
         <div class="selector-grid">
             <div>
                 <label style="display:block; margin-bottom:5px; font-weight:600;">Manual Questions Select</label>
                 <select id="questionCount">
                     <option value="10">10 Questions</option>
-                    <option value="14">14 Questions</option>
-                    <option value="20">20 Questions</option>
                     <option value="30">30 Questions</option>
                     <option value="50">50 Questions</option>
+                    <option value="63" selected>63 Questions</option>
                     <option value="100">100 Questions</option>
                 </select>
             </div>
@@ -452,7 +453,7 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processCropAndRead()">⚡ READ & CHECK ANSWER KEY</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:18px; padding:15px; border-radius:12px;" onclick="processSmartDualColumnOCR()">⚡ SMART DUAL-COLUMN READ</button>
             </div>
         </div>
 
@@ -466,7 +467,7 @@ body {
         
         <div class="header">
             <div class="header-top">
-                <div class="logo">Student55 Advanced OMR V6</div>
+                <div class="logo">Student55 AI OMR V7</div>
                 <div class="controls">
                     <button class="btn" onclick="confirmLeaveRedirect()">🏠 Home</button>
                     <button class="btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
@@ -609,9 +610,78 @@ function handleImageSelect(e) {
     }
 }
 
-// STABLE & SAFE MEMORY-OPTIMIZED PREPROCESSING
-function preprocessBlurImage(sourceCanvas) {
-    const scale = 2.5; // Safe optimal scale to prevent mobile browser crash
+// SMART DUAL-COLUMN SPLITTER & PREPROCESSOR
+async function processSmartDualColumnOCR() {
+    if (!cropper) return;
+    document.getElementById("loadingText").innerText = "Splitting Columns & Scanning Layout (0%)...";
+    document.getElementById("loadingOverlay").style.display = "flex";
+
+    try {
+        const rawCanvas = cropper.getCroppedCanvas();
+        const width = rawCanvas.width;
+        const height = rawCanvas.height;
+        const ctxOriginal = rawCanvas.getContext('2d');
+
+        // Create Left Column Canvas (1st half)
+        const leftCanvas = document.createElement('canvas');
+        leftCanvas.width = width / 2;
+        leftCanvas.height = height;
+        const leftCtx = leftCanvas.getContext('2d');
+        leftCtx.drawImage(rawCanvas, 0, 0, width / 2, height, 0, 0, width / 2, height);
+
+        // Create Right Column Canvas (2nd half)
+        const rightCanvas = document.createElement('canvas');
+        rightCanvas.width = width / 2;
+        rightCanvas.height = height;
+        const rightCtx = rightCanvas.getContext('2d');
+        rightCtx.drawImage(rawCanvas, width / 2, 0, width / 2, height, 0, 0, width / 2, height);
+
+        // Process columns safely with contrast boost
+        const processedLeft = upscaleAndEnhance(leftCanvas);
+        const processedRight = upscaleAndEnhance(rightCanvas);
+
+        document.getElementById("loadingText").innerText = "Running AI OCR on Multi-Columns (40%)...";
+
+        const worker = await Tesseract.createWorker('eng');
+        await worker.setParameters({
+            tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+            tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
+        });
+
+        // Scan Left Column
+        const resLeft = await worker.recognize(processedLeft);
+        // Scan Right Column
+        const resRight = await worker.recognize(processedRight);
+
+        await worker.terminate();
+
+        extractedAnswerKey = {};
+        
+        // Parse Left Column
+        parseTextToAnswers(resLeft.data.text);
+        // Parse Right Column
+        parseTextToAnswers(resRight.data.text);
+
+        document.getElementById("loadingOverlay").style.display = "none";
+
+        const detectedKeys = Object.keys(extractedAnswerKey);
+        if (detectedKeys.length > 0) {
+            autoCheckMode = true;
+            totalQuestions = Math.max(...detectedKeys.map(Number));
+            
+            alert(`✅ Dual-Column Read Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\n\nAb 'Start Test' button par click karein.`);
+        } else {
+            alert("❌ Accurate text detect nahi hua. Kripya image ko thoda saaf aur proper crop karein.");
+        }
+    } catch(err) {
+        console.error(err);
+        document.getElementById("loadingOverlay").style.display = "none";
+        alert("OCR Engine Error! Kripya dobara try karein.");
+    }
+}
+
+function upscaleAndEnhance(sourceCanvas) {
+    const scale = 2.5;
     const canvas = document.createElement('canvas');
     canvas.width = sourceCanvas.width * scale;
     canvas.height = sourceCanvas.height * scale;
@@ -626,7 +696,7 @@ function preprocessBlurImage(sourceCanvas) {
 
     for (let i = 0; i < data.length; i += 4) {
         let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-        let val = avg > 140 ? 255 : 0; // High contrast black & white threshold
+        let val = avg > 140 ? 255 : 0;
         data[i] = data[i + 1] = data[i + 2] = val;
     }
 
@@ -634,73 +704,30 @@ function preprocessBlurImage(sourceCanvas) {
     return canvas.toDataURL('image/png');
 }
 
-// BULLETPROOF CRASH-FREE OCR ENGINE
-async function processCropAndRead() {
-    if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Initializing Ultra OMR Engine (0%)...";
-    document.getElementById("loadingOverlay").style.display = "flex";
+function parseTextToAnswers(text) {
+    text = text.replace(/O/g, '0')
+               .replace(/I|l|\|/g, '1')
+               .replace(/S/g, '5')
+               .replace(/Z/g, '2');
 
-    try {
-        const rawCanvas = cropper.getCroppedCanvas();
-        const processedImageData = preprocessBlurImage(rawCanvas);
+    const matches = [...text.matchAll(/(\d{1,3})\s*[\.\-:\)\s]+\s*([A-Da-d])/g)];
+    matches.forEach(match => {
+        const qNum = parseInt(match[1]);
+        const qAns = match[2].toUpperCase();
+        if (qNum > 0 && qNum <= 500) {
+            extractedAnswerKey[qNum] = qAns;
+        }
+    });
 
-        document.getElementById("loadingText").innerText = "Scanning Text & Options (30%)...";
-
-        const worker = await Tesseract.createWorker('eng');
-        await worker.setParameters({
-            tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
-            tessedit_char_whitelist: '0123456789ABCDabcd.:-)\n '
-        });
-
-        const result = await worker.recognize(processedImageData);
-        await worker.terminate();
-
-        let text = result.data.text;
-        extractedAnswerKey = {};
-
-        // Cleaning common OCR character confusions
-        text = text.replace(/O/g, '0')
-                   .replace(/I|l|\|/g, '1')
-                   .replace(/S/g, '5')
-                   .replace(/Z/g, '2');
-
-        // Flexible multi-match regex scanning to capture all questions correctly
-        const matches = [...text.matchAll(/(\d{1,3})\s*[\.\-:\)\s]+\s*([A-Da-d])/g)];
-        matches.forEach(match => {
-            const qNum = parseInt(match[1]);
-            const qAns = match[2].toUpperCase();
+    if (Object.keys(extractedAnswerKey).length === 0) {
+        let tokens = [...text.replace(/\s+/g, ' ').matchAll(/(\d{1,3})\s*[:\.-]?\s*([A-D])/gi)];
+        tokens.forEach(tok => {
+            let qNum = parseInt(tok[1]);
+            let qAns = tok[2].toUpperCase();
             if (qNum > 0 && qNum <= 500) {
                 extractedAnswerKey[qNum] = qAns;
             }
         });
-
-        // Additional fallback token parser
-        if (Object.keys(extractedAnswerKey).length === 0) {
-            let tokens = [...text.replace(/\s+/g, ' ').matchAll(/(\d{1,3})\s*[:\.-]?\s*([A-D])/gi)];
-            tokens.forEach(tok => {
-                let qNum = parseInt(tok[1]);
-                let qAns = tok[2].toUpperCase();
-                if (qNum > 0 && qNum <= 500) {
-                    extractedAnswerKey[qNum] = qAns;
-                }
-            });
-        }
-
-        document.getElementById("loadingOverlay").style.display = "none";
-
-        const detectedKeys = Object.keys(extractedAnswerKey);
-        if (detectedKeys.length > 0) {
-            autoCheckMode = true;
-            totalQuestions = Math.max(...detectedKeys.map(Number));
-            
-            alert(`✅ Reading Successful!\nTotal Questions Detected: ${detectedKeys.length}\nMax Question No: ${totalQuestions}\n\nAb 'Start Test' button par click karein.`);
-        } else {
-            alert("❌ Accurate text detect nahi hua. Kripya image ko thoda saaf aur proper crop karein.");
-        }
-    } catch(err) {
-        console.error(err);
-        document.getElementById("loadingOverlay").style.display = "none";
-        alert("OCR Engine Error! Kripya dobara try karein.");
     }
 }
 
