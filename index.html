@@ -594,47 +594,6 @@ window.addEventListener('popstate', function (event) {
     }
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-    const activePage = sessionStorage.getItem("activePage");
-    if (activePage === "app" || window.location.hash === "#omr") {
-        totalQuestions = parseInt(sessionStorage.getItem("totalQuestions")) || 10;
-        autoCheckMode = sessionStorage.getItem("autoCheckMode") === "true";
-        userAnswers = JSON.parse(sessionStorage.getItem("userAnswers") || "{}");
-        extractedAnswerKey = JSON.parse(sessionStorage.getItem("extractedAnswerKey") || "{}");
-        testStarted = sessionStorage.getItem("testStarted") === "true";
-        submitted = sessionStorage.getItem("submitted") === "true";
-        seconds = parseInt(sessionStorage.getItem("seconds")) || 0;
-
-        document.getElementById("welcomePage").style.display = "none";
-        document.getElementById("app").style.display = "block";
-
-        generateOMR();
-        restoreUserSelections();
-
-        if (testStarted && !submitted) {
-            document.getElementById("startTimerBtn").style.display = "none";
-            document.getElementById("pauseResumeBtn").style.display = "inline-block";
-            resumeTimer();
-        }
-        if (submitted) {
-            submitTest(true);
-        }
-        updateResult();
-    }
-    loadComments();
-});
-
-function saveState(pageName) {
-    sessionStorage.setItem("activePage", pageName);
-    sessionStorage.setItem("totalQuestions", totalQuestions);
-    sessionStorage.setItem("autoCheckMode", autoCheckMode);
-    sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
-    sessionStorage.setItem("extractedAnswerKey", JSON.stringify(extractedAnswerKey));
-    sessionStorage.setItem("testStarted", testStarted);
-    sessionStorage.setItem("submitted", submitted);
-    sessionStorage.setItem("seconds", seconds);
-}
-
 function handleImageSelect(e) {
     const file = e.target.files[0];
     if (file) {
@@ -652,7 +611,6 @@ function handleImageSelect(e) {
     }
 }
 
-// ENHANCED IMAGE PREPROCESSING FOR BLURRY CAMERA & GALLERY PHOTOS
 function preprocessBlurImage(sourceCanvas) {
     const scale = 3; 
     const canvas = document.createElement('canvas');
@@ -661,4 +619,137 @@ function preprocessBlurImage(sourceCanvas) {
     const ctx = canvas.getContext('2d');
     
     ctx.imageSmoothingEnabled = true;
-  
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
+
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+
+    let histogram = new Array(256).fill(0);
+    for (let i = 0; i < data.length; i += 4) {
+        let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+        data[i] = data[i + 1] = data[i + 2] = avg;
+        histogram[Math.floor(avg)]++;
+    }
+
+    let total = canvas.width * canvas.height;
+    let sum = 0;
+    for (let t = 0; t < 256; t++) sum += t * histogram[t];
+
+    let sumB = 0, wB = 0, wF = 0, varMax = 0, threshold = 128;
+    for (let t = 0; t < 256; t++) {
+        wB += histogram[t];
+        if (wB === 0) continue;
+        wF = total - wB;
+        if (wF === 0) break;
+
+        sumB += t * histogram[t];
+        let mB = sumB / wB;
+        let mF = (sum - sumB) / wF;
+
+        let varBetween = wB * wF * (mB - mF) * (mB - mF);
+        if (varBetween > varMax) {
+            varMax = varBetween;
+            threshold = t;
+        }
+    }
+
+    for (let i = 0; i < data.length; i += 4) {
+        let val = data[i] < threshold ? 0 : 255;
+        data[i] = data[i + 1] = data[i + 2] = val;
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+    return canvas.toDataURL('image/png');
+}
+
+async function processCropAndRead() {
+    if (!cropper) return;
+    document.getElementById("loadingText").innerText = "Reading Image & Parsing Questions & Options...";
+    document.getElementById("loadingOverlay").style.display = "flex";
+
+    try {
+        const rawCanvas = cropper.getCroppedCanvas();
+        const processedImageData = preprocessBlurImage(rawCanvas);
+
+        const result = await Tesseract.recognize(
+            processedImageData,
+            'eng',
+            {
+                tessedit_pageseg_mode: '6',
+              function updateNav(qNo, status) {
+    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
+    if (navBtn) {
+        navBtn.classList.remove("checked-right", "checked-wrong");
+        if (status === "right") navBtn.classList.add("checked-right");
+        if (status === "wrong") navBtn.classList.add("checked-wrong");
+    }
+}
+
+function updateResult() {
+    document.getElementById("totalQuestions").innerText = totalQuestions;
+    document.getElementById("attemptedQuestions").innerText = Object.keys(userAnswers).length;
+    document.getElementById("rightQuestions").innerText = rightCount;
+    document.getElementById("wrongQuestions").innerText = wrongCount;
+
+    let acc = (rightCount + wrongCount) > 0 ? ((rightCount / (rightCount + wrongCount)) * 100).toFixed(1) : 0;
+    document.getElementById("accuracyPercent").innerText = acc + "%";
+}
+
+function toggleDarkMode() { document.body.classList.toggle("dark"); }
+
+function goHome() { 
+    window.location.hash = "";
+    location.reload(); 
+}
+
+function downloadOMRPDF() {
+    const name = document.getElementById("watermarkName").value || "Student55";
+    const element = document.getElementById("pdfExportArea");
+
+    const opt = {
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     `OMR_Report_${name}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
+
+function rateSite(s) { alert(`Rated ${s} stars!`); }
+
+function addComment() {
+    const name = document.getElementById("userName").value.trim();
+    const text = document.getElementById("commentText").value.trim();
+    if(!name || !text) {
+        alert("Please enter both name and comment.");
+        return;
+    }
+    
+    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
+    comments.push({ name, text, time: new Date().toLocaleDateString() });
+    localStorage.setItem("omrComments", JSON.stringify(comments));
+
+    document.getElementById("userName").value = "";
+    document.getElementById("commentText").value = "";
+    loadComments();
+}
+
+function loadComments() {
+    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
+    const container = document.getElementById("commentList");
+    container.innerHTML = "";
+    comments.forEach(c => {
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.innerHTML = `<strong>${c.name}</strong> <small style="color:gray;">(${c.time})</small><p style="margin-top:5px;">${c.text}</p>`;
+        container.appendChild(item);
+    });
+}
+
+window.onload = loadComments;
+</script>
+</body>
+</html>
