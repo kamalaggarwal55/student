@@ -364,7 +364,7 @@ body {
     border: 1px solid var(--border);
     max-height: 85vh;
     overflow-y: auto;
-    position: relative; /* Added for close button positioning */
+    position: relative;
 }
 .review-item {
     display: flex;
@@ -706,9 +706,10 @@ function openReviewModal() {
     let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
     let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
 
-    // Summary Line at the top inside modal
+    // Summary Line at the top inside modal including Total Qns Count
     let summaryLine = `
         <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around; flex-wrap:wrap; gap:5px;">
+            <span style="color:#2563eb;">📌 Total: ${sortedKeys.length}</span>
             <span style="color:#16a34a;">✅ Detected: ${detectedKeys.length}</span>
             <span style="color:#dc2626;">❓ Confusion: ${confusionKeys.length}</span>
             <span style="color:#d97706;">⚠️ Missing: ${missingKeys.length}</span>
