@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         }
 
         // 🔑 YAHAN APNI GEMINI API KEY RAKHEIN (Yeh server par secure rahegi)
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "YAHAN_APNI_REAL_API_KEY_DAAL_DENA";
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AQ.Ab8RN6I0sNVSNmnapJVvNYp_NSpWXHJ74rlNcILh8HxioqtGPw";
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
