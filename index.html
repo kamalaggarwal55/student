@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR - Perfected</title>
+<title>Student55 Ultra AI OMR - Final Review & Perfected</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -342,8 +342,8 @@ body {
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* LEAVE CONFIRMATION MODAL */
-#leaveConfirmModal {
+/* MODALS */
+#leaveConfirmModal, #reviewModal {
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -357,11 +357,29 @@ body {
     color: var(--text);
     padding: 30px;
     border-radius: 20px;
-    max-width: 400px;
+    max-width: 450px;
     width: 90%;
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     border: 1px solid var(--border);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+.review-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+.review-item select {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--text);
 }
 </style>
 </head>
@@ -385,11 +403,27 @@ body {
     </div>
 </div>
 
+<!-- OCR REVIEW & MANUAL CORRECTION MODAL -->
+<div id="reviewModal">
+    <div class="confirm-box" style="max-width: 600px;">
+        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Review</h3>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:15px;">Detected answers aur confusion wale questions ko yahan check/manual fix karein. (Optional)</p>
+        
+        <div id="reviewListContainer" style="text-align:left; max-height:350px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:15px;">
+            <!-- Dynamically populated -->
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn" onclick="applyReviewAndStart()" style="background:#16a34a; flex:1;">✅ Confirm & Continue</button>
+        </div>
+    </div>
+</div>
+
 <!-- WELCOME PAGE -->
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OCR & Auto Check System</p>
+        <p>Advanced OCR & Smart Review System</p>
 
         <div class="selector-grid">
             <div>
@@ -535,6 +569,7 @@ body {
 let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
+let questionStatusMap = {}; // Tracks 'detected', 'missing', 'confusion'
 let autoCheckMode = false;
 let testStarted = false;
 let testPaused = false;
@@ -606,6 +641,7 @@ async function processOCR() {
         await worker.terminate();
 
         extractedAnswerKey = {};
+        questionStatusMap = {};
         parseTextToAnswers(result.data.text);
         document.getElementById("loadingOverlay").style.display = "none";
 
@@ -614,7 +650,9 @@ async function processOCR() {
             autoCheckMode = true;
             totalQuestions = Math.max(...keys.map(Number));
             document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
-            alert(`✅ Scan Successful! Detected ${keys.length} answers.`);
+            
+            // Show Review Modal to let user verify detected vs missing/confusion questions
+            openReviewModal();
         } else {
             alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
         }
@@ -627,19 +665,97 @@ async function processOCR() {
 
 function parseTextToAnswers(text) {
     const lines = text.split('\n');
+    let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
+    
     lines.forEach(line => {
-        const matches = [...line.matchAll(/(\d{1,3})[\.\-:\)]*\s*([A-Da-d])/g)];
+        // Match standard format like 1. A or 1-B or 1) C with optional confidence flags
+        const matches = [...line.matchAll(/(\d{1,3})[\.\-:\)]*\s*([A-Da-d\?])/g)];
         matches.forEach(m => {
             const q = parseInt(m[1]);
-            const a = m[2].toUpperCase();
-            if (q > 0 && q <= 300) extractedAnswerKey[q] = a;
+            let rawAns = m[2];
+            if (q > 0 && q <= 300) {
+                if (rawAns === '?' || rawAns.toLowerCase() === 'x') {
+                    questionStatusMap[q] = 'confusion';
+                    extractedAnswerKey[q] = '';
+                } else {
+                    questionStatusMap[q] = 'detected';
+                    extractedAnswerKey[q] = rawAns.toUpperCase();
+                }
+            }
         });
     });
+
+    // Identify missing questions up to maxQ or detected limit
+    let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
+    for (let i = 1; i <= limit; i++) {
+        if (!extractedAnswerKey[i]) {
+            if (!questionStatusMap[i]) questionStatusMap[i] = 'missing';
+            extractedAnswerKey[i] = '';
+        }
+    }
+}
+
+function openReviewModal() {
+    const container = document.getElementById("reviewListContainer");
+    container.innerHTML = "";
+
+    const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
+
+    sortedKeys.forEach(q => {
+        const status = questionStatusMap[q] || 'missing';
+        const currentAns = extractedAnswerKey[q] || '';
+
+        let badgeText = "✅ Detected";
+        let badgeColor = "#16a34a";
+        if (status === 'missing') {
+            badgeText = "⚠️ Missing";
+            badgeColor = "#d97706";
+        } else if (status === 'confusion') {
+            badgeText = "❓ Confusion";
+            badgeColor = "#dc2626";
+        }
+
+        const item = document.createElement("div");
+        item.className = "review-item";
+        item.innerHTML = `
+            <div>
+                <strong>Q.${q}</strong> 
+                <span style="font-size:11px; padding:2px 6px; border-radius:4px; background:${badgeColor}; color:white; margin-left:6px;">${badgeText}</span>
+            </div>
+            <div>
+                <select id="rev-ans-${q}">
+                    <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
+                    <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
+                    <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
+                    <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
+                    <option value="D" ${currentAns === "D" ? "selected" : ""}>D</option>
+                </select>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+
+    document.getElementById("reviewModal").style.display = "flex";
+}
+
+function applyReviewAndStart() {
+    const sortedKeys = Object.keys(extractedAnswerKey).map(Number);
+    sortedKeys.forEach(q => {
+        const sel = document.getElementById(`rev-ans-${q}`);
+        if (sel) {
+            extractedAnswerKey[q] = sel.value;
+        }
+    });
+
+    document.getElementById("reviewModal").style.display = "none";
+    startApp();
 }
 
 function startApp() {
     if (!autoCheckMode) {
         totalQuestions = parseInt(document.getElementById("questionCount").value);
+    } else {
+        totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
     }
 
     const theme = document.getElementById("themeColor").value;
