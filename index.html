@@ -814,7 +814,7 @@ function generateOMR() {
                 <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">✖ Wrong</button>
             </div>
             <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
-            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">${extractedAnswerKey[i] || '-'}</div>
+            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">-</div>
         `;
 
         omr.appendChild(row);
@@ -908,7 +908,7 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
-            document.getElementById("correctAns-" + i).innerText = picAns;
+            document.getElementById("correctAns-" + i).innerText = picAns; // Revels correct answer only on submit
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
                 if (userAnswers[i] === extractedAnswerKey[i]) {
@@ -925,7 +925,7 @@ function submitTest() {
             }
         }
         updateResult();
-        alert("Auto Checked Successfully!");
+        alert("Test Submitted & Auto Checked Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
             document.getElementById("right-" + i).style.display = "inline-block";
