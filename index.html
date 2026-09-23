@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR - Vercel Integration</title>
+<title>Student55 Ultra AI OMR - Vercel Backend</title>
 
-<!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
@@ -116,8 +115,7 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Scanning Image via Vercel Backend...</h3>
-    <button class="btn" onclick="skipScanning()" style="margin-top:15px; background:#dc2626;">Skip & Open Review</button>
+    <h3 id="loadingText">Sending image to Vercel Backend API...</h3>
 </div>
 
 <div id="leaveConfirmModal">
@@ -134,8 +132,8 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 <div id="reviewModal">
     <div class="confirm-box" style="max-width: 600px;">
         <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
-        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Backend se read kiye gaye answers yahan set hain.</p>
+        <h3 style="margin-bottom:10px; font-size:20px;">🔍 Backend Scan Results & Summary</h3>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Backend se scan kiye gaye answers yahan set hain. Aap verify kar sakte hain.</p>
         <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;"></div>
         <div style="display:flex; gap:10px; justify-content:center;">
             <button class="btn" onclick="applyReviewAndStart()" style="background:#16a34a; flex:1;">✅ Confirm & Continue</button>
@@ -146,7 +144,7 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Vercel Backend AI OMR Reader & Summary</p>
+        <p>Vercel Backend API OMR Scanner</p>
 
         <div class="selector-grid">
             <div>
@@ -182,7 +180,7 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
             <div id="cropWrapper">
                 <div class="img-container"><img id="cropImage" src=""></div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Send to Vercel API & Scan</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="sendImageToBackendAPI()">⚡ Send to Backend API & Scan</button>
             </div>
         </div>
 
@@ -311,19 +309,19 @@ function handleImageSelect(e) {
     }
 }
 
-async function processOCR() {
+async function sendImageToBackendAPI() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Sending image to Vercel API (/api/scan-omr)...";
+    document.getElementById("loadingText").innerText = "Uploading image to Vercel API (/api/scan-omr)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
         const canvas = cropper.getCroppedCanvas({ 
-            width: cropper.getCroppedCanvas().width * 2, 
-            height: cropper.getCroppedCanvas().height * 2 
+            width: 800, 
+            height: 800 
         });
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
-        // Vercel Serverless Function ko request bhejna
+        // Backend API request
         const response = await fetch('/api/scan-omr', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -333,11 +331,11 @@ async function processOCR() {
         document.getElementById("loadingOverlay").style.display = "none";
 
         if (!response.ok) {
-            throw new Error("Vercel API route error");
+            throw new Error("Server responded with status " + response.status);
         }
 
         const result = await response.json();
-        extractedAnswerKey = result.answers || result.results || result;
+        extractedAnswerKey = result.answers || {};
 
         autoCheckMode = true;
         if (Object.keys(extractedAnswerKey).length > 0) {
@@ -349,17 +347,11 @@ async function processOCR() {
         }
         openReviewModal();
 
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Vercel connection failed. Review modal open kiya ja raha hai.");
-        openReviewModal();
+        alert("Backend connection error: " + err.message + ". Please check if code is deployed correctly on Vercel.");
     }
-}
-
-function skipScanning() {
-    document.getElementById("loadingOverlay").style.display = "none";
-    openReviewModal();
 }
 
 function openReviewModal() {
@@ -367,16 +359,15 @@ function openReviewModal() {
     const container = document.getElementById("reviewListContainer");
     container.innerHTML = "";
 
-    let finalHTML = `<div style="background:var(--bg); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; font-weight:600; text-align:center;">Review / Set Answer Key</div>`;
+    let finalHTML = `<div style="background:var(--bg); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; font-weight:600; text-align:center;">Review / Modify Answer Key</div>`;
     
     for(let q=1; q<=totalCount; q++) {
-        const currentAns = extractedAnswerKey[q] || '';
+        const currentAns = extractedAnswerKey[q] || 'A';
         finalHTML += `
             <div class="review-item">
                 <div><strong>Q.${q}</strong></div>
                 <div>
                     <select id="rev-ans-${q}">
-                        <option value="" ${currentAns === "" ? "selected" : ""}>-- None --</option>
                         <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
                         <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
                         <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
