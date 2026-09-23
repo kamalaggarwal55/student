@@ -320,7 +320,6 @@ async function processOCR() {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         const base64Data = dataUrl.split(',')[1];
 
-        // NETLIFY SERVERLESS FUNCTION ENDPOINT
         const response = await fetch('/.netlify/functions/scan', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
