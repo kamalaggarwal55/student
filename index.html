@@ -388,7 +388,8 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Scanning Image via Server...</h3>
+    <h3 id="loadingText">Processing Image...</h3>
+    <button class="btn" onclick="skipScanningAndStart()" style="margin-top:20px; background:#dc2626;">Skip & Open Manual Review</button>
 </div>
 
 <!-- LEAVE CONFIRMATION MODAL -->
@@ -409,7 +410,7 @@ body {
         <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
 
         <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected, confusion aur missing questions ki list niche di gayi hai.</p>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected answers ya manual key set karein.</p>
         
         <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;"></div>
 
@@ -423,7 +424,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced Server OCR & Summary Review</p>
+        <p>Advanced OMR & Summary Review</p>
 
         <div class="selector-grid">
             <div>
@@ -469,11 +470,11 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image via Server</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image</button>
             </div>
         </div>
 
-        <button class="start-btn" onclick="startApp()">Start Test</button>
+        <button class="start-btn" onclick="startAppDirect()">Start Test (Direct)</button>
     </div>
 </section>
 
@@ -619,8 +620,17 @@ function handleImageSelect(e) {
 
 async function processOCR() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Uploading & Scanning via Server...";
+    document.getElementById("loadingText").innerText = "Scanning Image via Server...";
     document.getElementById("loadingOverlay").style.display = "flex";
+
+    // Fallback timer taaki agar server response na de, toh 4 sec me loading hat jaye
+    let timeoutTriggered = false;
+    let timer = setTimeout(() => {
+        timeoutTriggered = true;
+        document.getElementById("loadingOverlay").style.display = "none";
+        alert("Server response timeout! Opening manual review sheet.");
+        openReviewModal();
+    }, 4000);
 
     try {
         const canvas = cropper.getCroppedCanvas({ 
@@ -637,21 +647,20 @@ async function processOCR() {
                 body: formData
             });
 
+            if (timeoutTriggered) return;
+            clearTimeout(timer);
+
             const data = await response.json();
             document.getElementById("loadingOverlay").style.display = "none";
 
             if (data.text) {
-                // Raw text ko parse karke answer key me convert karna
                 extractedAnswerKey = {};
-                questionStatusMap = {};
-                
                 const lines = data.text.split('\n');
                 let qNum = 1;
                 lines.forEach(line => {
                     const match = line.match(/([A-D])/i);
                     if (match) {
                         extractedAnswerKey[qNum] = match[1].toUpperCase();
-                        questionStatusMap[qNum] = 'detected';
                         qNum++;
                     }
                 });
@@ -662,40 +671,41 @@ async function processOCR() {
                     document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
                     openReviewModal();
                 } else {
-                    alert("OCR text read hua par answers match nahi hue. Manual select karein.");
+                    openReviewModal();
                 }
             } else {
-                alert("Server OCR Error: " + (data.error || "Please try again."));
+                openReviewModal();
             }
         }, 'image/png');
 
     } catch(err) {
-        console.error(err);
+        if (timeoutTriggered) return;
+        clearTimeout(timer);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Connection Error with Backend Server!");
+        openReviewModal();
     }
 }
 
+function skipScanningAndStart() {
+    document.getElementById("loadingOverlay").style.display = "none";
+    openReviewModal();
+}
+
 function openReviewModal() {
+    const totalCount = parseInt(document.getElementById("questionCount").value) || 10;
     const container = document.getElementById("reviewListContainer");
     container.innerHTML = "";
 
-    const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
-    let summaryLine = `
-        <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border);">
-            <span style="color:#2563eb;">📌 Total Detected Questions: ${sortedKeys.length}</span>
-        </div>
-    `;
-
-    let finalHTML = summaryLine;
-    sortedKeys.forEach(q => {
+    let finalHTML = `<div style="background:var(--bg); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; font-weight:600; text-align:center;">Answer Key Set karein (Optional)</div>`;
+    
+    for(let q=1; q<=totalCount; q++) {
         const currentAns = extractedAnswerKey[q] || '';
         finalHTML += `
             <div class="review-item">
                 <div><strong>Q.${q}</strong></div>
                 <div>
                     <select id="rev-ans-${q}">
-                        <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
+                        <option value="" ${currentAns === "" ? "selected" : ""}>-- None --</option>
                         <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
                         <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
                         <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
@@ -704,7 +714,7 @@ function openReviewModal() {
                 </div>
             </div>
         `;
-    });
+    }
 
     container.innerHTML = finalHTML;
     document.getElementById("reviewModal").style.display = "flex";
@@ -715,25 +725,25 @@ function closeReviewModal() {
 }
 
 function applyReviewAndStart() {
-    const sortedKeys = Object.keys(extractedAnswerKey).map(Number);
-    sortedKeys.forEach(q => {
+    const totalCount = parseInt(document.getElementById("questionCount").value) || 10;
+    for(let q=1; q<=totalCount; q++) {
         const sel = document.getElementById(`rev-ans-${q}`);
-        if (sel) {
+        if (sel && sel.value) {
             extractedAnswerKey[q] = sel.value;
+            autoCheckMode = true;
         }
-    });
-
+    }
     document.getElementById("reviewModal").style.display = "none";
     startApp();
 }
 
-function startApp() {
-    if (!autoCheckMode) {
-        totalQuestions = parseInt(document.getElementById("questionCount").value);
-    } else {
-        totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
-    }
+function startAppDirect() {
+    autoCheckMode = false;
+    startApp();
+}
 
+function startApp() {
+    totalQuestions = parseInt(document.getElementById("questionCount").value);
     const theme = document.getElementById("themeColor").value;
     document.documentElement.style.setProperty("--theme", theme);
 
@@ -772,7 +782,7 @@ function generateOMR() {
                 <button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">✖ Wrong</button>
             </div>
             <div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div>
-            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">-</div>
+            <div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">${extractedAnswerKey[i] || '-'}</div>
         `;
 
         omr.appendChild(row);
@@ -866,7 +876,6 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
-            document.getElementById("correctAns-" + i).innerText = picAns;
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
                 if (userAnswers[i] === extractedAnswerKey[i]) {
@@ -883,7 +892,7 @@ function submitTest() {
             }
         }
         updateResult();
-        alert("Test Submitted & Auto Checked Successfully!");
+        alert("Test Submitted Successfully!");
     } else {
         for (let i = 1; i <= totalQuestions; i++) {
             document.getElementById("right-" + i).style.display = "inline-block";
