@@ -1,7 +1,6 @@
 const { GoogleGenAI } = require('@google/genai');
 
 exports.handler = async function(event, context) {
-    // CORS headers for smooth connection
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
@@ -60,7 +59,7 @@ Example format: {"1": "A", "2": "C", "3": "B"}
 Do not include any extra text or markdown formatting blocks in the response except pure JSON if possible, or parseable standard format.`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-1.5-flash',
             contents: [
                 {
                     inlineData: {
