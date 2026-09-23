@@ -406,15 +406,12 @@ body {
 <!-- OCR REVIEW & MANUAL CORRECTION MODAL -->
 <div id="reviewModal">
     <div class="confirm-box" style="max-width: 600px;">
-        <!-- Close / Cross Button -->
         <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
 
         <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
         <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected, confusion aur missing questions ki list niche di gayi hai.</p>
         
-        <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;">
-            <!-- Dynamically populated summary and sections -->
-        </div>
+        <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;"></div>
 
         <div style="display:flex; gap:10px; justify-content:center;">
             <button class="btn" onclick="applyReviewAndStart()" style="background:#16a34a; flex:1;">✅ Confirm & Continue</button>
@@ -581,7 +578,6 @@ let rightCount = 0, wrongCount = 0, seconds = 0, timerInterval = null;
 let checkedQuestions = {};
 let cropper = null;
 
-// Clean Single Pop-up Handler for Back Button
 window.addEventListener('popstate', function (e) {
     if (document.getElementById("app").style.display === "block" && !submitted) {
         history.pushState({ page: 'app' }, 'OMR Test', '#omr');
@@ -621,7 +617,6 @@ function handleImageSelect(e) {
     }
 }
 
-// Updated processOCR sends cropped image to backend server for high-accuracy processing
 async function processOCR() {
     if (!cropper) return;
     document.getElementById("loadingText").innerText = "Uploading & Scanning via Server...";
@@ -645,19 +640,29 @@ async function processOCR() {
             const data = await response.json();
             document.getElementById("loadingOverlay").style.display = "none";
 
-            if (data.success) {
-                extractedAnswerKey = data.extractedAnswerKey;
-                questionStatusMap = data.questionStatusMap;
+            if (data.text) {
+                // Raw text ko parse karke answer key me convert karna
+                extractedAnswerKey = {};
+                questionStatusMap = {};
+                
+                const lines = data.text.split('\n');
+                let qNum = 1;
+                lines.forEach(line => {
+                    const match = line.match(/([A-D])/i);
+                    if (match) {
+                        extractedAnswerKey[qNum] = match[1].toUpperCase();
+                        questionStatusMap[qNum] = 'detected';
+                        qNum++;
+                    }
+                });
 
-                const keys = Object.keys(extractedAnswerKey);
-                if (keys.length > 0) {
+                if (Object.keys(extractedAnswerKey).length > 0) {
                     autoCheckMode = true;
-                    totalQuestions = Math.max(...keys.map(Number));
+                    totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
                     document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
-                    
                     openReviewModal();
                 } else {
-                    alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
+                    alert("OCR text read hua par answers match nahi hue. Manual select karein.");
                 }
             } else {
                 alert("Server OCR Error: " + (data.error || "Please try again."));
@@ -676,51 +681,30 @@ function openReviewModal() {
     container.innerHTML = "";
 
     const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
-
-    let detectedKeys = sortedKeys.filter(q => questionStatusMap[q] === 'detected');
-    let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
-    let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
-
     let summaryLine = `
-        <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around; flex-wrap:wrap; gap:5px;">
-            <span style="color:#2563eb;">📌 Total: ${sortedKeys.length}</span>
-            <span style="color:#16a34a;">✅ Detected: ${detectedKeys.length}</span>
-            <span style="color:#dc2626;">❓ Confusion: ${confusionKeys.length}</span>
-            <span style="color:#d97706;">⚠️ Missing: ${missingKeys.length}</span>
+        <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border);">
+            <span style="color:#2563eb;">📌 Total Detected Questions: ${sortedKeys.length}</span>
         </div>
     `;
 
-    function renderSection(title, keys, color, badgeText) {
-        if (keys.length === 0) return '';
-        let sectionHtml = `<div style="margin-bottom:15px;"><h4 style="margin-bottom:6px; color:${color}; font-size:14px; border-bottom:1px solid var(--border); padding-bottom:4px;">${title} (${keys.length})</h4>`;
-        keys.forEach(q => {
-            const currentAns = extractedAnswerKey[q] || '';
-            sectionHtml += `
-                <div class="review-item">
-                    <div>
-                        <strong>Q.${q}</strong> 
-                        <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:${color}; color:white; margin-left:6px;">${badgeText}</span>
-                    </div>
-                    <div>
-                        <select id="rev-ans-${q}">
-                            <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
-                            <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
-                            <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
-                            <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
-                            <option value="D" ${currentAns === "D" ? "selected" : ""}>D</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-        });
-        sectionHtml += `</div>`;
-        return sectionHtml;
-    }
-
     let finalHTML = summaryLine;
-    finalHTML += renderSection("✅ Successfully Detected", detectedKeys, "#16a34a", "Detected");
-    finalHTML += renderSection("❓ Confusion / Doubt", confusionKeys, "#dc2626", "Confusion");
-    finalHTML += renderSection("⚠️ Missing / Un-detected", missingKeys, "#d97706", "Missing");
+    sortedKeys.forEach(q => {
+        const currentAns = extractedAnswerKey[q] || '';
+        finalHTML += `
+            <div class="review-item">
+                <div><strong>Q.${q}</strong></div>
+                <div>
+                    <select id="rev-ans-${q}">
+                        <option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option>
+                        <option value="A" ${currentAns === "A" ? "selected" : ""}>A</option>
+                        <option value="B" ${currentAns === "B" ? "selected" : ""}>B</option>
+                        <option value="C" ${currentAns === "C" ? "selected" : ""}>C</option>
+                        <option value="D" ${currentAns === "D" ? "selected" : ""}>D</option>
+                    </select>
+                </div>
+            </div>
+        `;
+    });
 
     container.innerHTML = finalHTML;
     document.getElementById("reviewModal").style.display = "flex";
