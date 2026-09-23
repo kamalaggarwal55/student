@@ -24,16 +24,7 @@ exports.handler = async function(event, context) {
 
         if (!base64Image) {
             return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ error: 'No image provided' })
-            };
-        }
-
-        // Yahan apni Gemini API key daalein (AIza... se shuru hoti hai)
-        const apiKey = "AQ.Ab8RN6I0sNVSNmnapJVvNYp_NSpWXHJ74rlNcILh8HxioqtGPw";
-
-        if (!apiKey || apiKey === "YAHAN_APNI_GEMINI_API_KEY_DAALEIN") {
+                statusCode: 400YAHAN_APNI_GEMINI_API_KEY_DAALEIN") {
             return {
                 statusCode: 500,
                 headers,
