@@ -33,7 +33,7 @@ exports.handler = async function(event, context) {
         }
 
         // APNI GEMINI API KEY YAHAN DIRECT PASTE KAREIN:
-        const apiKey = "YAHAN_APNI_GEMINI_API_KEY_DAALEIN";
+        const apiKey = "AQ.Ab8RN6I0sNVSNmnapJVvNYp_NSpWXHJ74rlNcILh8HxioqtGPw";
 
         if (!apiKey || apiKey === "YAHAN_APNI_GEMINI_API_KEY_DAALEIN") {
             return {
