@@ -51,12 +51,22 @@ export default async function handler(req, res) {
         const data = await response.json();
         
         if (!response.ok) {
-            throw new Error(data.error?.message || 'Failed to communicate with Gemini API');
+            return res.status(500).json({ error: data.error?.message || 'Gemini API connection failed' });
         }
 
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!rawText) {
+            return res.status(500).json({ error: 'No response text received from Gemini AI model.' });
+        }
+
         const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-        const answers = JSON.parse(cleanedText);
+        
+        let answers;
+        try {
+            answers = JSON.parse(cleanedText);
+        } catch (parseError) {
+            return res.status(500).json({ error: 'Failed to parse AI response as JSON: ' + cleanedText });
+        }
 
         return res.status(200).json({
             success: true,
@@ -65,6 +75,6 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: 'Server Error: ' + error.message });
     }
 }
