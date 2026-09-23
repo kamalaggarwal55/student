@@ -337,11 +337,9 @@ async function processOCR() {
 
         const parsedAnswers = result.answers || result.result;
         
-        // Agar parsedAnswers JSON format me hai ya text string me hai handle karne ke liye
         let answersObj = parsedAnswers;
         if (typeof parsedAnswers === 'string') {
             try {
-                // Agar AI ne markdown code block ya text bheja ho
                 let cleanedText = parsedAnswers.replace(/```json/g, '').replace(/```/g, '').trim();
                 answersObj = JSON.parse(cleanedText);
             } catch (e) {
@@ -512,7 +510,6 @@ function renderOMRSheet() {
             correctAnsDiv.innerText = extractedAnswerKey[i] || "-";
             row.appendChild(correctAnsDiv);
         } else {
-            // Empty placeholders for non-auto check layout alignment
             for(let k=0; k<4; k++) {
                 let emptyCol = document.createElement("div");
                 row.appendChild(emptyCol);
@@ -526,7 +523,6 @@ function renderOMRSheet() {
 function selectOption(q, opt) {
     if (submitted) return;
     
-    // Toggle selection
     if (userAnswers[q] === opt) {
         delete userAnswers[q];
         document.getElementById(`q_${q}_${opt}`).classList.remove("selected");
@@ -549,7 +545,6 @@ function selectOption(q, opt) {
             rBtn.style.display = "inline-block";
             wBtn.style.display = "inline-block";
             
-            // Auto evaluate if key exists
             if (extractedAnswerKey[q]) {
                 if (userAnswers[q] === extractedAnswerKey[q]) {
                     markChecked(q, 'right');
@@ -646,8 +641,9 @@ function startTestTimer() {
 
 function togglePauseTest() {
     testPaused = !testPaused;
-    document.getElementById("pauseResumeBtn").innerText = testPaused ? "▶ Resume Test" : "⏸ Pause Test";
-    document.getElementById("pauseResumeBtn.style.background"] = testPaused ? "#16a34a" : "#d97706";
+    const pauseBtn = document.getElementById("pauseResumeBtn");
+    pauseBtn.innerText = testPaused ? "▶ Resume Test" : "⏸ Pause Test";
+    pauseBtn.style.background = testPaused ? "#16a34a" : "#d97706";
 }
 
 function submitTest() {
@@ -664,7 +660,6 @@ function toggleDarkMode() {
 
 function downloadOMRPDF() {
     const element = document.getElementById("pdfExportArea");
-    let wm = document.getElementById("watermarkName").value || "Student55 OMR Report";
     const opt = {
         margin: 1,
         filename: 'Student55_OMR_Report.pdf',
