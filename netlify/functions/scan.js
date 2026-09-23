@@ -32,7 +32,6 @@ exports.handler = async function(event, context) {
             };
         }
 
-        // APNI GEMINI API KEY YAHAN DIRECT PASTE KAREIN:
         const apiKey = "AQ.Ab8RN6I0sNVSNmnapJVvNYp_NSpWXHJ74rlNcILh8HxioqtGPw";
 
         if (!apiKey || apiKey === "YAHAN_APNI_GEMINI_API_KEY_DAALEIN") {
@@ -43,9 +42,9 @@ exports.handler = async function(event, context) {
             };
         }
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const url = `[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$){apiKey}`;
 
-        const promptText = `Analyze this OMR answer sheet image. Extract the correct options for each question number. Return ONLY a valid JSON object where keys are question numbers (as strings "1", "2", etc.) and values are the chosen option letters ("A", "B", "C", or "D"). Example format: {"1": "A", "2": "C", "3": "B"}`;
+        const promptText = `Analyze this OMR answer sheet image. Extract the correct options for each question number. Return ONLY a valid JSON object where keys are question numbers (as strings "1", "2", etc.) and values are the chosen option letters ("A", "B", "C", or "D"). Example format: {"1": "A", "2": "C", "3": "B"}. Do not include any extra text or markdown formatting blocks.`;
 
         const geminiResponse = await fetch(url, {
             method: 'POST',
@@ -75,15 +74,18 @@ exports.handler = async function(event, context) {
             };
         }
 
-        const textResult = data.candidates && 
+        let textResult = data.candidates && 
                            data.candidates[0] && 
                            data.candidates[0].content && 
-                           data.candidates[0].content.parts[0].text;
+                           data.candidates[0].content.parts[0].text || "{}";
+
+        // Markdown blocks ko yhin se clean kar dete hain
+        textResult = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ answers: textResult || "{}" })
+            body: JSON.stringify({ answers: textResult })
         };
 
     } catch (error) {
