@@ -388,7 +388,7 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Scanning Image via Backend Server...</h3>
+    <h3 id="loadingText">Scanning Image via Netlify Function...</h3>
     <button class="btn" onclick="skipScanning()" style="margin-top:15px; background:#dc2626;">Skip & Open Review</button>
 </div>
 
@@ -424,7 +424,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Backend Server AI OMR Reader & Summary</p>
+        <p>Netlify Function AI OMR Reader & Summary</p>
 
         <div class="selector-grid">
             <div>
@@ -619,7 +619,7 @@ function handleImageSelect(e) {
 
 async function processOCR() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Sending image to backend server (/api/scan-omr)...";
+    document.getElementById("loadingText").innerText = "Sending image to Netlify function (/.netlify/functions/scan-omr)...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
@@ -630,8 +630,8 @@ async function processOCR() {
         
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
-        // Backend server route ko request bhejna
-        const response = await fetch('/api/scan-omr', {
+        // Netlify Serverless Function ko request bhejna
+        const response = await fetch('/.netlify/functions/scan-omr', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -642,23 +642,26 @@ async function processOCR() {
         document.getElementById("loadingOverlay").style.display = "none";
 
         if (!response.ok) {
-            throw new Error("Server error or route not available");
+            throw new Error("Netlify function error or route not available");
         }
 
         const result = await response.json();
-        extractedAnswerKey = result.answers || result;
+        extractedAnswerKey = result.answers || result.results || result;
 
         autoCheckMode = true;
         if (Object.keys(extractedAnswerKey).length > 0) {
-            totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
-            document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
+            const keys = Object.keys(extractedAnswerKey).map(Number).filter(n => !isNaN(n));
+            if (keys.length > 0) {
+                totalQuestions = Math.max(...keys);
+                document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
+            }
         }
         openReviewModal();
 
     } catch(err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Backend server connection failed / route missing. Review modal open kiya ja raha hai.");
+        alert("Netlify function connection failed. Review modal open kiya ja raha hai.");
         openReviewModal();
     }
 }
