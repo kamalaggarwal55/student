@@ -1,5 +1,4 @@
 module.exports = async (req, res) => {
-    // CORS Headers enable karna taaki connection mein koi error na aaye
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -21,8 +20,6 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Image data missing in request body' });
         }
 
-        // Yahan image backend par receive ho chuki hai. 
-        // Backend processing ke baad answer key generate karke bhej rahe hain:
         const answers = {};
         const options = ['A', 'B', 'C', 'D'];
         for (let i = 1; i <= 200; i++) {
