@@ -1,52 +1,66 @@
-import { GoogleGenAI } from "@google/genai";
+const { GoogleGenAI } = require('@google/genai');
 
-export default async function handler(req, res) {
-  // CORS headers taaki frontend se connection mein koi dikkat na aaye
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { image } = req.body;
-    if (!image) {
-      return res.status(400).json({ error: 'Image data is required' });
+exports.handler = async function(event, context) {
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            body: JSON.stringify({ error: 'Method Not Allowed' })
+        };
     }
 
-    // === YAHAN APNI GEMINI API KEY SEEDHA LIKH DO ===
-    const GEMINI_API_KEY = "AQ.Ab8RN6I0sNVSNmnapJVvNYp_NSpWXHJ74rlNcILh8HxioqtGPw"; 
+    try {
+        const body = JSON.parse(event.body);
+        const base64Image = body.image;
 
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-    // Base64 image data ko clean karna agar prefix ho
-    const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, "");
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          inlineData: {
-            mimeType: 'image/jpeg',
-            data: base64Data
-          }
-        },
-        {
-          text: "Analyze this OMR sheet image and extract the answers accurately."
+        if (!base64Image) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: 'No image provided' })
+            };
         }
-      ]
-    });
 
-    return res.status(200).json({ result: response.text });
+        // APNI GEMINI API KEY YAHAN DIRECT PASTE KAREIN:
+        const apiKey = "YAHAN_APNI_GEMINI_API_KEY_DAALEIN";
 
-  } catch (error) {
-    console.error("Backend Error:", error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
-  }
-}
+        if (!apiKey || apiKey === "YAHAN_APNI_GEMINI_API_KEY_DAALEIN") {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: 'Please paste your valid Gemini API key inside scan.js file.' })
+            };
+        }
+
+        const ai = new GoogleGenAI({ apiKey: apiKey });
+
+        const promptText = `Analyze this OMR answer sheet image. Extract the correct options for each question number. 
+Return ONLY a valid JSON object where keys are question numbers (as strings "1", "2", etc.) and values are the chosen option letters ("A", "B", "C", or "D"). 
+Example format: {"1": "A", "2": "C", "3": "B"}
+Do not include any extra text or markdown formatting blocks in the response except pure JSON if possible, or parseable standard format.`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: [
+                {
+                    inlineData: {
+                        mimeType: 'image/jpeg',
+                        data: base64Image
+                    }
+                },
+                promptText
+            ]
+        });
+
+        const textResult = response.text();
+
+        return {
+            statusCode: 200,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answers: textResult })
+        };
+
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message })
+        };
+    }
+};
