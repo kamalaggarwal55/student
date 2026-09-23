@@ -120,7 +120,7 @@ body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
 <div id="leaveConfirmModal">
     <div class="confirm-box">
-        <h3 style="margin-bottom:15px; font-size:22px;">⚠️ you want to restart test?</h3>
+        <h3 style="margin-bottom:15px; font-size:22px;">⚠️ Kya aap test chhodna chahte hain?</h3>
         <p style="margin-bottom:25px; font-size:15px; opacity:0.8;">Aapki progress delete ho jayegi.</p>
         <div style="display:flex; gap:15px; justify-content:center;">
             <button class="btn" onclick="closeLeaveModal()" style="background:#6b7280; flex:1;">Nahi</button>
@@ -321,7 +321,6 @@ async function sendImageToBackendAPI() {
         });
         const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
-        // Backend API request
         const response = await fetch('/api/scan-omr', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
