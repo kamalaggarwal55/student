@@ -320,7 +320,7 @@ async function processOCR() {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         const base64Data = dataUrl.split(',')[1];
 
-        // CALLING OUR BACKEND FILE (/api/scan) INSTEAD OF DIRECT GEMINI API
+        // SECURE BACKEND CALL TO /api/scan
         const response = await fetch('/api/scan', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -335,18 +335,33 @@ async function processOCR() {
             return;
         }
 
-        const parsedAnswers = result.answers;
+        const parsedAnswers = result.answers || result.result;
+        
+        // Agar parsedAnswers JSON format me hai ya text string me hai handle karne ke liye
+        let answersObj = parsedAnswers;
+        if (typeof parsedAnswers === 'string') {
+            try {
+                // Agar AI ne markdown code block ya text bheja ho
+                let cleanedText = parsedAnswers.replace(/```json/g, '').replace(/```/g, '').trim();
+                answersObj = JSON.parse(cleanedText);
+            } catch (e) {
+                console.log("Raw text response:", parsedAnswers);
+            }
+        }
+
         extractedAnswerKey = {};
         questionStatusMap = {};
 
-        Object.keys(parsedAnswers).forEach(qStr => {
-            const q = parseInt(qStr);
-            const ans = String(parsedAnswers[qStr]).toUpperCase();
-            if (q > 0 && ['A', 'B', 'C', 'D'].includes(ans)) {
-                extractedAnswerKey[q] = ans;
-                questionStatusMap[q] = 'detected';
-            }
-        });
+        if (typeof answersObj === 'object' && answersObj !== null) {
+            Object.keys(answersObj).forEach(qStr => {
+                const q = parseInt(qStr);
+                const ans = String(answersObj[qStr]).toUpperCase();
+                if (q > 0 && ['A', 'B', 'C', 'D'].includes(ans)) {
+                    extractedAnswerKey[q] = ans;
+                    questionStatusMap[q] = 'detected';
+                }
+            });
+        }
 
         let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
         let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
@@ -358,9 +373,10 @@ async function processOCR() {
         }
 
         const keys = Object.keys(extractedAnswerKey).filter(k => extractedAnswerKey[k] !== '');
-        if (keys.length > 0) {
+        if (keys.length > 0 || typeof parsedAnswers === 'string') {
             autoCheckMode = true;
             totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
+            if (isNaN(totalQuestions) || totalQuestions < 1) totalQuestions = maxQ;
             document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
             openReviewModal();
         } else {
@@ -369,7 +385,7 @@ async function processOCR() {
     } catch(err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("Error connecting to backend server.");
+        alert("Error connect to backend server: " + err.message);
     }
 }
 
@@ -377,197 +393,314 @@ function openReviewModal() {
     const container = document.getElementById("reviewListContainer");
     container.innerHTML = "";
     const sortedKeys = Object.keys(extractedAnswerKey).map(Number).sort((a,b)=>a-b);
-    let detectedKeys = sortedKeys.filter(q => questionStatusMap[q] === 'detected');
-    let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
+    
+    sortedKeys.forEach(q => {
+        let statusBadge = questionStatusMap[q] === 'detected' 
+            ? '<span style="color:#16a34a; font-weight:600;">✓ Detected</span>' 
+            : '<span style="color:#dc2626; font-weight:600;">⚠️ Manual</span>';
 
-    let summaryLine = `<div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around;"><span>📌 Total: ${sortedKeys.length}</span><span style="color:#16a34a;">✅ Detected: ${detectedKeys.length}</span><span style="color:#d97706;">⚠️ Missing: ${missingKeys.length}</span></div>`;
+        let div = document.createElement("div");
+        div.className = "review-item";
+        div.innerHTML = `
+            <span><b>Q${q}</b> ${statusBadge}</span>
+            <select id="review_q_${q}">
+                <option value="" ${extractedAnswerKey[q]===''?'selected':''}>--</option>
+                <option value="A" ${extractedAnswerKey[q]==='A'?'selected':''}>A</option>
+                <option value="B" ${extractedAnswerKey[q]==='B'?'selected':''}>B</option>
+                <option value="C" ${extractedAnswerKey[q]==='C'?'selected':''}>C</option>
+                <option value="D" ${extractedAnswerKey[q]==='D'?'selected':''}>D</option>
+            </select>
+        `;
+        container.appendChild(div);
+    });
 
-    function renderSection(title, keys, color, badgeText) {
-        if (keys.length === 0) return '';
-        let sectionHtml = `<div style="margin-bottom:15px;"><h4 style="margin-bottom:6px; color:${color}; font-size:14px; border-bottom:1px solid var(--border); padding-bottom:4px;">${title} (${keys.length})</h4>`;
-        keys.forEach(q => {
-            const currentAns = extractedAnswerKey[q] || '';
-            sectionHtml += `<div class="review-item"><div><strong>Q.${q}</strong> <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:${color}; color:white; margin-left:6px;">${badgeText}</span></div><div><select id="rev-ans-${q}"><option value="" ${currentAns === "" ? "selected" : ""}>-- Select --</option><option value="A" ${currentAns === "A" ? "selected" : ""}>A</option><option value="B" ${currentAns === "B" ? "selected" : ""}>B</option><option value="C" ${currentAns === "C" ? "selected" : ""}>C</option><option value="D" ${currentAns === "D" ? "selected" : ""}>D</option></select></div></div>`;
-        });
-        sectionHtml += `</div>`;
-        return sectionHtml;
-    }
-
-    container.innerHTML = summaryLine + renderSection("✅ Successfully Detected", detectedKeys, "#16a34a", "Detected") + renderSection("⚠️ Missing / Un-detected", missingKeys, "#d97706", "Missing");
     document.getElementById("reviewModal").style.display = "flex";
 }
 
-function closeReviewModal() { document.getElementById("reviewModal").style.display = "none"; }
-function applyReviewAndStart() {
-    Object.keys(extractedAnswerKey).map(Number).forEach(q => {
-        const sel = document.getElementById(`rev-ans-${q}`);
-        if (sel) extractedAnswerKey[q] = sel.value;
-    });
+function closeReviewModal() {
     document.getElementById("reviewModal").style.display = "none";
+}
+
+function applyReviewAndStart() {
+    const sortedKeys = Object.keys(extractedAnswerKey).map(Number);
+    sortedKeys.forEach(q => {
+        const sel = document.getElementById(`review_q_${q}`);
+        if (sel) {
+            extractedAnswerKey[q] = sel.value;
+        }
+    });
+    closeReviewModal();
     startApp();
 }
 
 function startApp() {
-    totalQuestions = autoCheckMode ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : parseInt(document.getElementById("questionCount").value);
-    document.documentElement.style.setProperty("--theme", document.getElementById("themeColor").value);
+    totalQuestions = parseInt(document.getElementById("questionCount").value) || 10;
+    const theme = document.getElementById("themeColor").value;
+    document.documentElement.style.setProperty('--theme', theme);
+
     document.getElementById("welcomePage").style.display = "none";
     document.getElementById("app").style.display = "block";
     history.pushState({ page: 'app' }, 'OMR Test', '#omr');
-    generateOMR();
-    updateResult();
-    document.getElementById("resultPanel").style.display = "block";
+
+    if (autoCheckMode) {
+        document.getElementById("resultPanel").style.display = "block";
+        document.getElementById("totalQuestions").innerText = totalQuestions;
+    }
+
+    renderOMRSheet();
+    renderNavigator();
 }
 
-function generateOMR() {
-    const omr = document.getElementById("omrContainer");
-    const nav = document.getElementById("navigator");
-    omr.innerHTML = ""; nav.innerHTML = "";
+function goHome() {
+    submitted = true;
+    window.location.hash = '';
+    location.reload();
+}
+
+function renderOMRSheet() {
+    const container = document.getElementById("omrContainer");
+    container.innerHTML = "";
+
     for (let i = 1; i <= totalQuestions; i++) {
-        const row = document.createElement("div");
-        row.className = "omr-row"; row.id = "row-" + i;
-        row.innerHTML = `<div class="qno">${String(i).padStart(2, "0")}</div><div class="option" data-opt="A" onclick="selectOption(${i},'A',this)">A</div><div class="option" data-opt="B" onclick="selectOption(${i},'B',this)">B</div><div class="option" data-opt="C" onclick="selectOption(${i},'C',this)">C</div><div class="option" data-opt="D" onclick="selectOption(${i},'D',this)">D</div><div style="text-align:center;"><button class="check-btn right-btn" id="right-${i}" onclick="markManual(${i}, 'right')">✔ Right</button></div><div style="text-align:center;"><button class="check-btn wrong-btn" id="wrong-${i}" onclick="markManual(${i}, 'wrong')">✖ Wrong</button></div><div id="yourAns-${i}" style="text-align:center; font-weight:700;">-</div><div id="correctAns-${i}" style="text-align:center; font-weight:700; color:#16a34a;">-</div>`;
-        omr.appendChild(row);
-        const btn = document.createElement("button");
-        btn.className = "nav-btn"; btn.innerText = i; btn.setAttribute("data-q", i);
-        btn.onclick = () => document.getElementById("row-" + i).scrollIntoView({ behavior: "smooth" });
+        let row = document.createElement("div");
+        row.className = "omr-row";
+        if (autoCheckMode && extractedAnswerKey[i]) {
+            row.id = `row_${i}`;
+        }
+
+        let qno = document.createElement("div");
+        qno.className = "qno";
+        qno.innerText = `Q.${i}`;
+        row.appendChild(qno);
+
+        ['A', 'B', 'C', 'D'].forEach(opt => {
+            let optDiv = document.createElement("div");
+            optDiv.className = "option";
+            optDiv.innerText = opt;
+            optDiv.onclick = () => selectOption(i, opt);
+            optDiv.id = `q_${i}_${opt}`;
+            row.appendChild(optDiv);
+        });
+
+        if (autoCheckMode) {
+            let rightBtn = document.createElement("button");
+            rightBtn.className = "check-btn right-btn";
+            rightBtn.id = `right_btn_${i}`;
+            rightBtn.innerText = "Right";
+            rightBtn.onclick = () => markChecked(i, 'right');
+            row.appendChild(rightBtn);
+
+            let wrongBtn = document.createElement("button");
+            wrongBtn.className = "check-btn wrong-btn";
+            wrongBtn.id = `wrong_btn_${i}`;
+            wrongBtn.innerText = "Wrong";
+            wrongBtn.onclick = () => markChecked(i, 'wrong');
+            row.appendChild(wrongBtn);
+
+            let yourAnsDiv = document.createElement("div");
+            yourAnsDiv.id = `your_ans_${i}`;
+            yourAnsDiv.style.textAlign = "center";
+            yourAnsDiv.style.fontWeight = "600";
+            yourAnsDiv.innerText = "-";
+            row.appendChild(yourAnsDiv);
+
+            let correctAnsDiv = document.createElement("div");
+            correctAnsDiv.id = `correct_ans_${i}`;
+            correctAnsDiv.style.textAlign = "center";
+            correctAnsDiv.style.fontWeight = "600";
+            correctAnsDiv.style.color = "#16a34a";
+            correctAnsDiv.innerText = extractedAnswerKey[i] || "-";
+            row.appendChild(correctAnsDiv);
+        } else {
+            // Empty placeholders for non-auto check layout alignment
+            for(let k=0; k<4; k++) {
+                let emptyCol = document.createElement("div");
+                row.appendChild(emptyCol);
+            }
+        }
+
+        container.appendChild(row);
+    }
+}
+
+function selectOption(q, opt) {
+    if (submitted) return;
+    
+    // Toggle selection
+    if (userAnswers[q] === opt) {
+        delete userAnswers[q];
+        document.getElementById(`q_${q}_${opt}`).classList.remove("selected");
+    } else {
+        if (userAnswers[q]) {
+            document.getElementById(`q_${q}_${userAnswers[q]}`).classList.remove("selected");
+        }
+        userAnswers[q] = opt;
+        document.getElementById(`q_${q}_${opt}`).classList.add("selected");
+    }
+
+    if (autoCheckMode) {
+        let yourDiv = document.getElementById(`your_ans_${q}`);
+        yourDiv.innerText = userAnswers[q] || "-";
+
+        let rBtn = document.getElementById(`right_btn_${q}`);
+        let wBtn = document.getElementById(`wrong_btn_${q}`);
+
+        if (userAnswers[q]) {
+            rBtn.style.display = "inline-block";
+            wBtn.style.display = "inline-block";
+            
+            // Auto evaluate if key exists
+            if (extractedAnswerKey[q]) {
+                if (userAnswers[q] === extractedAnswerKey[q]) {
+                    markChecked(q, 'right');
+                } else {
+                    markChecked(q, 'wrong');
+                }
+            }
+        } else {
+            rBtn.style.display = "none";
+            wBtn.style.display = "none";
+            delete checkedQuestions[q];
+            let row = document.getElementById(`row_${q}`);
+            if (row) {
+                row.classList.remove("correct-row", "wrong-row");
+            }
+        }
+        updateLiveResult();
+    }
+
+    renderNavigator();
+}
+
+function markChecked(q, status) {
+    checkedQuestions[q] = status;
+    let row = document.getElementById(`row_${q}`);
+    if (row) {
+        row.classList.remove("correct-row", "wrong-row");
+        if (status === 'right') row.classList.add("correct-row");
+        if (status === 'wrong') row.classList.add("wrong-row");
+    }
+
+    let navBtn = document.getElementById(`nav_${q}`);
+    if (navBtn) {
+        navBtn.classList.remove("checked-right", "checked-wrong", "done");
+        if (status === 'right') navBtn.classList.add("checked-right");
+        if (status === 'wrong') navBtn.classList.add("checked-wrong");
+    }
+    updateLiveResult();
+}
+
+function updateLiveResult() {
+    let attempted = Object.keys(userAnswers).length;
+    let r = 0, w = 0;
+    Object.keys(checkedQuestions).forEach(q => {
+        if (checkedQuestions[q] === 'right') r++;
+        if (checkedQuestions[q] === 'wrong') w++;
+    });
+
+    rightCount = r;
+    wrongCount = w;
+
+    document.getElementById("attemptedQuestions").innerText = attempted;
+    document.getElementById("rightQuestions").innerText = rightCount;
+    document.getElementById("wrongQuestions").innerText = wrongCount;
+
+    let totalChecked = rightCount + wrongCount;
+    let accuracy = totalChecked > 0 ? Math.round((rightCount / totalChecked) * 100) : 0;
+    document.getElementById("accuracyPercent").innerText = accuracy + "%";
+}
+
+function renderNavigator() {
+    const nav = document.getElementById("navigator");
+    nav.innerHTML = "";
+    for (let i = 1; i <= totalQuestions; i++) {
+        let btn = document.createElement("button");
+        btn.className = "nav-btn";
+        btn.id = `nav_${i}`;
+        btn.innerText = i;
+        if (userAnswers[i]) btn.classList.add("done");
+        if (checkedQuestions[i] === 'right') btn.classList.add("checked-right");
+        if (checkedQuestions[i] === 'wrong') btn.classList.add("checked-wrong");
+        
+        btn.onclick = () => {
+            const row = document.getElementById(`q_${i}_A`);
+            if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
         nav.appendChild(btn);
     }
 }
 
 function startTestTimer() {
-    if (testStarted) return;
-    testStarted = true; testPaused = false;
+    testStarted = true;
     document.getElementById("startTimerBtn").style.display = "none";
     document.getElementById("pauseResumeBtn").style.display = "inline-block";
-    resumeTimer();
-}
-
-function togglePauseTest() {
-    if (!testStarted || submitted) return;
-    testPaused = !testPaused;
-    if (testPaused) {
-        clearInterval(timerInterval);
-        document.getElementById("pauseResumeBtn").innerText = "▶ Resume Test";
-        document.getElementById("pauseResumeBtn").style.background = "#16a34a";
-    } else {
-        resumeTimer();
-        document.getElementById("pauseResumeBtn").innerText = "⏸ Pause Test";
-        document.getElementById("pauseResumeBtn").style.background = "#d97706";
-    }
-}
-
-function resumeTimer() {
-    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         if (!testPaused) {
             seconds++;
-            document.getElementById("timer").innerText = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+            let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            let s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById("timer").innerText = `${m}:${s}`;
         }
     }, 1000);
 }
 
-function selectOption(qNo, value, element) {
-    if (!testStarted || testPaused || submitted) return;
-    document.getElementById("row-" + qNo).querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
-    element.classList.add("selected");
-    userAnswers[qNo] = value;
-    document.getElementById("yourAns-" + qNo).innerText = value;
-    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
-    if (navBtn) navBtn.classList.add("done");
-    updateResult();
+function togglePauseTest() {
+    testPaused = !testPaused;
+    document.getElementById("pauseResumeBtn").innerText = testPaused ? "▶ Resume Test" : "⏸ Pause Test";
+    document.getElementById("pauseResumeBtn.style.background"] = testPaused ? "#16a34a" : "#d97706";
 }
 
 function submitTest() {
-    if (!testStarted) { alert("Test start nahi hua h!"); return; }
-    submitted = true; clearInterval(timerInterval);
-    document.getElementById("pdfArea").style.display = "block";
+    submitted = true;
+    if (timerInterval) clearInterval(timerInterval);
+    alert("Test Submitted Successfully!");
     document.getElementById("submitBtn").style.display = "none";
-    document.getElementById("pauseResumeBtn").style.display = "none";
-
-    if (autoCheckMode) {
-        rightCount = 0; wrongCount = 0;
-        for (let i = 1; i <= totalQuestions; i++) {
-            const row = document.getElementById("row-" + i);
-            const myAns = userAnswers[i] || "-";
-            const picAns = extractedAnswerKey[i] || "-";
-            document.getElementById("yourAns-" + i).innerText = myAns;
-            document.getElementById("correctAns-" + i).innerText = picAns;
-            if (userAnswers[i] && extractedAnswerKey[i]) {
-                if (userAnswers[i] === extractedAnswerKey[i]) { row.classList.add("correct-row"); rightCount++; updateNav(i, "right"); }
-                else { row.classList.add("wrong-row"); wrongCount++; updateNav(i, "wrong"); }
-            } else if (!userAnswers[i] && extractedAnswerKey[i]) { row.classList.add("wrong-row"); }
-        }
-        updateResult();
-        alert("Test Submitted & Auto Checked Successfully!");
-    } else {
-        for (let i = 1; i <= totalQuestions; i++) {
-            document.getElementById("right-" + i).style.display = "inline-block";
-            document.getElementById("wrong-" + i).style.display = "inline-block";
-        }
-        alert("Manual Check Mode Active!");
-    }
+    document.getElementById("pdfArea").style.display = "block";
 }
 
-function markManual(qNo, status) {
-    if (!userAnswers[qNo]) { alert("Pehle answer select karein."); return; }
-    const row = document.getElementById("row-" + qNo);
-    if (checkedQuestions[qNo] === status) return;
-    if (checkedQuestions[qNo] === "right") rightCount--;
-    if (checkedQuestions[qNo] === "wrong") wrongCount--;
-    checkedQuestions[qNo] = status;
-    if (status === "right") { rightCount++; row.className = "omr-row correct-row"; updateNav(qNo, "right"); }
-    else { wrongCount++; row.className = "omr-row wrong-row"; updateNav(qNo, "wrong"); }
-    updateResult();
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
 }
-
-function updateNav(qNo, status) {
-    const navBtn = document.querySelector(`[data-q="${qNo}"]`);
-    if (navBtn) {
-        navBtn.classList.remove("checked-right", "checked-wrong");
-        if (status === "right") navBtn.classList.add("checked-right");
-        if (status === "wrong") navBtn.classList.add("checked-wrong");
-    }
-}
-
-function updateResult() {
-    document.getElementById("totalQuestions").innerText = totalQuestions;
-    document.getElementById("attemptedQuestions").innerText = Object.keys(userAnswers).length;
-    document.getElementById("rightQuestions").innerText = rightCount;
-    document.getElementById("wrongQuestions").innerText = wrongCount;
-    let acc = (rightCount + wrongCount) > 0 ? ((rightCount / (rightCount + wrongCount)) * 100).toFixed(1) : 0;
-    document.getElementById("accuracyPercent").innerText = acc + "%";
-}
-
-function toggleDarkMode() { document.body.classList.toggle("dark"); }
-function goHome() { window.location.href = window.location.pathname; }
 
 function downloadOMRPDF() {
-    const name = document.getElementById("watermarkName").value || "Student55";
-    html2pdf().set({ margin: 0.3, filename: `OMR_Report_${name}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(document.getElementById("pdfExportArea")).save();
+    const element = document.getElementById("pdfExportArea");
+    let wm = document.getElementById("watermarkName").value || "Student55 OMR Report";
+    const opt = {
+        margin: 1,
+        filename: 'Student55_OMR_Report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
 }
 
 function addComment() {
-    const name = document.getElementById("userName").value.trim();
-    const text = document.getElementById("commentText").value.trim();
-    if(!name || !text) { alert("Please enter both name and comment."); return; }
-    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
-    comments.push({ name, text, time: new Date().toLocaleDateString() });
-    localStorage.setItem("omrComments", JSON.stringify(comments));
-    document.getElementById("userName").value = ""; document.getElementById("commentText").value = "";
+    let name = document.getElementById("userName").value.trim();
+    let text = document.getElementById("commentText").value.trim();
+    if(!name || !text) { alert("Please enter name and comment!"); return; }
+
+    let comments = JSON.parse(localStorage.getItem("omr_comments") || "[]");
+    comments.push({ name, text, time: new Date().toLocaleString() });
+    localStorage.setItem("omr_comments", JSON.stringify(comments));
+    
+    document.getElementById("commentText").value = "";
     loadComments();
 }
 
 function loadComments() {
-    let comments = JSON.parse(localStorage.getItem("omrComments") || "[]");
-    const container = document.getElementById("commentList");
-    container.innerHTML = "";
+    let list = document.getElementById("commentList");
+    if(!list) return;
+    let comments = JSON.parse(localStorage.getItem("omr_comments") || "[]");
+    list.innerHTML = "";
     comments.forEach(c => {
-        const item = document.createElement("div");
-        item.className = "comment-item";
-        item.innerHTML = `<strong>${c.name}</strong> <small style="color:gray;">(${c.time})</small><p style="margin-top:5px;">${c.text}</p>`;
-        container.appendChild(item);
+        let div = document.createElement("div");
+        div.className = "comment-item";
+        div.innerHTML = `<b>${c.name}</b> <span style="font-size:11px; opacity:0.6;">(${c.time})</span><p>${c.text}</p>`;
+        list.appendChild(div);
     });
 }
 </script>
+
 </body>
 </html>
