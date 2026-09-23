@@ -7,7 +7,6 @@
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -389,7 +388,7 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Scanning Image... 0%</h3>
+    <h3 id="loadingText">Scanning Image via Server...</h3>
 </div>
 
 <!-- LEAVE CONFIRMATION MODAL -->
@@ -427,7 +426,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OCR & Summary Review</p>
+        <p>Advanced Server OCR & Summary Review</p>
 
         <div class="selector-grid">
             <div>
@@ -473,7 +472,7 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image via Server</button>
             </div>
         </div>
 
@@ -622,77 +621,53 @@ function handleImageSelect(e) {
     }
 }
 
+// Updated processOCR sends cropped image to backend server for high-accuracy processing
 async function processOCR() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Scanning Image... 0%";
+    document.getElementById("loadingText").innerText = "Uploading & Scanning via Server...";
     document.getElementById("loadingOverlay").style.display = "flex";
 
     try {
-        const canvas = cropper.getCroppedCanvas({ width: cropper.getCroppedCanvas().width * 2, height: cropper.getCroppedCanvas().height * 2 });
-        
-        const worker = await Tesseract.createWorker('eng', 1, {
-            logger: m => {
-                if (m.status === 'recognizing text') {
-                    let progressPercent = Math.round(m.progress * 100);
-                    document.getElementById("loadingText").innerText = `Scanning Image... ${progressPercent}%`;
-                } else if (m.status) {
-                    document.getElementById("loadingText").innerText = `${m.status}...`;
-                }
-            }
+        const canvas = cropper.getCroppedCanvas({ 
+            width: cropper.getCroppedCanvas().width * 2, 
+            height: cropper.getCroppedCanvas().height * 2 
         });
+        
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            formData.append('image', blob, 'omr-crop.png');
 
-        const result = await worker.recognize(canvas.toDataURL('image/png'));
-        await worker.terminate();
+            const response = await fetch('/api/scan-omr', {
+                method: 'POST',
+                body: formData
+            });
 
-        extractedAnswerKey = {};
-        questionStatusMap = {};
-        parseTextToAnswers(result.data.text);
-        document.getElementById("loadingOverlay").style.display = "none";
+            const data = await response.json();
+            document.getElementById("loadingOverlay").style.display = "none";
 
-        const keys = Object.keys(extractedAnswerKey);
-        if (keys.length > 0) {
-            autoCheckMode = true;
-            totalQuestions = Math.max(...keys.map(Number));
-            document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
-            
-            openReviewModal();
-        } else {
-            alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
-        }
+            if (data.success) {
+                extractedAnswerKey = data.extractedAnswerKey;
+                questionStatusMap = data.questionStatusMap;
+
+                const keys = Object.keys(extractedAnswerKey);
+                if (keys.length > 0) {
+                    autoCheckMode = true;
+                    totalQuestions = Math.max(...keys.map(Number));
+                    document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
+                    
+                    openReviewModal();
+                } else {
+                    alert("❌ OCR se text match nahi hua. Manual checking ya dobara clear photo crop karein.");
+                }
+            } else {
+                alert("Server OCR Error: " + (data.error || "Please try again."));
+            }
+        }, 'image/png');
+
     } catch(err) {
         console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
-        alert("OCR Error! Please try again.");
-    }
-}
-
-function parseTextToAnswers(text) {
-    const lines = text.split('\n');
-    let maxQ = parseInt(document.getElementById("questionCount").value) || 10;
-    
-    lines.forEach(line => {
-        const matches = [...line.matchAll(/(\d{1,3})[\.\-:\)]*\s*([A-Da-d\?])/g)];
-        matches.forEach(m => {
-            const q = parseInt(m[1]);
-            let rawAns = m[2];
-            if (q > 0 && q <= 300) {
-                if (rawAns === '?' || rawAns.toLowerCase() === 'x') {
-                    questionStatusMap[q] = 'confusion';
-                    extractedAnswerKey[q] = '';
-                } else {
-                    questionStatusMap[q] = 'detected';
-                    extractedAnswerKey[q] = rawAns.toUpperCase();
-                }
-            }
-        });
-    });
-
-    let limit = Math.max(maxQ, Object.keys(extractedAnswerKey).length > 0 ? Math.max(...Object.keys(extractedAnswerKey).map(Number)) : 10);
-    for (let i = 1; i <= limit; i++) {
-        if (!extractedAnswerKey[i]) {
-            if (!questionStatusMap[i]) questionStatusMap[i] = 'missing';
-            extractedAnswerKey[i] = '';
-        }
+        alert("Connection Error with Backend Server!");
     }
 }
 
@@ -706,7 +681,6 @@ function openReviewModal() {
     let confusionKeys = sortedKeys.filter(q => questionStatusMap[q] === 'confusion');
     let missingKeys = sortedKeys.filter(q => questionStatusMap[q] === 'missing');
 
-    // Summary Line at the top inside modal including Total Qns Count
     let summaryLine = `
         <div style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border); display:flex; justify-content:space-around; flex-wrap:wrap; gap:5px;">
             <span style="color:#2563eb;">📌 Total: ${sortedKeys.length}</span>
@@ -908,7 +882,7 @@ function submitTest() {
             const picAns = extractedAnswerKey[i] || "-";
 
             document.getElementById("yourAns-" + i).innerText = myAns;
-            document.getElementById("correctAns-" + i).innerText = picAns; // Revels correct answer only on submit
+            document.getElementById("correctAns-" + i).innerText = picAns;
 
             if (userAnswers[i] && extractedAnswerKey[i]) {
                 if (userAnswers[i] === extractedAnswerKey[i]) {
