@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student55 Ultra AI OMR - Summary & Categorized Review</title>
+<title>Student55 Ultra AI OMR - Backend Server Integration</title>
 
 <!-- Fonts & External Libraries -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -388,8 +388,8 @@ body {
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <h3 id="loadingText">Processing Image...</h3>
-    <button class="btn" onclick="skipScanningAndStart()" style="margin-top:20px; background:#dc2626;">Skip & Open Manual Review</button>
+    <h3 id="loadingText">Scanning Image via Backend Server...</h3>
+    <button class="btn" onclick="skipScanning()" style="margin-top:15px; background:#dc2626;">Skip & Open Review</button>
 </div>
 
 <!-- LEAVE CONFIRMATION MODAL -->
@@ -410,7 +410,7 @@ body {
         <span onclick="closeReviewModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: var(--text); opacity: 0.7;" title="Close">×</span>
 
         <h3 style="margin-bottom:10px; font-size:20px;">🔍 Scan Results & Summary</h3>
-        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Detected answers ya manual key set karein.</p>
+        <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">Backend se read kiye gaye answers yahan set hain.</p>
         
         <div id="reviewListContainer" style="text-align:left; max-height:380px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:15px;"></div>
 
@@ -424,7 +424,7 @@ body {
 <section id="welcomePage">
     <div class="welcome-box">
         <h1>🎯 Student55 Ultra AI OMR</h1>
-        <p>Advanced OMR & Summary Review</p>
+        <p>Backend Server AI OMR Reader & Summary</p>
 
         <div class="selector-grid">
             <div>
@@ -470,7 +470,7 @@ body {
                 <div class="img-container">
                     <img id="cropImage" src="">
                 </div>
-                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Scan Cropped Image</button>
+                <button class="btn" style="width:100%; margin-top:15px; background:#2563eb; font-size:16px; padding:12px; border-radius:12px;" onclick="processOCR()">⚡ Send to Backend & Scan</button>
             </div>
         </div>
 
@@ -570,7 +570,6 @@ body {
 let totalQuestions = 10;
 let userAnswers = {};
 let extractedAnswerKey = {};
-let questionStatusMap = {}; 
 let autoCheckMode = false;
 let testStarted = false;
 let testPaused = false;
@@ -620,17 +619,8 @@ function handleImageSelect(e) {
 
 async function processOCR() {
     if (!cropper) return;
-    document.getElementById("loadingText").innerText = "Scanning Image via Server...";
+    document.getElementById("loadingText").innerText = "Sending image to backend server (/api/scan-omr)...";
     document.getElementById("loadingOverlay").style.display = "flex";
-
-    // Fallback timer taaki agar server response na de, toh 4 sec me loading hat jaye
-    let timeoutTriggered = false;
-    let timer = setTimeout(() => {
-        timeoutTriggered = true;
-        document.getElementById("loadingOverlay").style.display = "none";
-        alert("Server response timeout! Opening manual review sheet.");
-        openReviewModal();
-    }, 4000);
 
     try {
         const canvas = cropper.getCroppedCanvas({ 
@@ -638,55 +628,42 @@ async function processOCR() {
             height: cropper.getCroppedCanvas().height * 2 
         });
         
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            formData.append('image', blob, 'omr-crop.png');
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
-            const response = await fetch('/api/scan-omr', {
-                method: 'POST',
-                body: formData
-            });
+        // Backend server route ko request bhejna
+        const response = await fetch('/api/scan-omr', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: dataUrl })
+        });
 
-            if (timeoutTriggered) return;
-            clearTimeout(timer);
+        document.getElementById("loadingOverlay").style.display = "none";
 
-            const data = await response.json();
-            document.getElementById("loadingOverlay").style.display = "none";
+        if (!response.ok) {
+            throw new Error("Server error or route not available");
+        }
 
-            if (data.text) {
-                extractedAnswerKey = {};
-                const lines = data.text.split('\n');
-                let qNum = 1;
-                lines.forEach(line => {
-                    const match = line.match(/([A-D])/i);
-                    if (match) {
-                        extractedAnswerKey[qNum] = match[1].toUpperCase();
-                        qNum++;
-                    }
-                });
+        const result = await response.json();
+        extractedAnswerKey = result.answers || result;
 
-                if (Object.keys(extractedAnswerKey).length > 0) {
-                    autoCheckMode = true;
-                    totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
-                    document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
-                    openReviewModal();
-                } else {
-                    openReviewModal();
-                }
-            } else {
-                openReviewModal();
-            }
-        }, 'image/png');
+        autoCheckMode = true;
+        if (Object.keys(extractedAnswerKey).length > 0) {
+            totalQuestions = Math.max(...Object.keys(extractedAnswerKey).map(Number));
+            document.getElementById("questionCount").value = totalQuestions <= 200 ? totalQuestions : 200;
+        }
+        openReviewModal();
 
     } catch(err) {
-        if (timeoutTriggered) return;
-        clearTimeout(timer);
+        console.error(err);
         document.getElementById("loadingOverlay").style.display = "none";
+        alert("Backend server connection failed / route missing. Review modal open kiya ja raha hai.");
         openReviewModal();
     }
 }
 
-function skipScanningAndStart() {
+function skipScanning() {
     document.getElementById("loadingOverlay").style.display = "none";
     openReviewModal();
 }
@@ -696,7 +673,7 @@ function openReviewModal() {
     const container = document.getElementById("reviewListContainer");
     container.innerHTML = "";
 
-    let finalHTML = `<div style="background:var(--bg); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; font-weight:600; text-align:center;">Answer Key Set karein (Optional)</div>`;
+    let finalHTML = `<div style="background:var(--bg); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; font-weight:600; text-align:center;">Review / Set Answer Key</div>`;
     
     for(let q=1; q<=totalCount; q++) {
         const currentAns = extractedAnswerKey[q] || '';
