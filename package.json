@@ -1,9 +1,0 @@
-{
-  "name": "student55-omr",
-  "version": "1.0.0",
-  "description": "Student55 OMR Scanner Backend",
-  "private": true,
-  "scripts": {
-    "start": "echo 'Frontend static app running'"
-  }
-}
