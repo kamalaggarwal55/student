@@ -24,9 +24,12 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'GEMINI_API_KEY is not configured in Vercel Environment Variables.' });
         }
 
+        // Clean base64 string
         const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // Call Gemini API from backend server
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            model: 'gemini-1.5-flash',
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -48,33 +51,27 @@ export default async function handler(req, res) {
             })
         });
 
-        const data = await response.json();
+        const data = await geminiResponse.json();
         
-        if (!response.ok) {
-            return res.status(500).json({ error: data.error?.message || 'Gemini API connection failed' });
+        if (!geminiResponse.ok) {
+            return res.status(500).json({ error: data.error?.message || 'Gemini API rejected the request' });
         }
 
         const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!rawText) {
-            return res.status(500).json({ error: 'No response text received from Gemini AI model.' });
+            return res.status(500).json({ error: 'Empty response received from Gemini AI model.' });
         }
 
         const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-        
-        let answers;
-        try {
-            answers = JSON.parse(cleanedText);
-        } catch (parseError) {
-            return res.status(500).json({ error: 'Failed to parse AI response as JSON: ' + cleanedText });
-        }
+        const answers = JSON.parse(cleanedText);
 
         return res.status(200).json({
             success: true,
-            message: 'OMR successfully scanned using Gemini AI!',
+            message: 'OMR successfully scanned via backend Gemini AI!',
             answers: answers
         });
 
     } catch (error) {
-        return res.status(500).json({ error: 'Server Error: ' + error.message });
+        return res.status(500).json({ error: 'Backend Server Exception: ' + error.message });
     }
 }
