@@ -1,6 +1,9 @@
 {
-  "name": "student55-omr-backend",
+  "name": "student55-omr",
   "version": "1.0.0",
+  "description": "Student55 OMR Scanner Backend",
   "private": true,
-  "description": "Student55 AI OMR Vercel Backend"
+  "scripts": {
+    "start": "echo 'Frontend static app running'"
+  }
 }
