@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/scan-omr.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
+  "functions": {
+    "api/scan-omr.js": {
+      "maxDuration": 30
+    }
+  }
 }
