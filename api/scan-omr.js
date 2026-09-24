@@ -24,12 +24,9 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'GEMINI_API_KEY is not configured in Vercel Environment Variables.' });
         }
 
-        // Clean base64 string
         const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
 
-        // Call Gemini API from backend server
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            model: 'gemini-1.5-flash',
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -51,15 +48,15 @@ export default async function handler(req, res) {
             })
         });
 
-        const data = await geminiResponse.json();
+        const data = await response.json();
         
-        if (!geminiResponse.ok) {
-            return res.status(500).json({ error: data.error?.message || 'Gemini API rejected the request' });
+        if (!response.ok) {
+            return res.status(500).json({ error: data.error?.message || 'Gemini API failed' });
         }
 
         const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!rawText) {
-            return res.status(500).json({ error: 'Empty response received from Gemini AI model.' });
+            return res.status(500).json({ error: 'Empty response from Gemini AI' });
         }
 
         const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -67,11 +64,11 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
             success: true,
-            message: 'OMR successfully scanned via backend Gemini AI!',
+            message: 'OMR successfully scanned!',
             answers: answers
         });
 
     } catch (error) {
-        return res.status(500).json({ error: 'Backend Server Exception: ' + error.message });
+        return res.status(500).json({ error: 'Server Error: ' + error.message });
     }
 }
