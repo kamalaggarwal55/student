@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/scan-omr.js": {
-      "maxDuration": 30
+  "maxDuration": 30
     }
   }
 }
