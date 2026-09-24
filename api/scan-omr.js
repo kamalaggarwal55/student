@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            return res.status(500).json({ error: 'GEMINI_API_KEY is not configured in Vercel Environment Variables.' });
+            return res.status(500).json({ error: 'GEMINI_ISSUE: GEMINI_API_KEY is not configured in Vercel Environment Variables.' });
         }
 
         const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
